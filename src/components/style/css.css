@@ -1,0 +1,202 @@
+/* css.css */
+
+/* Logo */
+.logo-img {
+  max-height: 100px;
+}
+.custom-bg-green {
+  background-color: #319740; /* Màu xanh lá chuẩn hoặc màu bạn muốn */
+}
+.dropdown-item:active {
+  background-color: #a5d6a7 !important;
+  color: #1b5e20 !important;
+  font-weight: 600;
+}
+.dropdown-menu-custom .dropdown-item:hover {
+  background-color: #c8e6c9; /* Màu xanh lá nhạt */
+  color: #1b5e20; /* Màu chữ xanh đậm */
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* Button Show All */
+.btn-show-all {
+  display: flex;
+  align-items: center;
+  color: #09c979; /* text-success */
+  margin-right: 0.5rem;
+  background-color: #d9f6f0; /* btn-light */
+  border: 1px solid #c8ecd2;
+}
+
+/* Input search width */
+.input-search {
+  width: 75%;
+}
+
+/* Icon và text dưới icon */
+.icon-text {
+  text-align: center;
+  margin: 0 0.5rem;
+  position: relative;
+}
+
+.icon-text svg {
+  font-size: 1rem;
+}
+
+.icon-text .small-text {
+  font-size: 0.8rem;
+}
+
+/* Badge giỏ hàng */
+.cart-badge {
+  position: absolute;
+  top: -8px; /* lên trên đầu icon */
+  right: -8px; /* sát mép phải icon */
+  font-size: 0.75rem;
+  padding: 0.25em 0.4em;
+  border-radius: 50%;
+  min-width: 1.2em;
+  height: 1.2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  background-color: #dc3545; /* màu đỏ bootstrap */
+  color: white;
+}
+
+/* Tài khoản cursor pointer */
+.account-dropdown-toggle {
+  cursor: pointer;
+  text-align: center;
+  margin: 0 0.5rem;
+  position: relative;
+}
+
+/* Dropdown menu position */
+.dropdown-menu-custom {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+/* Bottom nav links */
+.bottom-nav-link {
+  color: #000;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  text-decoration: none;
+}
+
+.bottom-nav-link svg {
+  margin-right: 0.25rem;
+}
+
+/* Hình xe tải */
+.truck-icon {
+  height: 20px;
+  margin-right: 0.25rem;
+}
+/* XàmXàm
+/* Container tổng */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c3e22; /* xanh đậm */
+  background-color: #f8faf7; /* nền nhạt xanh lá nhẹ */
+}
+
+/* Tiêu đề lớn */
+h1 {
+  color: #2e7d32; /* xanh lá đậm */
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Các tiêu đề section */
+h2 {
+  color: #388e3c;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #a5d6a7; /* đường gạch dưới nhẹ */
+  padding-bottom: 0.5rem;
+}
+
+/* Mục sách - khung ngoài */
+.grid > div {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgb(46 125 50 / 0.15);
+  padding: 1rem;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+.grid > div:hover {
+  box-shadow: 0 8px 20px rgb(46 125 50 / 0.3);
+  transform: translateY(-5px);
+}
+
+/* Ảnh sách */
+.grid img {
+  border-radius: 10px;
+  object-fit: cover;
+  width: 100%;
+  height: 200px;
+  margin-bottom: 1rem;
+}
+
+/* Tên sách */
+.grid h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #1b5e20;
+}
+
+/* Tác giả */
+.grid p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.7rem;
+}
+
+/* Giá sách */
+.grid p.font-bold {
+  color: #2e7d32;
+  font-size: 1rem;
+}
+
+/* Danh sách sách bán chạy */
+ul.list-decimal {
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgb(46 125 50 / 0.12);
+}
+
+/* Danh sách dịch vụ */
+ul.list-disc {
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgb(46 125 50 / 0.12);
+}
+
+/* Footer nhỏ ở dưới */
+
+/* Responsive nhỏ */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+  .grid > div img {
+    height: 180px;
+  }
+}
