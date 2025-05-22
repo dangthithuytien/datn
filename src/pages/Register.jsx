@@ -17,7 +17,7 @@ export default function Register() {
     <div className="login-container container-md bg-white rounded-3 shadow-sm p-4 p-md-5">
       <h1 className="text-center mb-3">ĐĂNG KÝ</h1>
       <p className="login-subtitle text-center text-muted mb-4">
-        Vui lòng nhập thông tin đăng ký
+        Vui lòng nhập thông tin đăng
       </p>
 
       <form onSubmit={handleSubmit} className="login-form">
