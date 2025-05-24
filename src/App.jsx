@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import UserProfile from './pages/UserProfile';
+import ForgotPassword from './pages/ForgetPass';
 
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -14,10 +15,11 @@ const App = () => {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/user-profile" element={<UserProfile />} />
+        <Route path="/" element={<Home/>} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/register" element={<Register/>} />
+        <Route path="/user-profile" element={<UserProfile/>} />
+        <Route path="/forgot-password" element={<ForgotPassword/>} />
       </Routes>
     </Layout>
   );

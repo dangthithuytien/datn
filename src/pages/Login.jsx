@@ -46,6 +46,8 @@ export default function Login() {
           />
           <label htmlFor="passwordInput"><i className="bi bi-lock me-2"></i>Mật khẩu</label>
         </div>
+        <div className="forgot-password-link">
+  <Link to="/forgot-password">Quên mật khẩu?</Link></div>
         <button type="submit" className="btn btn-success w-100 py-2">
           <i className="bi bi-box-arrow-in-right me-2"></i>
           ĐĂNG NHẬP
