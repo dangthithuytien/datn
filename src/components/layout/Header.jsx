@@ -21,7 +21,7 @@ const Header = () => {
   return (
     <header className="bg-light shadow-md">
       {/* Top header */}
-      <div className="container-xxl custom-bg-green text-white py-3">
+      <div className="container-xxxl custom-bg-green text-white py-3">
         <div className="row align-items-center">
           {/* Logo */}
           <div className="col-2 d-flex align-items-center">
@@ -53,7 +53,7 @@ const Header = () => {
           </div>
 
           {/* Icons */}
-          <div className="col-4 d-flex justify-content-end align-items-center">
+          <div className="col-2 d-flex justify-content-end align-items-center">
             <div className="icon-text">
               <FaBookOpen />
               <div className="small-text">Tra cứu</div>
@@ -85,7 +85,7 @@ const Header = () => {
                     </a>
                   </li>
                   <li>
-                    <a className="dropdown-item" href="/profile">
+                    <a className="dropdown-item" href="/user-profile">
                       Thông tin cá nhân
                     </a>
                   </li>

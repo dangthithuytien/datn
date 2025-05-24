@@ -1,0 +1,28 @@
+:root {
+  /* Light Theme */
+  --color-light-bg: #ffffff;
+  --color-light-text: #213547;
+  --color-light-primary: #007bff;
+  --color-light-border: #e0e0e0;
+
+  /* Dark Theme */
+  --color-dark-bg: #242424;
+  --color-dark-text: rgba(255, 255, 255, 0.87);
+  --color-dark-primary: #646cff;
+  --color-dark-border: #363636;
+
+  /* Active Theme (Mặc định: Light) */
+  --color-bg: var(--color-light-bg);
+  --color-text: var(--color-light-text);
+  --color-primary: var(--color-light-primary);
+  --color-border: var(--color-light-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: var(--color-dark-bg);
+    --color-text: var(--color-dark-text);
+    --color-primary: var(--color-dark-primary);
+    --color-border: var(--color-dark-border);
+  }
+}

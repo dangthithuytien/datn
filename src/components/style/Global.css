@@ -1,0 +1,81 @@
+/* Reset CSS cơ bản */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Định nghĩa CSS Variables cho theme */
+:root {
+  /* Light Theme - Mặc định */
+  --bg-color: #ffffff;
+  --text-color: #213547;
+  --primary-color: #007bff;
+  --border-color: #e0e0e0;
+
+  /* Dark Theme - Giá trị mặc định sẽ được ghi đè */
+  --bg-color-dark: #242424;
+  --text-color-dark: rgba(255, 255, 255, 0.87);
+  --primary-color-dark: #646cff;
+  --border-color-dark: #363636;
+}
+
+/* Áp dụng theme theo hệ thống mặc định */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: var(--bg-color-dark);
+    --text-color: var(--text-color-dark);
+    --primary-color: var(--primary-color-dark);
+    --border-color: var(--border-color-dark);
+  }
+}
+
+/* Style toàn cục cho body */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.5;
+  transition: 
+    background-color 0.3s ease, 
+    color 0.3s ease;
+}
+
+/* Style chung cho các thẻ HTML */
+h1, h2, h3 {
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* Class tiện ích */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: 
+    background-color 0.3s,
+    border-color 0.3s;
+}
+
+.button:hover {
+  border-color: var(--primary-color);
+}

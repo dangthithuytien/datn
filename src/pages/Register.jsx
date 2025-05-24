@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import "./Register.css"; // Dùng chung CSS với Login
+import "../components/style/Register.css"; // Dùng chung CSS với Login
 
 export default function Register() {
   const [email, setEmail] = useState("");
