@@ -94,12 +94,12 @@
 }
 
 .product-card {
-  flex: 0 0 18%; /* vừa 5 sản phẩm */
-  max-width: 18%;
+  flex: 0 0 15%; /* thu nhỏ còn 15% để nhỏ hơn */
+  max-width: 15%;
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 10px;
+  padding: 8px; /* giảm padding bên trong */
   position: relative;
   transition: transform 0.3s ease;
   cursor: pointer;
@@ -113,13 +113,13 @@
   width: 100%;
   height: 150px;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: 4px;
 }
-
 .product-name {
   font-size: 1.1rem;
   margin: 10px 0 6px;
   color: #333;
+  text-align: center;
 }
 
 .prices {

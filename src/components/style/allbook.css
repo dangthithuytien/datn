@@ -10,20 +10,6 @@
 }
 
 /* Style danh mục sản phẩm */
-.list-group-item {
-  background-color: #28a745; /* Màu xanh lá */
-  color: #fff; /* Chữ trắng */
-  font-weight: bold; /* Chữ đậm */
-  border: none; /* Loại bỏ border */
-  border-radius: 8px; /* Bo tròn cạnh */
-  cursor: pointer; /* Cursor pointer khi hover */
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-.list-group-item:hover {
-  background-color: #218838; /* Màu xanh đậm hơn khi hover */
-  transform: scale(1.02); /* Phóng to nhẹ khi hover */
-}
 
 /* Style card sách */
 .book-card {
@@ -59,4 +45,108 @@
   color: #bf6e6e;
   font-size: 14px; /* nhỏ hơn */
   margin-bottom: 10px;
+}
+.book-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 8px #ccc;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 8px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Căn giữa tất cả nội dung ngang */
+}
+
+.book-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.book-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 8px;
+  margin-bottom: 6px;
+  text-align: center; /* căn giữa chữ */
+}
+
+.book-price {
+  color: #3a803a; /* tone xanh lá dịu hơn */
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.button-group {
+  display: flex;
+  margin: 0 auto; /* căn giữa nhóm nút */
+  overflow: hidden;
+  border-radius: 6px;
+  gap: 0; /* để 2 nút dính liền nhau */
+  box-shadow: 0 0 5px rgba(58, 128, 58, 0.3);
+}
+
+.button-group button {
+  font-size: 0.8rem; /* nhỏ hơn */
+  padding: 5px 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-group button:first-child {
+  background-color: #4caf50; /* xanh lá đậm */
+  color: white;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.button-group button:first-child:hover {
+  background-color: #388e3c;
+}
+
+.button-group button:last-child {
+  background-color: #81c784; /* xanh lá nhạt hơn */
+  color: white;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.button-group button:last-child:hover {
+  background-color: #66bb6a;
+}
+/* Các CSS bạn có thể giữ nguyên */
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  margin-left: 10px; /* Khoảng cách so với icon mũi tên */
+}
+
+.filter-btn {
+  background-color: transparent;
+  border: 1.5px solid #71e9b9;
+  color: #043f2d;
+  padding: 3px 8px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.filter-btn:hover {
+  background-color: #0a5321;
+  color: white;
+}
+
+.filter-btn.active {
+  background-color: #0056b3;
+  color: white;
+  border-color: #0056b3;
 }

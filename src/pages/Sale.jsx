@@ -96,7 +96,7 @@ const Sale = () => {
     );
   };
 
-  const productsToShow = showAll ? productsOnSale : productsOnSale.slice(0, 5);
+  const productsToShow = showAll ? productsOnSale : productsOnSale.slice(0, 6);
 
   return (
     <div className="flashsale-container">
