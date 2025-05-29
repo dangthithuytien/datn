@@ -1,9 +1,35 @@
 /* css.css */
 
-/* Logo */
 .logo-img {
-  max-height: 100px;
+  width: 150px !important;
+  height: auto !important;
+  max-height: none !important;
 }
+
+.category-btn {
+  height: 100%;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-group .form-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Giảm khoảng cách giữa các icon (tra cứu, giỏ hàng, tài khoản, liên hệ) */
+.icon-text {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
 .custom-bg-green {
   background-color: #319740; /* Màu xanh lá chuẩn hoặc màu bạn muốn */
 }
@@ -65,6 +91,27 @@
   z-index: 1;
   background-color: #dc3545; /* màu đỏ bootstrap */
   color: white;
+}
+.custom-container {
+  padding-left: 2cm;
+  padding-right: 2cm;
+}
+.icon-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.icon-text svg {
+  font-size: 1.2rem;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  font-size: 0.65rem;
 }
 
 /* Tài khoản cursor pointer */
@@ -199,4 +246,347 @@ ul.list-disc {
   .grid > div img {
     height: 180px;
   }
+}
+/* danh mục */
+/* ===== Dropdown 3 cột cho DANH MỤC ===== */
+.category-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%; /* Đặt điểm gốc ngang giữa */
+  transform: translateX(-50%); /* Canh giữa theo chiều ngang */
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  color: #333;
+  width: 650px;
+  max-width: calc(
+    100vw - 32px
+  ); /* Không vượt quá chiều rộng viewport (margin 16px mỗi bên) */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+  border-radius: 12px;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  animation: fadeIn 0.3s ease-out;
+  border: 1px solid #e5e5e5;
+  backdrop-filter: blur(6px);
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước ngoài */
+}
+
+/* Hiệu ứng hiện dropdown */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(
+      -50%,
+      -10px
+    ); /* Vì đã dùng translateX(-50%), ta cần giữ lại phần này */
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+}
+
+/* Các phần còn lại giữ nguyên */
+.category-column {
+  flex: 1;
+}
+
+.category-column h6 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #007bff;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 4px;
+}
+
+.category-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-column ul li a {
+  text-decoration: none;
+  color: #444;
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.category-column ul li a:hover {
+  color: #0069d9;
+  transform: translateX(4px);
+  text-decoration: none;
+}
+
+.category-column ul li a::before {
+  content: "📚";
+  margin-right: 8px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* Wrapper cho icon-text */
+.icon-text.position-relative {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+  .category-dropdown {
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+    left: 0;
+    transform: none;
+  }
+}
+
+/* Tai khoan*/
+/* Wrapper icon-text tài khoản */
+.icon-text.position-relative.account-dropdown-toggle {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Text nhỏ dưới icon */
+.icon-text .small-text {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #333;
+}
+
+/* Dropdown menu tài khoản */
+.account-dropdown-toggle .dropdown-menu-custom {
+  position: absolute;
+  top: 100%;
+  right: 0; /* Căn dropdown sát bên phải icon */
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 16px 0;
+  width: 220px;
+  z-index: 1000;
+  box-sizing: border-box;
+  backdrop-filter: blur(6px);
+  animation: fadeInDropdown 0.3s ease-out forwards;
+  list-style: none;
+  margin: 6px 0 0 0;
+  font-size: 14px;
+}
+
+/* Hiệu ứng fade in (dùng chung với danh mục) */
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hiện dropdown */
+.account-dropdown-toggle .dropdown-menu-custom.show {
+  display: block;
+}
+
+/* Item trong dropdown */
+.account-dropdown-toggle .dropdown-menu-custom li {
+  padding: 0;
+  margin: 0;
+}
+
+/* Link và nút trong dropdown */
+.account-dropdown-toggle .dropdown-menu-custom a.dropdown-item,
+.account-dropdown-toggle .dropdown-menu-custom button.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 24px;
+  color: #444;
+  background: none;
+  border: none;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Hover item */
+.account-dropdown-toggle .dropdown-menu-custom a.dropdown-item:hover,
+.account-dropdown-toggle .dropdown-menu-custom button.dropdown-item:hover {
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Dòng ngăn cách */
+.account-dropdown-toggle .dropdown-divider {
+  border-top: 1px solid #e5e5e5;
+  margin: 8px 0;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .account-dropdown-toggle .dropdown-menu-custom {
+    right: auto;
+    left: 0;
+    width: 100vw;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 12px 0;
+  }
+}
+/* tra cứu */
+/* tra cứu */
+/* Dropdown Tra cứu */
+.tra-cuu-dropdown-toggle {
+  position: relative;
+  user-select: none;
+}
+
+/* Dropdown chính */
+.tra-cuu-dropdown {
+  position: absolute;
+  top: 100%;
+  /* căn giữa ngang */
+  transform: translateX(-50%); /* căn giữa ngang */
+  width: 850px;
+  max-width: calc(100vw - 32px); /* không vượt quá màn hình */
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  color: #333;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  backdrop-filter: blur(6px);
+  box-sizing: border-box;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 16px; /* giảm gap cho vừa */
+  animation: fadeInDropdown 0.3s ease-out;
+}
+
+/* Cột */
+.tra-cuu-column {
+  flex: 1;
+  min-width: 140px; /* đảm bảo cột không quá nhỏ */
+}
+
+/* Tiêu đề cột */
+.tra-cuu-column h6 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #007bff;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 4px;
+}
+
+/* Danh sách link */
+.tra-cuu-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Link */
+.tra-cuu-column ul li a {
+  text-decoration: none;
+  color: #444;
+  display: flex; /* để icon và text thẳng hàng */
+  align-items: center;
+  padding: 6px 0;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+/* Icon trước link */
+.tra-cuu-column ul li a::before {
+  content: "🔍"; /* icon kính lúp cho tra cứu */
+  margin-right: 8px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* Hover link */
+.tra-cuu-column ul li a:hover {
+  color: #0069d9;
+  transform: translateX(4px);
+  text-decoration: none;
+}
+
+/* Animation dropdown */
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .tra-cuu-dropdown {
+    flex-direction: column;
+    width: 100%;
+    gap: 16px;
+    left: 0;
+    transform: none;
+  }
+}
+/* dưới */
+.bottom-nav-grid {
+  display: flex;
+  justify-content: space-between; /* chia đều khoảng cách */
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 0 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Mỗi phần tử trong nav là flex container, căn hàng ngang, không ép nhỏ quá */
+.bottom-nav-grid > * {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  /* Bỏ flex:1 để không chia đều cứng, mà dùng margin tự nhiên */
+  /* flex: 1 1 0; */
+  min-width: auto;
+}
+
+/* Link riêng giữ màu chữ */
+.bottom-nav-link {
+  text-decoration: none;
+  color: inherit;
+  font-weight: 500;
+}
+
+.bottom-nav-link:hover,
+.bottom-nav-grid > *:hover {
+  color: #0d6efd;
+}
+
+.truck-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
