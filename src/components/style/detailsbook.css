@@ -1,0 +1,232 @@
+.details-container {
+  background-color: #e6f2e6;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Bọc ảnh để giới hạn hiệu ứng phóng to */
+.details-image-wrapper {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Ảnh sách */
+.details-image {
+  width: 100%;
+  max-height: 350px;
+  object-fit: contain;
+  border-radius: 12px;
+  transition: transform 0.3s ease; /* hiệu ứng phóng to */
+}
+
+/* Khi rê chuột vào ảnh */
+.details-image:hover {
+  transform: scale(1.1); /* phóng to 10% */
+}
+
+/* Thông tin bên phải */
+.details-info {
+  padding-left: 30px;
+}
+
+.details-title {
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.details-container {
+  background-color: #e6f2e6;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Bọc ảnh để giới hạn hiệu ứng phóng to */
+.details-image-wrapper {
+  overflow: hidden;
+  border-radius: 12px;
+  position: relative; /* Để dễ dàng kiểm soát vị trí phóng to */
+}
+
+/* Ảnh sách */
+.details-image {
+  width: 100%;
+  max-height: 350px;
+  object-fit: contain;
+  border-radius: 12px;
+  transition: transform 0.3s ease; /* hiệu ứng phóng to */
+}
+
+/* Khi rê chuột vào ảnh */
+.details-image-wrapper:hover .details-image {
+  transform: scale(1.3); /* phóng to 30% */
+}
+
+/* Thông tin bên phải */
+.details-info {
+  padding-left: 30px;
+}
+
+.details-title {
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+/* Số lượng */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+  max-width: 110px;
+}
+
+.quantity-control button {
+  width: 10px;
+  height: 24px;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.quantity-input {
+  width: 40px;
+  height: 28px;
+  text-align: center;
+  border: 1px solid #ced4da;
+  margin: 0 5px;
+  font-size: 1rem;
+  border-radius: 4px;
+  user-select: none;
+  background-color: #e6f2e6;
+}
+
+/* Nút nhỏ hơn */
+.btn-smaller {
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  min-width: 70px;
+}
+
+.details-info .btn {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  flex-grow: 0;
+}
+
+.btn-group-small {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+/* Phần mô tả & bảng */
+.details-bottom {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 2cm;
+  padding-right: 2cm;
+  margin-top: 30px;
+}
+
+.details-description {
+  flex: 1 1 60%;
+  padding-right: 20px;
+}
+
+.details-bottom h4 {
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.table-bordered {
+  border: 1px solid #e6f2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #e6f2e6;
+  vertical-align: middle;
+  padding: 8px;
+}
+
+/* Responsive cho điện thoại */
+@media (max-width: 767px) {
+  .details-info {
+    padding-left: 0;
+    margin-top: 20px;
+  }
+  .details-bottom {
+    flex-direction: column;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .details-description,
+  .details-table-container {
+    flex: 1 1 100%;
+    margin-bottom: 20px;
+  }
+}
+/* Phần mô tả & bảng */
+.details-bottom {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 2cm;
+  padding-right: 2cm;
+  margin-top: 30px;
+}
+
+.details-description {
+  flex: 1 1 60%;
+  padding-right: 20px;
+}
+
+.details-table-container {
+  flex: 1 1 35%;
+}
+
+.details-bottom h4 {
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.details-bottom p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+.table-bordered {
+  border: 1px solid #e6f2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #e6f2e6;
+  vertical-align: middle;
+  padding: 8px;
+}
+
+/* Responsive cho điện thoại */
+@media (max-width: 767px) {
+  .details-info {
+    padding-left: 0;
+    margin-top: 20px;
+  }
+  .details-bottom {
+    flex-direction: column;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .details-description,
+  .details-table-container {
+    flex: 1 1 100%;
+    margin-bottom: 20px;
+  }
+}

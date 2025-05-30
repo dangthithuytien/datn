@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import "../components/style/allbook.css";
 
-// Danh mục sản phẩm với danh mục con
 const categories = [
   { name: "Tiểu thuyết" },
   {
@@ -15,8 +15,6 @@ const categories = [
   { name: "Nấu ăn" },
 ];
 
-// Dữ liệu sách mẫu
-// Dữ liệu sách
 const allBooks = [
   {
     id: 1,
@@ -25,6 +23,8 @@ const allBooks = [
     price: 150000,
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    description:
+      "Cuốn tiểu thuyết này mở ra một thế giới đầy màu sắc với những câu chuyện phong phú về cuộc sống, tình yêu và số phận con người. Nhân vật chính trải qua nhiều thử thách cam go, từ những mất mát đến những niềm vui bất ngờ, khiến người đọc không thể rời mắt khỏi từng trang sách. Tác giả khéo léo xây dựng các tình tiết và cảnh vật sống động, phản ánh sâu sắc các giá trị đạo đức và những khía cạnh tâm lý phức tạp của con người.",
   },
   {
     id: 2,
@@ -91,12 +91,12 @@ const allBooks = [
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
   },
 ];
+
 const AllBook = () => {
   const [showAll, setShowAll] = useState(false);
-  const [sortBy, setSortBy] = useState(""); // "" | "name" | "price"
-  const [openCategory, setOpenCategory] = useState(null); // Danh mục đang mở
+  const [sortBy, setSortBy] = useState("");
+  const [openCategory, setOpenCategory] = useState(null);
 
-  // Clone và sắp xếp danh sách
   const sortedBooks = [...allBooks];
   if (sortBy === "name") {
     sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
@@ -129,7 +129,6 @@ const AllBook = () => {
                     {cat.name}
                     {hasSub && (isOpen ? <FaAngleUp /> : <FaAngleDown />)}
                   </li>
-
                   {hasSub && isOpen && (
                     <ul className="list-group ms-3">
                       {cat.subcategories.map((sub, subIdx) => (
@@ -145,42 +144,32 @@ const AllBook = () => {
           </ul>
         </div>
 
-        {/* Hiển thị sách */}
+        {/* Danh sách sách */}
         <div className="col-md-9">
-          <h4 style={{ display: "flex", alignItems: "center" }}>
+          <h4 className="d-flex align-items-center">
             <span>Tất cả sách</span>
 
             {allBooks.length > 8 && (
               <span
-                style={{
-                  cursor: "pointer",
-                  color: "#28a745",
-                  fontSize: "1.2rem",
-                  userSelect: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  marginLeft: 8,
-                }}
                 onClick={() => setShowAll(!showAll)}
                 title={showAll ? "Thu gọn" : "Xem thêm"}
+                className="ms-2 text-success"
+                style={{ cursor: "pointer", fontSize: "1.2rem" }}
               >
                 {showAll ? <FaAngleUp /> : <FaAngleDown />}
               </span>
             )}
 
-            {/* Bộ lọc */}
-            <div className="filter-buttons ms-auto d-flex gap-2">
+            <div className="ms-auto d-flex gap-2">
               <button
                 className={`filter-btn ${sortBy === "name" ? "active" : ""}`}
                 onClick={() => setSortBy("name")}
-                title="Lọc theo tên"
               >
                 Tên
               </button>
               <button
                 className={`filter-btn ${sortBy === "price" ? "active" : ""}`}
                 onClick={() => setSortBy("price")}
-                title="Lọc theo giá"
               >
                 Giá
               </button>
@@ -191,14 +180,16 @@ const AllBook = () => {
             {displayedBooks.map((book) => (
               <div key={book.id} className="col-6 col-md-3 mb-4">
                 <div className="book-card">
-                  <div className="image-container">
-                    <img
-                      src={book.image}
-                      alt={book.title}
-                      className="book-image"
-                    />
-                  </div>
-                  <h5 className="book-title">{book.title}</h5>
+                  <Link to={`/book/${book.id}`} state={{ book }}>
+                    <div className="image-container">
+                      <img
+                        src={book.image}
+                        alt={book.title}
+                        className="book-image"
+                      />
+                    </div>
+                    <h5 className="book-title">{book.title}</h5>
+                  </Link>
                   <p className="book-price">{book.price.toLocaleString()}đ</p>
                   <div className="button-group">
                     <button className="btn btn-outline-primary btn-sm">
