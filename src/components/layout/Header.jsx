@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import React, { useState, useRef } from "react";
 import {
   FaBookOpen,
@@ -31,21 +33,33 @@ const Header = () => {
   const handleMouseLeave = (setOpen, timeoutRef) => {
     timeoutRef.current = setTimeout(() => {
       setOpen(false);
-    }, 2000);
+    }, 500);
   };
 
   return (
     <header className="bg-light shadow-md">
-      <div className="custom-container custom-bg-green text-white py-3 px-4" style={{ paddingInline: "2cm" }}>
+      <div
+        className="custom-container custom-bg-green text-white py-3 px-4"
+        style={{ paddingInline: "2cm" }}
+      >
         <div className="row align-items-center">
           <div className="col-3 d-flex align-items-center">
-            <img src="/logodatn.png" alt="Logo" className="logo-img" style={{ maxHeight: "60px", width: "auto" }} />
+            <img
+              src="/logodatn.png"
+              alt="Logo"
+              className="logo-img"
+              style={{ maxHeight: "60px", width: "auto" }}
+            />
           </div>
 
           <div className="col-5 d-flex align-items-center ps-4">
             <div className="d-flex align-items-stretch w-100">
               <div className="input-group ms-2 flex-grow-1">
-                <input type="text" className="form-control" placeholder="Tìm kiếm..." />
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Tìm kiếm..."
+                />
                 <button className="btn btn-light">
                   <FaSearch />
                 </button>
@@ -56,8 +70,12 @@ const Header = () => {
           <div className="col-4 d-flex justify-content-end align-items-center gap-3">
             <div
               className="icon-text text-center position-relative"
-              onMouseEnter={() => handleMouseEnter(setCategoryOpen, categoryTimeout)}
-              onMouseLeave={() => handleMouseLeave(setCategoryOpen, categoryTimeout)}
+              onMouseEnter={() =>
+                handleMouseEnter(setCategoryOpen, categoryTimeout)
+              }
+              onMouseLeave={() =>
+                handleMouseLeave(setCategoryOpen, categoryTimeout)
+              }
               style={{ cursor: "pointer" }}
             >
               <FaTags />
@@ -67,28 +85,52 @@ const Header = () => {
                   <div className="category-column">
                     <h6>Thể loại</h6>
                     <ul>
-                      <li><a href="#">Truyện ngắn</a></li>
-                      <li><a href="#">Kỹ năng sống</a></li>
-                      <li><a href="#">Tâm lý học</a></li>
-                      <li><a href="#">Kinh doanh</a></li>
+                      <li>
+                        <a href="#">Truyện ngắn</a>
+                      </li>
+                      <li>
+                        <a href="#">Kỹ năng sống</a>
+                      </li>
+                      <li>
+                        <a href="#">Tâm lý học</a>
+                      </li>
+                      <li>
+                        <a href="#">Kinh doanh</a>
+                      </li>
                     </ul>
                   </div>
                   <div className="category-column">
                     <h6>Tác giả</h6>
                     <ul>
-                      <li><a href="#">Nguyễn Nhật Ánh</a></li>
-                      <li><a href="#">Dale Carnegie</a></li>
-                      <li><a href="#">Paulo Coelho</a></li>
-                      <li><a href="#">Tony Buổi Sáng</a></li>
+                      <li>
+                        <a href="#">Nguyễn Nhật Ánh</a>
+                      </li>
+                      <li>
+                        <a href="#">Dale Carnegie</a>
+                      </li>
+                      <li>
+                        <a href="#">Paulo Coelho</a>
+                      </li>
+                      <li>
+                        <a href="#">Tony Buổi Sáng</a>
+                      </li>
                     </ul>
                   </div>
                   <div className="category-column">
                     <h6>Nhà xuất bản</h6>
                     <ul>
-                      <li><a href="#">NXB Kim Đồng</a></li>
-                      <li><a href="#">NXB Trẻ</a></li>
-                      <li><a href="#">NXB Văn Học</a></li>
-                      <li><a href="#">NXB Tổng hợp TP.HCM</a></li>
+                      <li>
+                        <a href="#">NXB Kim Đồng</a>
+                      </li>
+                      <li>
+                        <a href="#">NXB Trẻ</a>
+                      </li>
+                      <li>
+                        <a href="#">NXB Văn Học</a>
+                      </li>
+                      <li>
+                        <a href="#">NXB Tổng hợp TP.HCM</a>
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -97,8 +139,12 @@ const Header = () => {
 
             <div
               className="icon-text text-center position-relative tra-cuu-dropdown-toggle"
-              onMouseEnter={() => handleMouseEnter(setTraCuuDropdownOpen, traCuuTimeout)}
-              onMouseLeave={() => handleMouseLeave(setTraCuuDropdownOpen, traCuuTimeout)}
+              onMouseEnter={() =>
+                handleMouseEnter(setTraCuuDropdownOpen, traCuuTimeout)
+              }
+              onMouseLeave={() =>
+                handleMouseLeave(setTraCuuDropdownOpen, traCuuTimeout)
+              }
               style={{ cursor: "pointer" }}
             >
               <FaBookOpen />
@@ -108,65 +154,114 @@ const Header = () => {
                   <div className="tra-cuu-column">
                     <h6>Sách</h6>
                     <ul>
-                      <li><a href="/sach-moi">Sách mới</a></li>
-                      <li><a href="/sach-ban-chay">Sách bán chạy</a></li>
-                      <li><a href="/sach-khuyen-mai">Sách khuyến mãi</a></li>
+                      <li>
+                        <a href="/sach-moi">Sách mới</a>
+                      </li>
+                      <li>
+                        <a href="/sach-ban-chay">Sách bán chạy</a>
+                      </li>
+                      <li>
+                        <a href="/sach-khuyen-mai">Sách khuyến mãi</a>
+                      </li>
                     </ul>
                   </div>
                   <div className="tra-cuu-column">
                     <h6>Đánh giá</h6>
                     <ul>
-                      <li><a href="/danh-gia-cao">Đánh giá cao</a></li>
-                      <li><a href="/danh-gia-moi">Đánh giá mới</a></li>
+                      <li>
+                        <a href="/danh-gia-cao">Đánh giá cao</a>
+                      </li>
+                      <li>
+                        <a href="/danh-gia-moi">Đánh giá mới</a>
+                      </li>
                     </ul>
                   </div>
                   <div className="tra-cuu-column">
                     <h6>Tác giả</h6>
                     <ul>
-                      <li><a href="/tac-gia-noi-bat">Tác giả nổi bật</a></li>
-                      <li><a href="/tac-gia-moi">Tác giả mới</a></li>
+                      <li>
+                        <a href="/tac-gia-noi-bat">Tác giả nổi bật</a>
+                      </li>
+                      <li>
+                        <a href="/tac-gia-moi">Tác giả mới</a>
+                      </li>
                     </ul>
                   </div>
                   <div className="tra-cuu-column">
                     <h6>Khuyến mãi</h6>
                     <ul>
-                      <li><a href="/khuyen-mai-dac-biet">Đặc biệt</a></li>
-                      <li><a href="/khuyen-mai-theo-tuan">Theo tuần</a></li>
+                      <li>
+                        <a href="/khuyen-mai-dac-biet">Đặc biệt</a>
+                      </li>
+                      <li>
+                        <a href="/khuyen-mai-theo-tuan">Theo tuần</a>
+                      </li>
                     </ul>
                   </div>
                   <div className="tra-cuu-column">
                     <h6>Dịch vụ</h6>
                     <ul>
-                      <li><a href="/giao-hang">Giao hàng</a></li>
-                      <li><a href="/doi-tra">Đổi trả</a></li>
-                      <li><a href="/ho-tro">Hỗ trợ</a></li>
+                      <li>
+                        <a href="/giao-hang">Giao hàng</a>
+                      </li>
+                      <li>
+                        <a href="/doi-tra">Đổi trả</a>
+                      </li>
+                      <li>
+                        <a href="/ho-tro">Hỗ trợ</a>
+                      </li>
                     </ul>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="icon-text text-center position-relative">
+            <Link
+              to="/cart"
+              className="icon-text text-center position-relative"
+            >
               <FaShoppingCart />
               <div className="small-text">Giỏ hàng</div>
               <span className="badge bg-danger cart-badge">0</span>
-            </div>
+            </Link>
 
             <div
               className="icon-text text-center position-relative account-dropdown-toggle"
-              onMouseEnter={() => handleMouseEnter(setAccountDropdownOpen, accountTimeout)}
-              onMouseLeave={() => handleMouseLeave(setAccountDropdownOpen, accountTimeout)}
+              onMouseEnter={() =>
+                handleMouseEnter(setAccountDropdownOpen, accountTimeout)
+              }
+              onMouseLeave={() =>
+                handleMouseLeave(setAccountDropdownOpen, accountTimeout)
+              }
               style={{ cursor: "pointer" }}
             >
               <FaUser />
               <div className="small-text">Tài khoản</div>
               {accountDropdownOpen && (
                 <ul className="dropdown-menu dropdown-menu-custom show">
-                  <li><a className="dropdown-item" href="/register">Đăng ký</a></li>
-                  <li><a className="dropdown-item" href="/login">Đăng nhập</a></li>
-                  <li><a className="dropdown-item" href="/user-profile">Thông tin cá nhân</a></li>
-                  <li><a className="dropdown-item" href="/login">Đơn hàng của Bạn</a></li>
-                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <a className="dropdown-item" href="/register">
+                      Đăng ký
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/login">
+                      Đăng nhập
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/user-profile">
+                      Thông tin cá nhân
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/login">
+                      Đơn hàng của Bạn
+                    </a>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
                   <li>
                     <button
                       className="dropdown-item"

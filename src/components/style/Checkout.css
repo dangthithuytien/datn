@@ -1,0 +1,161 @@
+/* General styles for the checkout section */
+.checkout-section {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.checkout-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #2b5d3f;
+}
+
+.checkout-input-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.checkout-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.checkout-input input,
+.checkout-input select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+}
+
+/* Focus state for input fields */
+.checkout-input input:focus,
+.checkout-input select:focus {
+  border-color: #80bdff;
+  outline: none;
+}
+
+/* Styles for shipping and payment methods */
+.shipping-methods,
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shipping-option,
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shipping-option input,
+.payment-option input {
+  accent-color: #008017;
+}
+
+/* Footer styles */
+.checkout-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+}
+
+.discount-section {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.discount-input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 200px;
+}
+
+.total-bill {
+  text-align: right;
+  font-size: 20px;
+  font-weight: bold;
+  color: #0a7431;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .checkout-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .discount-section {
+    width: 100%;
+  }
+
+  .discount-input {
+    width: 100%;
+  }
+
+  .total-bill {
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
+  }
+}
+
+/* Button styles for MoMo */
+/* Styles for the QR code container */
+.qr-code-container {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #80bdff; /* Light blue border */
+  border-radius: 5px;
+  background-color: #f9f9f9; /* Light background */
+  text-align: center; /* Center the content */
+}
+
+/* Center the QR code */
+.qr-code-container img {
+  display: block; /* Ensures the image is treated as a block element */
+  margin: 0 auto; /* Centers the image */
+}
+
+/* Styles for the QR code container */
+.qr-code-container {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #80bdff; /* Light blue border */
+  border-radius: 5px;
+  background-color: #f9f9f9; /* Light background */
+}
+
+/* Styles for the bank selection */
+.bank-selection {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #80bdff; /* Light blue border */
+  border-radius: 5px;
+  background-color: #f9f9f9; /* Light background */
+}
+/* Button styles */
+.btn-success {
+  background-color: #28a745; /* Green color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-success:hover {
+  background-color: #218838; /* Darker green on hover */
+}

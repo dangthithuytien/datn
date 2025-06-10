@@ -1,0 +1,60 @@
+.flashsale-container {
+  padding: 20px;
+}
+
+.flashsale-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.products-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 6px;
+  background-color: white;
+  text-align: center;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 5px 15px rgb(0 0 0 / 0.2);
+}
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.product-name {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.prices {
+  margin-bottom: 6px;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #888;
+  margin-right: 8px;
+}
+
+.new-price {
+  color: #e53935;
+  font-weight: 700;
+}
+
+.discount-percent {
+  color: #388e3c;
+  font-weight: 700;
+}

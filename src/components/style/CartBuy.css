@@ -1,0 +1,82 @@
+.no-border-table {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.no-border-table th,
+.no-border-table td {
+  border: none !important;
+}
+/* Box nền cho phần tiêu đề bảng */
+.table-header-box {
+  background-color: #90a797; /* Màu nền khác biệt */
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table-header-box th {
+  vertical-align: middle;
+  background-color: #b2e9c2 !important;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-weight: 600;
+  border-bottom: 1px solid #ccc !important;
+}
+
+/* Checkbox custom: to hơn, màu xanh đậm khi checked */
+.custom-checkbox {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: #008017;
+}
+
+.custom-checkbox:hover {
+  accent-color: #0aa135;
+}
+
+/* Gạch dưới mỗi sản phẩm */
+.border-bottom-row {
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Footer */
+.cart-footer {
+  border-top: 1px solid #4ac495;
+  padding-top: 15px;
+  justify-content: flex-start;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.total-shipping {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.discount-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.discount-input {
+  width: 250px;
+  min-width: 200px;
+}
+
+@media (max-width: 576px) {
+  .cart-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .discount-section {
+    width: 100%;
+  }
+
+  .discount-input {
+    width: 100%;
+  }
+}

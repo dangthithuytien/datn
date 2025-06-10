@@ -1,6 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import "../components/style/sale.css";
+import "../components/style/sale.css"; // Đường dẫn file CSS của bạn
 
 const productsOnSale = [
   {
@@ -57,29 +56,12 @@ const productsOnSale = [
 const calcDiscountPercent = (oldPrice, newPrice) =>
   Math.round(((oldPrice - newPrice) / oldPrice) * 100);
 
-const Sale = () => {
-  const navigate = useNavigate();
-
-  const productsToShow = productsOnSale.slice(0, 6);
-
-  const handleViewAllClick = () => {
-    navigate("/sale-all");
-  };
-
+const SaleAll = () => {
   return (
     <div className="flashsale-container">
-      <div className="flashsale-header">
-        <div className="flashsale-left">
-          <h2 className="flashsale-title">Flash Sale</h2>
-        </div>
-
-        <div className="view-all-btn" onClick={handleViewAllClick}>
-          Xem tất cả
-        </div>
-      </div>
-
+      <h2 className="flashsale-title">Tất cả sản phẩm giảm giá</h2>
       <div className="products-list">
-        {productsToShow.map((product) => {
+        {productsOnSale.map((product) => {
           const discountPercent = calcDiscountPercent(
             product.oldPrice,
             product.newPrice
@@ -109,4 +91,4 @@ const Sale = () => {
   );
 };
 
-export default Sale;
+export default SaleAll;

@@ -1,13 +1,20 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import "../components/style/detailsbook.css";
 
 const DetailsBook = () => {
-  const { state } = useLocation();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const book = state?.book;
+  const [book, setBook] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    // Lấy dữ liệu sách từ localStorage
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const foundBook = cart.find((item) => item.id.toString() === id);
+    setBook(foundBook);
+  }, [id]);
 
   const handleMouseMove = (e) => {
     const { clientX, clientY } = e;
@@ -26,6 +33,21 @@ const DetailsBook = () => {
     setQuantity(quantity + 1);
   };
 
+  const handleAddToCart = () => {
+    if (!book) return;
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingItem = cart.find((item) => item.id === book.id);
+    if (existingItem) {
+      existingItem.quantity += quantity;
+    } else {
+      cart.push({ ...book, quantity });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("✅ Đã thêm vào giỏ hàng!");
+  };
+
   if (!book) {
     return (
       <div className="container mt-4">
@@ -40,22 +62,21 @@ const DetailsBook = () => {
   return (
     <div className="container mt-4 details-container">
       <div className="row">
-        <div className="col-md-5">
-          <div
-            className="details-image-wrapper"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
-            <img
-              src={book.image}
-              alt={book.title}
-              className="img-fluid details-image"
-              style={{
-                transformOrigin: `${mousePosition.x}px ${mousePosition.y}px`,
-                transform: `scale(${mousePosition.x ? 1.3 : 1})`,
-              }}
-            />
-          </div>
+        <div
+          className="col-md-5 details-image-wrapper"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
+          <img
+            src={book.image}
+            alt={book.title}
+            className="img-fluid details-image"
+            style={{
+              transformOrigin: `${mousePosition.x}px ${mousePosition.y}px`,
+              transform: `scale(${mousePosition.x ? 1.3 : 1})`,
+              transition: "transform 0.2s ease-out",
+            }}
+          />
         </div>
 
         <div className="col-md-7 details-info">
@@ -66,22 +87,34 @@ const DetailsBook = () => {
           <p>
             <strong>Giá:</strong> {book.price.toLocaleString()}đ
           </p>
-          <div className="quantity-control">
-            <button className="btn btn-outline-secondary" onClick={handleDecrease}>
+          <div className="quantity-control d-flex align-items-center my-2 gap-2">
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={handleDecrease}
+            >
               -
             </button>
             <input
               type="text"
               readOnly
               value={quantity}
-              className="quantity-input"
+              className="form-control form-control-sm text-center"
+              style={{ width: "50px" }}
             />
-            <button className="btn btn-outline-secondary" onClick={handleIncrease}>
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={handleIncrease}
+            >
               +
             </button>
           </div>
           <div className="d-flex gap-3 mt-3">
-            <button className="btn btn-outline-primary">Thêm vào giỏ</button>
+            <button
+              className="btn btn-outline-primary"
+              onClick={handleAddToCart}
+            >
+              Thêm vào giỏ
+            </button>
             <button className="btn btn-success">Mua ngay</button>
           </div>
         </div>
