@@ -1,12 +1,10 @@
 .flashsale-container {
   max-width: 1300px;
   margin: 20px auto;
-  padding: 15px 2cm; /* padding trái phải = 2cm */
-  background-color: #e6f2e6; /* xanh lá nhạt */
+  padding: 15px 2cm;
+  background-color: #e6f2e6;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
-  box-sizing: border-box; /* bao gồm padding trong width */
 }
 
 .flashsale-header {
@@ -14,98 +12,47 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  gap: 15px;
-}
-
-.flashsale-left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex: 1;
 }
 
 .flashsale-title {
-  color: #d93025; /* đỏ */
+  color: #d93025;
   font-size: 1.8rem;
   font-weight: bold;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.timer {
-  display: flex;
-  gap: 6px;
-  font-weight: bold;
-  color: #ff6600; /* cam */
-  font-size: 1.6rem;
-}
-
-.timer span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 32px;
-  height: 38px;
-  background-color: #fff3e0; /* nền cam nhạt */
-  border: 2px solid #ff6600; /* viền cam */
-  border-radius: 6px;
-  font-family: monospace;
-  user-select: none;
-}
-
-/* Dấu hai chấm */
-.timer span.colon {
-  background-color: transparent;
-  border: none;
-  min-width: 12px;
-  color: #ff6600;
-  font-weight: bold;
-  font-size: 1.6rem;
-  cursor: default;
-  padding: 0;
 }
 
 .view-all-btn {
-  color: #003366; /* xanh đậm */
+  color: #003366;
   font-weight: 600;
   cursor: pointer;
-  white-space: nowrap;
   padding: 8px 16px;
   border-radius: 6px;
   border: 2px solid #003366;
-  transition: background-color 0.3s, color 0.3s;
+  transition: 0.3s;
 }
-
 .view-all-btn:hover {
   background-color: #003366;
   color: white;
 }
 
-.products-list {
+.flashsale-products-list {
   display: flex;
   gap: 12px;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-  overflow-x: auto; /* có thể cuộn ngang */
-  width: 100%;
-  box-sizing: border-box;
-  margin-left: 0;
-  margin-right: 0;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
-.product-card {
-  flex: 0 0 15%; /* thu nhỏ còn 15% để nhỏ hơn */
+.flashsale-product-card {
+  flex: 0 0 15%;
   max-width: 15%;
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 8px; /* giảm padding bên trong */
+  padding: 8px;
   position: relative;
-  transition: transform 0.3s ease;
   cursor: pointer;
+  transition: transform 0.3s ease;
 }
-
-.product-card:hover {
+.flashsale-product-card:hover {
   transform: translateY(-6px);
 }
 
@@ -115,10 +62,10 @@
   object-fit: contain;
   border-radius: 4px;
 }
+
 .product-name {
   font-size: 1.1rem;
   margin: 10px 0 6px;
-  color: #333;
   text-align: center;
 }
 
@@ -126,8 +73,6 @@
   display: flex;
   justify-content: center;
   gap: 10px;
-  align-items: center;
-  margin-bottom: 6px;
 }
 
 .old-price {
@@ -135,7 +80,6 @@
   color: #999;
   font-size: 0.9rem;
 }
-
 .new-price {
   font-weight: bold;
   color: #d93025;
@@ -144,13 +88,14 @@
 
 .discount-percent {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px;
+  left: 8px; /* chuyển sang góc trái */
   background-color: #d93025;
   color: white;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
   font-weight: bold;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.9rem;
+  min-width: 36px;
+  text-align: center;
 }
-/* sale all */

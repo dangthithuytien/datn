@@ -1,5 +1,5 @@
 import React from "react";
-import "../components/style/sale.css"; // Đường dẫn file CSS của bạn
+import "../components/style/saleall.css";
 
 const productsOnSale = [
   {
@@ -24,31 +24,31 @@ const productsOnSale = [
     image: "sach.jpg",
   },
   {
-    id: 44,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
+    id: 4,
+    name: "Túi đeo chéo",
+    oldPrice: 600000,
+    newPrice: 450000,
     image: "sach.jpg",
   },
   {
-    id: 55,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
+    id: 5,
+    name: "Áo khoác mùa đông",
+    oldPrice: 1500000,
+    newPrice: 1100000,
     image: "sach.jpg",
   },
   {
-    id: 66,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
+    id: 6,
+    name: "Đồng hồ thời trang",
+    oldPrice: 2000000,
+    newPrice: 1500000,
     image: "sach.jpg",
   },
   {
     id: 7,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
+    name: "Thắt lưng da",
+    oldPrice: 400000,
+    newPrice: 300000,
     image: "sach.jpg",
   },
 ];
@@ -57,17 +57,25 @@ const calcDiscountPercent = (oldPrice, newPrice) =>
   Math.round(((oldPrice - newPrice) / oldPrice) * 100);
 
 const SaleAll = () => {
+  const handleAddToCart = (product) => {
+    alert(`Đã thêm "${product.name}" vào giỏ hàng!`);
+  };
+
+  const handleBuyNow = (product) => {
+    alert(`Mua ngay: ${product.name}`);
+  };
+
   return (
-    <div className="flashsale-container">
-      <h2 className="flashsale-title">Tất cả sản phẩm giảm giá</h2>
-      <div className="products-list">
+    <div className="saleall-container">
+      <h2 className="saleall-title">Tất cả sản phẩm giảm giá</h2>
+      <div className="saleall-products-grid">
         {productsOnSale.map((product) => {
           const discountPercent = calcDiscountPercent(
             product.oldPrice,
             product.newPrice
           );
           return (
-            <div key={product.id} className="product-card">
+            <div key={product.id} className="saleall-product-card">
               <img
                 src={product.image}
                 alt={product.name}
@@ -83,6 +91,20 @@ const SaleAll = () => {
                 </span>
               </div>
               <div className="discount-percent">-{discountPercent}%</div>
+              <div className="product-buttons">
+                <button
+                  className="btn-buy"
+                  onClick={() => handleBuyNow(product)}
+                >
+                  Mua ngay
+                </button>
+                <button
+                  className="btn-add"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  Giỏ hàng
+                </button>
+              </div>
             </div>
           );
         })}

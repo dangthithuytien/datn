@@ -25,31 +25,24 @@ const productsOnSale = [
     image: "sach.jpg",
   },
   {
-    id: 44,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
+    id: 4,
+    name: "Túi đeo chéo",
+    oldPrice: 600000,
+    newPrice: 450000,
     image: "sach.jpg",
   },
   {
-    id: 55,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
+    id: 5,
+    name: "Áo khoác mùa đông",
+    oldPrice: 1500000,
+    newPrice: 1100000,
     image: "sach.jpg",
   },
   {
-    id: 66,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
-    image: "sach.jpg",
-  },
-  {
-    id: 7,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
+    id: 6,
+    name: "Đồng hồ thời trang",
+    oldPrice: 2000000,
+    newPrice: 1500000,
     image: "sach.jpg",
   },
 ];
@@ -59,12 +52,7 @@ const calcDiscountPercent = (oldPrice, newPrice) =>
 
 const Sale = () => {
   const navigate = useNavigate();
-
-  const productsToShow = productsOnSale.slice(0, 6);
-
-  const handleViewAllClick = () => {
-    navigate("/sale-all");
-  };
+  const handleViewAllClick = () => navigate("/sale-all");
 
   return (
     <div className="flashsale-container">
@@ -72,20 +60,19 @@ const Sale = () => {
         <div className="flashsale-left">
           <h2 className="flashsale-title">Flash Sale</h2>
         </div>
-
         <div className="view-all-btn" onClick={handleViewAllClick}>
           Xem tất cả
         </div>
       </div>
 
-      <div className="products-list">
-        {productsToShow.map((product) => {
+      <div className="flashsale-products-list">
+        {productsOnSale.map((product) => {
           const discountPercent = calcDiscountPercent(
             product.oldPrice,
             product.newPrice
           );
           return (
-            <div key={product.id} className="product-card">
+            <div key={product.id} className="flashsale-product-card">
               <img
                 src={product.image}
                 alt={product.name}
