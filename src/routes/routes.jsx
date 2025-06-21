@@ -15,6 +15,13 @@ import RentCart from "../pages/RentCart";
 import About from "../pages/AboutUs";
 import News from "../pages/News";
 import Contact from "../pages/Contact";
+import RentCheckout from "../pages/RentCheckout";
+import AllOrders from "../pages/AllOrders";
+import OrdersRent from "../pages/OrdersRent";
+import OrderRentDetail from "../pages/OrderRentDetail";
+import OrderSellDetail from "../pages/OrderSellDetail";
+import FavoriteBooks from "../pages/FavoriteBooks";
+
 
 export const appRoutes = [
   { path: "/", element: <Home /> },
@@ -32,10 +39,17 @@ export const appRoutes = [
 
   { path: "/sale-all", element: <SaleAll /> },
   { path: "/checkout", element: <Checkout /> },
+  { path: "/rent-checkout", element: <RentCheckout /> },
+  { path: "/orders-all", element: <AllOrders /> },
+  { path: "/orders-rent", element: <OrdersRent /> },
+  { path: "/orders-rent/:id", element: <OrderRentDetail /> },
+  { path: "/orders-sell/:id", element: <OrderSellDetail /> },
+
 
   // Danh mục sách bán
   { path: "/books", element: <AllBook /> },
   { path: "/books-page", element: <BooksPage /> },
+  { path: "/favorite", element:<FavoriteBooks /> },
 
   // Khác
   { path: "/sale", element: <Sale /> },

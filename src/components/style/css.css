@@ -1,4 +1,39 @@
 /* css.css */
+/* Dropdown không có dấu chấm */
+ul.dropdown-menu-custom,
+ul.dropdown-submenu {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+/* Style item dropdown */
+.dropdown-menu-custom .dropdown-item,
+.dropdown-submenu .dropdown-item {
+  padding: 8px 16px;
+  color: #333;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover item */
+.dropdown-menu-custom .dropdown-item:hover,
+.dropdown-submenu .dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Submenu */
+.dropdown-submenu .dropdown-item {
+  padding-left: 30px;
+  background-color: #f9f9f9;
+}
+
+/* Dropdown menu style */
+.dropdown-menu-custom {
+  border-radius: 0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
 
 .logo-img {
   width: 150px !important;
@@ -591,3 +626,10 @@ ul.list-disc {
   object-fit: contain;
 }
 /* dshfhfbhfbh */
+.dropdown-menu .dropdown-item + ul {
+  margin-top: 5px;
+}
+
+.dropdown-menu .dropdown-item + ul li a {
+  padding-left: 1.5rem;
+}

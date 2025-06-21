@@ -1,0 +1,86 @@
+/* Căn giữa tiêu đề và nội dung */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* Thanh lọc trạng thái đơn hàng */
+.status-filter {
+  display: flex;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.status-filter button {
+  flex: 1;
+  border-radius: 0 !important;
+  border-right: 1px solid #ccc;
+  margin: 0 !important;
+}
+
+/* Loại bỏ bo góc đầu/cuối */
+.status-filter button:first-child {
+  border-left: 1px solid #ccc;
+}
+
+.status-filter button:last-child {
+  border-right: none;
+}
+
+/* Bảng đơn hàng */
+.table {
+  text-align: left;
+}
+
+.table th {
+  text-align: center;
+  vertical-align: middle;
+  background-color: #eaf9ed;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* Hình ảnh sản phẩm nhỏ */
+.table img {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Canh giữa cột thao tác */
+td:last-child {
+  text-align: center;
+}
+
+/* Responsive tối thiểu */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .table td,
+  .table th {
+    white-space: nowrap;
+  }
+}
+.action-icons {
+  min-width: 120px;
+  gap: 6px;
+}
+
+.action-icons .btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}

@@ -1,13 +1,14 @@
 import React from "react";
 import Sale from "./Sale";
 import AllBook from "./AllBook";
-import AllRent from "./AllRent";
+import RentBooksPage from "./RentBooksPage";
 
 const Home = () => {
   return (
     <div>
       <Sale />
       <AllBook />
+      <RentBooksPage />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaAngleDown, FaFilter } from "react-icons/fa";
+import { FaAngleDown, FaFilter, FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import AllRent from "./AllRent";
 import "../components/style/allbook.css";
@@ -22,7 +22,6 @@ const categories = [
   { name: "Thiếu nhi" },
   { name: "Y học" },
   { name: "Tôn giáo" }
-  
 ];
 
 const allBooks = [
@@ -51,7 +50,7 @@ const allBooks = [
     category: "Lịch sử",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-   {
+  {
     id: 4,
     title: "Sách Lịch sử 1",
     author: "Tác giả C",
@@ -59,7 +58,7 @@ const allBooks = [
     category: "Lịch sử",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-     {
+  {
     id: 5,
     title: "Sách Lịch sử 1",
     author: "Tác giả C",
@@ -67,7 +66,7 @@ const allBooks = [
     category: "Lịch sử",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-     {
+  {
     id: 6,
     title: "Sách Lịch sử 1",
     author: "Tác giả C",
@@ -75,7 +74,7 @@ const allBooks = [
     category: "Lịch sử",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-     {
+  {
     id: 7,
     title: "Sách Lịch sử 1",
     author: "Tác giả C",
@@ -83,7 +82,7 @@ const allBooks = [
     category: "Lịch sử",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-     {
+  {
     id: 8,
     title: "Sách Lịch sử 1",
     author: "Tác giả C",
@@ -91,7 +90,7 @@ const allBooks = [
     category: "Lịch sử",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-     {
+  {
     id: 9,
     title: "Sách Lịch sử 1",
     author: "Tác giả C",
@@ -106,7 +105,6 @@ const AllBook = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // ✅ Hàm thêm vào giỏ hàng
   const handleAddToCart = (book) => {
     const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
     const index = cart.findIndex((item) => item.id === book.id);
@@ -121,12 +119,22 @@ const AllBook = () => {
     alert("Đã thêm vào giỏ hàng!");
   };
 
-  // Lọc theo danh mục
+  const handleAddToFavorites = (book) => {
+    const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
+    const isExist = favorites.some((item) => item.id === book.id);
+    if (!isExist) {
+      favorites.push(book);
+      localStorage.setItem("favoriteBooks", JSON.stringify(favorites));
+      alert("Đã thêm vào yêu thích!");
+    } else {
+      alert("Sách đã có trong danh sách yêu thích.");
+    }
+  };
+
   const filteredBooks = selectedCategory
     ? allBooks.filter((book) => book.category === selectedCategory)
     : allBooks;
 
-  // Lọc theo tên hoặc giá
   const sortedBooks = [...filteredBooks];
   if (sortBy === "name") {
     sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
@@ -139,15 +147,12 @@ const AllBook = () => {
   return (
     <div className="container mt-3">
       <div className="row">
-        {/* Danh mục */}
         <div className="col-md-3 mb-4">
           <h4 className="category-title">Danh mục sản phẩm</h4>
           <div className="category-list-wrapper">
             <ul className="list-group category-list">
               <li
-                className={`list-group-item category-item ${
-                  !selectedCategory ? "active" : ""
-                }`}
+                className={`list-group-item category-item ${!selectedCategory ? "active" : ""}`}
                 onClick={() => setSelectedCategory(null)}
               >
                 Tất cả
@@ -155,9 +160,7 @@ const AllBook = () => {
               {categories.map((cat, idx) => (
                 <li
                   key={idx}
-                  className={`list-group-item category-item ${
-                    selectedCategory === cat.name ? "active" : ""
-                  }`}
+                  className={`list-group-item category-item ${selectedCategory === cat.name ? "active" : ""}`}
                   onClick={() => setSelectedCategory(cat.name)}
                 >
                   {cat.name}
@@ -167,7 +170,6 @@ const AllBook = () => {
           </div>
         </div>
 
-        {/* Sách bán + lọc */}
         <div className="col-md-9">
           <h4 className="d-flex align-items-center">
             <span>Danh mục Sách Bán</span>
@@ -192,9 +194,7 @@ const AllBook = () => {
               {showFilter && (
                 <div className="filter-dropdown shadow-sm">
                   <div
-                    className={`filter-option ${
-                      sortBy === "name" ? "active" : ""
-                    }`}
+                    className={`filter-option ${sortBy === "name" ? "active" : ""}`}
                     onClick={() => {
                       setSortBy("name");
                       setShowFilter(false);
@@ -203,9 +203,7 @@ const AllBook = () => {
                     Lọc theo Tên
                   </div>
                   <div
-                    className={`filter-option ${
-                      sortBy === "price" ? "active" : ""
-                    }`}
+                    className={`filter-option ${sortBy === "price" ? "active" : ""}`}
                     onClick={() => {
                       setSortBy("price");
                       setShowFilter(false);
@@ -218,11 +216,15 @@ const AllBook = () => {
             </div>
           </h4>
 
-          {/* Hiển thị sách */}
           <div className="row">
             {displayedBooks.map((book) => (
               <div key={book.id} className="col-6 col-md-3 mb-4">
-                <div className="book-card">
+                <div className="book-card position-relative">
+                  <FaHeart
+                    className="heart-icon"
+                    onClick={() => handleAddToFavorites(book)}
+                    title="Thêm vào yêu thích"
+                  />
                   <Link to={`/book/${book.id}`} state={{ book }}>
                     <div className="image-container">
                       <img
@@ -250,21 +252,6 @@ const AllBook = () => {
             ))}
           </div>
 
-          {/* Sách thuê */}
-          <div className="mt-5">
-            <h4 className="d-flex align-items-center">
-              <span>Danh mục Sách Cho Thuê</span>
-              <Link
-                to="/rent-books"
-                className="ms-2 text-success"
-                title="Xem tất cả sách thuê"
-                style={{ fontSize: "1.2rem" }}
-              >
-                <FaAngleDown />
-              </Link>
-            </h4>
-            <AllRent selectedCategory={selectedCategory} />
-          </div>
         </div>
       </div>
     </div>
