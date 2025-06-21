@@ -1,0 +1,70 @@
+/* Container chính */
+.about-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Hero section */
+.about-hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.about-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.about-hero .highlight {
+  color: #2e7d32;
+}
+
+.about-hero p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+/* Nội dung chính */
+.about-content .about-section {
+  margin-bottom: 30px;
+}
+
+.about-content h2 {
+  font-size: 1.6rem;
+  color: #1b5e20;
+  margin-bottom: 12px;
+  border-left: 4px solid #66bb6a;
+  padding-left: 10px;
+}
+
+.about-content p,
+.about-content ul {
+  margin-left: 20px;
+}
+
+.about-content ul li {
+  margin-bottom: 8px;
+}
+
+/* Footer liên hệ */
+.about-footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+  text-align: center;
+}
+
+.about-footer h2 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #2e7d32;
+}
+
+.about-footer p {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}

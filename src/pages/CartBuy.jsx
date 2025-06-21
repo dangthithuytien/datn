@@ -9,11 +9,11 @@ const CartBuy = () => {
   const [discountAmount, setDiscountAmount] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartItems(storedCart);
-    setSelectedItems(storedCart.map((_, i) => i));
-  }, []);
+useEffect(() => {
+  const storedCart = JSON.parse(localStorage.getItem("cartBuy")) || [];
+  setCartItems(storedCart);
+  setSelectedItems(storedCart.map((_, i) => i));
+}, []);
 
   const calculateSelectedTotal = () => {
     return selectedItems.reduce((total, idx) => {
@@ -150,12 +150,13 @@ const handleCheckout = () => {
                   </td>
                   <td>{(item.price * item.quantity).toLocaleString()}đ</td>
                   <td className="action-buttons">
-                    <button
+                   <button
   className="btn btn-info btn-sm me-1"
-  onClick={() => navigate(`/book/${item.id}`)} // <-- chuyển tới trang chi tiết
+  onClick={() => navigate(`/book/${item.id}`, { state: { book: item } })}
 >
   Xem chi tiết
 </button>
+
 
                     <button
                       className="btn btn-danger btn-sm"

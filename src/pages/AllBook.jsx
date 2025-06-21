@@ -1,18 +1,28 @@
 import React, { useState } from "react";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { FaAngleDown, FaFilter } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import AllRent from "./AllRent";
 import "../components/style/allbook.css";
 
 const categories = [
   { name: "Tiểu thuyết" },
-  {
-    name: "Khoa học",
-    subcategories: ["Nhân tạo", "Viễn tưởng", "Chiêm nghiệm"],
-  },
+  { name: "Khoa học" },
   { name: "Lịch sử" },
   { name: "Tâm lý học" },
   { name: "Công nghệ" },
   { name: "Nấu ăn" },
+  { name: "Thiếu nhi" },
+  { name: "Y học" },
+  { name: "Tôn giáo" }, { name: "Tiểu thuyết" },
+  { name: "Khoa học" },
+  { name: "Lịch sử" },
+  { name: "Tâm lý học" },
+  { name: "Công nghệ" },
+  { name: "Nấu ăn" },
+  { name: "Thiếu nhi" },
+  { name: "Y học" },
+  { name: "Tôn giáo" }
+  
 ];
 
 const allBooks = [
@@ -21,161 +31,194 @@ const allBooks = [
     title: "Sách Tiểu thuyết 1",
     author: "Tác giả A",
     price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
-    description:
-      "Cuốn tiểu thuyết này mở ra một thế giới đầy màu sắc với những câu chuyện phong phú về cuộc sống, tình yêu và số phận con người. Nhân vật chính trải qua nhiều thử thách cam go, từ những mất mát đến những niềm vui bất ngờ, khiến người đọc không thể rời mắt khỏi từng trang sách. Tác giả khéo léo xây dựng các tình tiết và cảnh vật sống động, phản ánh sâu sắc các giá trị đạo đức và những khía cạnh tâm lý phức tạp của con người.",
+    category: "Tiểu thuyết",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    description: "Cuốn tiểu thuyết này mở ra một thế giới đầy màu sắc..."
   },
   {
     id: 2,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Khoa học 1",
+    author: "Tác giả B",
+    price: 140000,
+    category: "Khoa học",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
   {
     id: 3,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-  {
+   {
     id: 4,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-  {
+     {
     id: 5,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-  {
+     {
     id: 6,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-  {
+     {
     id: 7,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-  {
+     {
     id: 8,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
-  {
+     {
     id: 9,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 120000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
   },
 ];
 
 const AllBook = () => {
-  const [showAll, setShowAll] = useState(false);
   const [sortBy, setSortBy] = useState("");
-  const [openCategory, setOpenCategory] = useState(null);
+  const [showFilter, setShowFilter] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const sortedBooks = [...allBooks];
+  // ✅ Hàm thêm vào giỏ hàng
+  const handleAddToCart = (book) => {
+    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
+    const index = cart.findIndex((item) => item.id === book.id);
+
+    if (index !== -1) {
+      cart[index].quantity += 1;
+    } else {
+      cart.push({ ...book, quantity: 1 });
+    }
+
+    localStorage.setItem("cartBuy", JSON.stringify(cart));
+    alert("Đã thêm vào giỏ hàng!");
+  };
+
+  // Lọc theo danh mục
+  const filteredBooks = selectedCategory
+    ? allBooks.filter((book) => book.category === selectedCategory)
+    : allBooks;
+
+  // Lọc theo tên hoặc giá
+  const sortedBooks = [...filteredBooks];
   if (sortBy === "name") {
     sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
   } else if (sortBy === "price") {
     sortedBooks.sort((a, b) => a.price - b.price);
   }
 
-  const displayedBooks = showAll ? sortedBooks : sortedBooks.slice(0, 8);
+  const displayedBooks = sortedBooks.slice(0, 8);
 
   return (
     <div className="container mt-3">
       <div className="row">
         {/* Danh mục */}
         <div className="col-md-3 mb-4">
-          <h4>Danh mục sản phẩm</h4>
-          <ul className="list-group">
-            {categories.map((cat, idx) => {
-              const hasSub = cat.subcategories && cat.subcategories.length > 0;
-              const isOpen = openCategory === idx;
-
-              return (
-                <React.Fragment key={idx}>
-                  <li
-                    className="list-group-item d-flex justify-content-between align-items-center"
-                    onClick={() =>
-                      hasSub && setOpenCategory(isOpen ? null : idx)
-                    }
-                    style={{ cursor: hasSub ? "pointer" : "default" }}
-                  >
-                    {cat.name}
-                    {hasSub && (isOpen ? <FaAngleUp /> : <FaAngleDown />)}
-                  </li>
-                  {hasSub && isOpen && (
-                    <ul className="list-group ms-3">
-                      {cat.subcategories.map((sub, subIdx) => (
-                        <li key={subIdx} className="list-group-item">
-                          {sub}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </ul>
+          <h4 className="category-title">Danh mục sản phẩm</h4>
+          <div className="category-list-wrapper">
+            <ul className="list-group category-list">
+              <li
+                className={`list-group-item category-item ${
+                  !selectedCategory ? "active" : ""
+                }`}
+                onClick={() => setSelectedCategory(null)}
+              >
+                Tất cả
+              </li>
+              {categories.map((cat, idx) => (
+                <li
+                  key={idx}
+                  className={`list-group-item category-item ${
+                    selectedCategory === cat.name ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedCategory(cat.name)}
+                >
+                  {cat.name}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        {/* Danh sách sách */}
+        {/* Sách bán + lọc */}
         <div className="col-md-9">
           <h4 className="d-flex align-items-center">
-            <span>Tất cả sách</span>
-
+            <span>Danh mục Sách Bán</span>
             {allBooks.length > 8 && (
-              <span
-                onClick={() => setShowAll(!showAll)}
-                title={showAll ? "Thu gọn" : "Xem thêm"}
+              <Link
+                to="/books-page"
                 className="ms-2 text-success"
-                style={{ cursor: "pointer", fontSize: "1.2rem" }}
+                title="Xem tất cả sách"
+                style={{ fontSize: "1.2rem" }}
               >
-                {showAll ? <FaAngleUp /> : <FaAngleDown />}
-              </span>
+                <FaAngleDown />
+              </Link>
             )}
-
-            <div className="ms-auto d-flex gap-2">
+            <div className="ms-auto position-relative">
               <button
-                className={`filter-btn ${sortBy === "name" ? "active" : ""}`}
-                onClick={() => setSortBy("name")}
+                className="btn btn-light filter-icon-btn"
+                onClick={() => setShowFilter(!showFilter)}
+                title="Lọc sách"
               >
-                Tên
+                <FaFilter />
               </button>
-              <button
-                className={`filter-btn ${sortBy === "price" ? "active" : ""}`}
-                onClick={() => setSortBy("price")}
-              >
-                Giá
-              </button>
+              {showFilter && (
+                <div className="filter-dropdown shadow-sm">
+                  <div
+                    className={`filter-option ${
+                      sortBy === "name" ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setSortBy("name");
+                      setShowFilter(false);
+                    }}
+                  >
+                    Lọc theo Tên
+                  </div>
+                  <div
+                    className={`filter-option ${
+                      sortBy === "price" ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setSortBy("price");
+                      setShowFilter(false);
+                    }}
+                  >
+                    Lọc theo Giá
+                  </div>
+                </div>
+              )}
             </div>
           </h4>
 
+          {/* Hiển thị sách */}
           <div className="row">
             {displayedBooks.map((book) => (
               <div key={book.id} className="col-6 col-md-3 mb-4">
@@ -190,9 +233,14 @@ const AllBook = () => {
                     </div>
                     <h5 className="book-title">{book.title}</h5>
                   </Link>
-                  <p className="book-price">{book.price.toLocaleString()}đ</p>
+                  <p className="book-price">
+                    {book.price.toLocaleString()}đ
+                  </p>
                   <div className="button-group">
-                    <button className="btn btn-outline-primary btn-sm">
+                    <button
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={() => handleAddToCart(book)}
+                    >
                       Giỏ hàng
                     </button>
                     <button className="btn btn-primary btn-sm">Mua ngay</button>
@@ -200,6 +248,22 @@ const AllBook = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Sách thuê */}
+          <div className="mt-5">
+            <h4 className="d-flex align-items-center">
+              <span>Danh mục Sách Cho Thuê</span>
+              <Link
+                to="/rent-books"
+                className="ms-2 text-success"
+                title="Xem tất cả sách thuê"
+                style={{ fontSize: "1.2rem" }}
+              >
+                <FaAngleDown />
+              </Link>
+            </h4>
+            <AllRent selectedCategory={selectedCategory} />
           </div>
         </div>
       </div>

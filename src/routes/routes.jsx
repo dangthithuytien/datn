@@ -9,20 +9,12 @@ import SaleAll from "../pages/SaleAll";
 import Checkout from "../pages/Checkout";
 import AllBook from "../pages/AllBook";
 import Sale from "../pages/Sale";
-
-// Đây là cách truyền tham số để lấy chi tiết  1 cái gi đó như id
-// Ví dụ: nếu bạn muốn lấy chi tiết sách theo id, bạn có thể sử dụng useParams trong component DetailsBook
-// sau nay có truyền vào api để lấy ra chi tiết
-//   { path: "/book/:id", element: <Details /> },
-// import { useParams } from "react-router-dom";
-// const Details = () => {
-//   const { id } = useParams(); // id sẽ là chuỗi từ URL
-//   return (
-//     <div>
-//       <h2>Chi tiết sách</h2>
-//       <p>ID sách: {id}</p>
-//     </div>
-//   );
+import BooksPage from "../pages/BooksPage";
+import RentBooksPage from "../pages/RentBooksPage";
+import RentCart from "../pages/RentCart";
+import About from "../pages/AboutUs";
+import News from "../pages/News";
+import Contact from "../pages/Contact";
 
 export const appRoutes = [
   { path: "/", element: <Home /> },
@@ -30,10 +22,28 @@ export const appRoutes = [
   { path: "/register", element: <Register /> },
   { path: "/user-profile", element: <UserProfile /> },
   { path: "/forgot-password", element: <ForgetPass /> },
+
+  // Chi tiết sách (bán và thuê)
   { path: "/book/:id", element: <DetailsBook /> },
+  { path: "/rent/:id", element: <DetailsBook /> },
+
+  // Giỏ hàng sách mua
   { path: "/cart", element: <CartBuy /> },
+
   { path: "/sale-all", element: <SaleAll /> },
   { path: "/checkout", element: <Checkout /> },
+
+  // Danh mục sách bán
   { path: "/books", element: <AllBook /> },
+  { path: "/books-page", element: <BooksPage /> },
+
+  // Khác
   { path: "/sale", element: <Sale /> },
+  { path: "/rent-books", element: <RentBooksPage /> },
+  { path: "/rent-cart", element: <RentCart /> },
+
+  // Trang giới thiệu
+  { path: "/about", element: <About /> },
+  { path: "/news", element: <News /> },
+  { path: "/contact", element: <Contact /> },
 ];

@@ -58,7 +58,7 @@ const Sale = () => {
     <div className="flashsale-container">
       <div className="flashsale-header">
         <div className="flashsale-left">
-          <h2 className="flashsale-title">Flash Sale</h2>
+          <h2 className="flashsale-title">Giá Tốt Mỗi Ngày</h2>
         </div>
         <div className="view-all-btn" onClick={handleViewAllClick}>
           Xem tất cả

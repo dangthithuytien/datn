@@ -1,124 +1,190 @@
+/* ==================== TỔNG QUAN ==================== */
 .container {
   max-width: 1300px;
   margin: 20px auto;
   padding: 15px 2cm;
-  background-color: #e6f2e6;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  background-color: #f4fff4;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
   box-sizing: border-box;
 }
 
-/* Style danh mục sản phẩm */
-
-/* Style card sách */
-
-.book-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* ==================== DANH MỤC SẢN PHẨM ==================== */
+.category-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #2e7d32;
+  border-bottom: 2px solid #81c784;
+  padding-bottom: 4px;
 }
 
+.category-list-wrapper {
+  max-height: 620px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #81c784 #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+/* Scrollbar cho WebKit (Chrome, Edge, Safari) */
+.category-list-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.category-list-wrapper::-webkit-scrollbar-thumb {
+  background-color: #81c784;
+  border-radius: 4px;
+}
+
+.category-list-wrapper::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.category-list {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.category-item {
+  border: none;
+  padding: 10px 16px;
+  background-color: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.category-item:hover {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.category-item.active {
+  background-color: #c8e6c9;
+  font-weight: 600;
+  color: #2e7d32;
+  border-left: 4px solid #66bb6a;
+}
+
+/* ==================== SÁCH ==================== */
 .book-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 0 8px #ccc;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  padding: 8px;
-
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 10px;
+  box-shadow: 0 0 8px rgba(51, 105, 30, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: center; /* Căn giữa tất cả nội dung ngang */
+  align-items: center;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
 .book-image {
   width: 100%;
   height: 150px;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .book-title {
-  font-weight: bold;
+  font-weight: 600;
   font-size: 16px;
-  margin-top: 8px;
-  margin-bottom: 6px;
-  text-align: center; /* căn giữa chữ */
+  margin: 10px 0 6px;
+  text-align: center;
+  color: #2d7031;
 }
 
 .book-price {
-  color: #3a803a; /* tone xanh lá dịu hơn */
+  color: #1b5e20;
   font-size: 14px;
-  margin-bottom: 10px;
   font-weight: 600;
+  margin-bottom: 8px;
   text-align: center;
 }
 
 .button-group {
   display: flex;
-  margin: 0 auto; /* căn giữa nhóm nút */
+  justify-content: center;
   overflow: hidden;
-  border-radius: 6px;
-  gap: 0; /* để 2 nút dính liền nhau */
+  width: 100%;
   box-shadow: 0 0 5px rgba(58, 128, 58, 0.3);
 }
 
 .button-group button {
-  font-size: 0.8rem; /* nhỏ hơn */
-  padding: 5px 12px;
+  flex: 1;
+  font-size: 0.85rem;
+  padding: 6px 10px;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.button-group button:first-child {
-  background-color: #4caf50; /* xanh lá đậm */
-  color: white;
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
-}
-
-.button-group button:first-child:hover {
-  background-color: #388e3c;
+  border-right: 1px solid #ffffff55;
+  border-radius: 0;
 }
 
 .button-group button:last-child {
-  background-color: #81c784; /* xanh lá nhạt hơn */
-  color: white;
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-right: none;
 }
 
-.button-group button:last-child:hover {
-  background-color: #66bb6a;
-}
-/* Các CSS bạn có thể giữ nguyên */
-
-.filter-buttons {
-  display: flex;
-  gap: 8px;
-  margin-left: 10px; /* Khoảng cách so với icon mũi tên */
-}
-
-.filter-btn {
+/* ==================== BỘ LỌC ==================== */
+.filter-icon-btn {
   background-color: transparent;
   border: 1.5px solid #71e9b9;
-  color: #043f2d;
-  padding: 3px 8px;
-  font-size: 0.9rem;
-  border-radius: 4px;
+  color: #065a3c;
+  padding: 4px 8px;
+  font-size: 1rem;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.filter-btn:hover {
+.filter-icon-btn:hover {
   background-color: #0a5321;
   color: white;
 }
 
-.filter-btn.active {
-  background-color: #0056b3;
-  color: white;
-  border-color: #0056b3;
+.filter-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  z-index: 1000;
+  min-width: 160px;
+  padding: 5px 0;
+  font-size: 0.9rem;
+}
+
+.filter-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filter-option:hover,
+.filter-option.active {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+  font-weight: bold;
+}
+
+/* ==================== TIÊU ĐỀ ==================== */
+h4.d-flex.align-items-center {
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #1b4332;
+  border-left: 5px solid #43a047;
+  padding-left: 12px;
 }
