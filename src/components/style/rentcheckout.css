@@ -1,0 +1,117 @@
+/* === General Section === */
+.checkout-section {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.checkout-section-title,
+.checkout-section h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #2b5d3f;
+}
+
+/* === Input Group === */
+.checkout-input-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.checkout-input-group input,
+.checkout-input-group select {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+}
+
+.checkout-input-group input:focus,
+.checkout-input-group select:focus {
+  border-color: #80bdff;
+  outline: none;
+}
+
+/* === Radio buttons layout === */
+.d-flex.gap-3 label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+input[type="radio"] {
+  accent-color: #008017;
+}
+
+/* === QR Code Section === */
+.qr-code-container {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #80bdff;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.qr-code-container img,
+.qr-code-container svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* === Footer section === */
+.checkout-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #ccc;
+}
+
+.total-shipping {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.total-shipping strong {
+  font-size: 18px;
+  color: #28a745;
+}
+
+.checkout-footer .btn {
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+/* === Responsive === */
+@media (max-width: 576px) {
+  .checkout-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .checkout-input-group input,
+  .checkout-input-group select {
+    width: 100%;
+  }
+}
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-methods label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

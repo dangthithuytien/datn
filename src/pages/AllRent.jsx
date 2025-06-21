@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "../components/style/rentbook.css"; // Dùng CSS riêng cho sách thuê
+import { FaAngleDown, FaFilter, FaHeart } from "react-icons/fa";
+import "../components/style/rentbook.css";
 
 const rentBooks = [
+  // 10 sách thuê
   {
     id: 101,
     title: "Sách Thuê - Lập trình React",
     author: "Tác giả X",
     rentPrice: 30000,
-    image:
-      "https://th.bing.com/th/id/OIP.YFcOB54Boqrk5K3pPwzI-QHaD4?w=297&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+    image: "https://th.bing.com/th/id/OIP.YFcOB54Boqrk5K3pPwzI-QHaD4?w=297&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
   },
   {
     id: 102,
@@ -32,12 +33,73 @@ const rentBooks = [
     rentPrice: 35000,
     image: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
   },
+  {
+    id: 105,
+    title: "Sách Thuê - Marketing căn bản",
+    author: "Tác giả A",
+    rentPrice: 26000,
+    image: "https://images.unsplash.com/photo-1544717305-2782549b5136",
+  },
+  {
+    id: 106,
+    title: "Sách Thuê - Quản trị kinh doanh",
+    author: "Tác giả B",
+    rentPrice: 27000,
+    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c",
+  },
+  {
+    id: 107,
+    title: "Sách Thuê - Kỹ năng mềm",
+    author: "Tác giả C",
+    rentPrice: 29000,
+    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794",
+  },
+  {
+    id: 108,
+    title: "Sách Thuê - Tài chính cá nhân",
+    author: "Tác giả D",
+    rentPrice: 32000,
+    image: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+  },
+  {
+    id: 109,
+    title: "Sách Thuê - Machine Learning",
+    author: "Tác giả E",
+    rentPrice: 40000,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQk9otPCKjvW8rFR1OfL0yiP90EWj2aCcEh0w&s",
+  },
+  {
+    id: 110,
+    title: "Sách Thuê - Deep Work",
+    author: "Cal Newport",
+    rentPrice: 30000,
+    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794",
+  },
+   {
+    id: 111,
+    title: "Sách Thuê - Deep Work",
+    author: "Cal Newport",
+    rentPrice: 30000,
+    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794",
+  },
 ];
 
+
 const AllRent = () => {
+  const [showFilter, setShowFilter] = useState(false);
+  const [sortBy, setSortBy] = useState("");
+
+  const sortedBooks = [...rentBooks];
+  if (sortBy === "name") {
+    sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortBy === "price") {
+    sortedBooks.sort((a, b) => a.rentPrice - b.rentPrice);
+  }
+
+  const displayedBooks = sortedBooks.slice(0, 10);
+
   const handleAddToRentCart = (book) => {
     const existingCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-
     const alreadyExists = existingCart.find((item) => item.id === book.id);
     if (alreadyExists) {
       alert("Sách đã có trong giỏ thuê.");
@@ -61,38 +123,100 @@ const AllRent = () => {
     alert("Đã thêm sách vào giỏ thuê!");
   };
 
+  const handleAddToFavorites = (book) => {
+    const favorites = JSON.parse(localStorage.getItem("favoriteRentBooks")) || [];
+    const exists = favorites.find((item) => item.id === book.id);
+    if (!exists) {
+      favorites.push(book);
+      localStorage.setItem("favoriteRentBooks", JSON.stringify(favorites));
+      alert("Đã thêm sách thuê vào yêu thích!");
+    } else {
+      alert("Sách đã nằm trong danh sách yêu thích.");
+    }
+  };
+
   return (
-    <div className="row">
-      {rentBooks.map((book) => (
-        <div key={book.id} className="col-6 col-md-3 mb-4">
-          <div className="rent-book-card">
-            <Link to={`/rent/${book.id}`} state={{ book }}>
-              <div className="image-container">
-                <img
-                  src={book.image}
-                  alt={book.title}
-                  className="rent-book-image"
-                />
-              </div>
-              <h5 className="rent-book-title">{book.title}</h5>
-            </Link>
-            <p className="rent-book-price">
-              Thuê: {book.rentPrice.toLocaleString()}đ
-            </p>
-            <div className="rent-button-group">
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={() => handleAddToRentCart(book)}
+    <div className="container mt-4">
+      <h4 className="d-flex align-items-center mb-4">
+        <span>Danh sách sách thuê</span>
+        <Link
+          to="/rent-books"
+          state={{ books: sortedBooks }}
+          onClick={() =>
+            localStorage.setItem("rentBooksTemp", JSON.stringify(sortedBooks))
+          }
+          className="ms-2 text-success"
+          title="Xem tất cả sách thuê"
+          style={{ fontSize: "1.2rem" }}
+        >
+          <FaAngleDown />
+        </Link>
+        <div className="ms-auto position-relative">
+          <button
+            className="btn btn-light filter-icon-btn"
+            onClick={() => setShowFilter(!showFilter)}
+            title="Lọc sách"
+          >
+            <FaFilter />
+          </button>
+          {showFilter && (
+            <div className="filter-dropdown shadow-sm">
+              <div
+                className={`filter-option ${sortBy === "name" ? "active" : ""}`}
+                onClick={() => {
+                  setSortBy("name");
+                  setShowFilter(false);
+                }}
               >
-                Giỏ thuê
-              </button>
-              <Link to="/rent-cart">
-                <button className="btn btn-success btn-sm">Thuê ngay</button>
+                Lọc theo Tên
+              </div>
+              <div
+                className={`filter-option ${sortBy === "price" ? "active" : ""}`}
+                onClick={() => {
+                  setSortBy("price");
+                  setShowFilter(false);
+                }}
+              >
+                Lọc theo Giá
+              </div>
+            </div>
+          )}
+        </div>
+      </h4>
+
+      <div className="d-flex flex-wrap justify-content-between">
+        {displayedBooks.map((book) => (
+          <div key={book.id} style={{ width: "19%" }} className="mb-4 position-relative">
+            <div className="book-card">
+              {/* Trái tim yêu thích */}
+              <FaHeart
+                className="heart-icon"
+                onClick={() => handleAddToFavorites(book)}
+                title="Thêm vào yêu thích"
+              />
+
+              <Link to={`/rent/${book.id}`} state={{ book }}>
+                <div className="image-container">
+                  <img src={book.image} alt={book.title} className="book-image" />
+                </div>
+                <h5 className="book-title">{book.title}</h5>
               </Link>
+              <p className="book-price">Thuê: {book.rentPrice.toLocaleString()}đ</p>
+              <div className="button-group">
+                <button
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => handleAddToRentCart(book)}
+                >
+                  Giỏ thuê
+                </button>
+                <Link to="/rent-cart">
+                  <button className="btn btn-success btn-sm  ">Thuê ngay</button>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

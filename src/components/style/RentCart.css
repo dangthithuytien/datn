@@ -1,3 +1,4 @@
+/* Không viền bảng */
 .no-border-table {
   border: none !important;
   box-shadow: none !important;
@@ -7,9 +8,10 @@
 .no-border-table td {
   border: none !important;
 }
-/* Box nền cho phần tiêu đề bảng */
+
+/* Tiêu đề bảng có màu nền */
 .table-header-box {
-  background-color: #90a797; /* Màu nền khác biệt */
+  background-color: #90a797;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -23,7 +25,7 @@
   border-bottom: 1px solid #ccc !important;
 }
 
-/* Checkbox custom: to hơn, màu xanh đậm khi checked */
+/* Checkbox to hơn, màu xanh khi hover */
 .custom-checkbox {
   width: 22px;
   height: 22px;
@@ -35,12 +37,12 @@
   accent-color: #0aa135;
 }
 
-/* Gạch dưới mỗi sản phẩm */
+/* Gạch dưới mỗi hàng */
 .border-bottom-row {
   border-bottom: 1px solid #dee2e6;
 }
 
-/* Footer */
+/* Footer thanh toán */
 .cart-footer {
   border-top: 1px solid #4ac495;
   padding-top: 15px;
@@ -54,30 +56,11 @@
   text-align: left;
 }
 
-.discount-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.discount-input {
-  width: 250px;
-  min-width: 200px;
-}
-
+/* Responsive cho màn nhỏ */
 @media (max-width: 576px) {
   .cart-footer {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .discount-section {
-    width: 100%;
-  }
-
-  .discount-input {
-    width: 100%;
   }
 }
 .btn-outline-success:hover svg {
