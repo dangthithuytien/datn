@@ -1,20 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../components/style/detailsbook.css";
 
 const DetailsBook = () => {
-  const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
-  const [book, setBook] = useState(null);
+  const [book] = useState(location.state?.book || null);
   const [quantity, setQuantity] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    // Lấy dữ liệu sách từ localStorage
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const foundBook = cart.find((item) => item.id.toString() === id);
-    setBook(foundBook);
-  }, [id]);
 
   const handleMouseMove = (e) => {
     const { clientX, clientY } = e;
@@ -35,16 +28,16 @@ const DetailsBook = () => {
 
   const handleAddToCart = () => {
     if (!book) return;
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
+    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
     const existingItem = cart.find((item) => item.id === book.id);
+
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
       cart.push({ ...book, quantity });
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem("cartBuy", JSON.stringify(cart));
     alert("✅ Đã thêm vào giỏ hàng!");
   };
 
@@ -73,7 +66,7 @@ const DetailsBook = () => {
             className="img-fluid details-image"
             style={{
               transformOrigin: `${mousePosition.x}px ${mousePosition.y}px`,
-              transform: `scale(${mousePosition.x ? 1.3 : 1})`,
+              transform: mousePosition.x ? "scale(1.3)" : "scale(1)",
               transition: "transform 0.2s ease-out",
             }}
           />
@@ -123,7 +116,7 @@ const DetailsBook = () => {
       <div className="row mt-5 details-bottom">
         <div className="col-md-7">
           <h4>Mô tả sách</h4>
-          <p>{book.description}</p>
+          <p>{book.description || "Không có mô tả."}</p>
         </div>
         <div className="col-md-5">
           <h4>Thông tin chi tiết</h4>

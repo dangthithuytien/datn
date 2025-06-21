@@ -15,22 +15,22 @@
 }
 
 .flashsale-title {
-  color: #d93025;
+  color: #106505;
   font-size: 1.8rem;
   font-weight: bold;
 }
 
 .view-all-btn {
-  color: #003366;
+  color: #09965d;
   font-weight: 600;
   cursor: pointer;
   padding: 8px 16px;
   border-radius: 6px;
-  border: 2px solid #003366;
+  border: 2px solid #54e678;
   transition: 0.3s;
 }
 .view-all-btn:hover {
-  background-color: #003366;
+  background-color: #98eba7;
   color: white;
 }
 
