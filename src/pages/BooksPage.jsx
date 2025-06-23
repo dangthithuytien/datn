@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaHeart, FaFilter } from "react-icons/fa";
 import "../components/style/booksPage.css";
 
 const mockBooks = [
@@ -8,187 +9,175 @@ const mockBooks = [
     title: "Sách Tiểu thuyết 1",
     author: "Tác giả A",
     price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
-    description:
-      "Cuốn tiểu thuyết này mở ra một thế giới đầy màu sắc với những câu chuyện phong phú về cuộc sống, tình yêu và số phận con người. Nhân vật chính trải qua nhiều thử thách cam go, từ những mất mát đến những niềm vui bất ngờ, khiến người đọc không thể rời mắt khỏi từng trang sách. Tác giả khéo léo xây dựng các tình tiết và cảnh vật sống động, phản ánh sâu sắc các giá trị đạo đức và những khía cạnh tâm lý phức tạp của con người.",
+    category: "Tiểu thuyết",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    description: "Cuốn tiểu thuyết này mở ra một thế giới đầy màu sắc..."
   },
   {
     id: 2,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Khoa học 1",
+    author: "Tác giả B",
+    price: 140000,
+    category: "Khoa học",
+    image: "https://i.pinimg.com/originals/5b/af/f3/5baff3a874af2020544b306e34b5b269.jpg"
   },
   {
     id: 3,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://i.pinimg.com/236x/79/e3/f3/79e3f32c79474c41b7588b7247806dbb--wattpad.jpg"
   },
   {
     id: 4,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://lh3.googleusercontent.com/proxy/dshHw9mkAy2iyn9begIzj-4mZjcctNlOQ9QZdvO5pHZGuPWrWUVyPXjoASVBw1xVaPDfOzaviJGtqxNlc-A"
   },
   {
     id: 5,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://vnkings.com/wp-content/uploads/2016/05/hiu4a.png"
   },
   {
     id: 6,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://nukaly11.files.wordpress.com/2020/09/lam-tinh-yeu-nhieu-hon-han.jpg?w=940"
   },
   {
     id: 7,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://cn-e-pic.itoon.org/cartoon-posters/886172437d.webp"
   },
   {
     id: 8,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://cn-e-pic.itoon.org/cartoon-posters/1421672a15.webp"
   },
   {
     id: 9,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 120000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
-  },
-  {
-    id: 10,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 120000,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
+    title: "Sách Lịch sử 1",
+    author: "Tác giả C",
+    price: 160000,
+    category: "Lịch sử",
+    image: "https://i.pinimg.com/236x/d7/33/b2/d733b2322e36f0b0a29f5ae77e5e33b4.jpg"
   },
 ];
 
 const BooksPage = () => {
-  const [category, setCategory] = useState("");
-  const [author, setAuthor] = useState("");
-  const [title, setTitle] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 1000000]);
-  const navigate = useNavigate(); // 👈 dùng để chuyển trang
+  const [showFilter, setShowFilter] = useState(false);
+  const [sortBy, setSortBy] = useState("");
+  const [favoriteIds, setFavoriteIds] = useState([]);
+  const navigate = useNavigate();
 
-  const handlePriceChange = (e) => {
-    const value = e.target.value;
-    if (value === "1") setPriceRange([0, 100000]);
-    else if (value === "2") setPriceRange([100000, 200000]);
-    else if (value === "3") setPriceRange([200000, 1000000]);
-    else setPriceRange([0, 1000000]);
+  React.useEffect(() => {
+    const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
+    setFavoriteIds(favorites.map((b) => b.id));
+  }, []);
+
+  const handleAddToFavorites = (book) => {
+    const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
+    const exists = favorites.some((b) => b.id === book.id);
+
+    if (exists) {
+      alert("Sách đã có trong danh sách yêu thích.");
+      return;
+    }
+
+    const updatedFavorites = [...favorites, book];
+    localStorage.setItem("favoriteBooks", JSON.stringify(updatedFavorites));
+    setFavoriteIds([...favoriteIds, book.id]);
+    alert("Đã thêm vào yêu thích!");
   };
-
-  const filteredBooks = mockBooks.filter((book) => {
-    return (
-      (category === "" || book.category === category) &&
-      (author === "" ||
-        book.author.toLowerCase().includes(author.toLowerCase())) &&
-      (title === "" ||
-        book.title.toLowerCase().includes(title.toLowerCase())) &&
-      book.price >= priceRange[0] &&
-      book.price <= priceRange[1]
-    );
-  });
 
   const handleBookClick = (book) => {
     navigate(`/book/${book.id}`, { state: { book } });
   };
 
+  const sortedBooks = [...mockBooks];
+  if (sortBy === "name") sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
+  else if (sortBy === "price") sortedBooks.sort((a, b) => a.price - b.price);
+
   return (
-    <div className="container">
-      <h2 className="section-title">Tất cả sách</h2>
-
-      {/* Bộ lọc */}
-      <div
-        className="filter-buttons"
-        style={{
-          flexWrap: "wrap",
-          gap: "12px",
-          justifyContent: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <select
-          className="filter-btn"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="">Tất cả danh mục</option>
-          <option value="Tiểu thuyết">Tiểu thuyết</option>
-          <option value="Công nghệ">Công nghệ</option>
-          <option value="Kỹ năng">Kỹ năng</option>
-          <option value="Thiếu nhi">Thiếu nhi</option>
-        </select>
-
-        <select className="filter-btn" onChange={handlePriceChange}>
-          <option value="0">Tất cả giá</option>
-          <option value="1">Dưới 100.000₫</option>
-          <option value="2">100.000₫ - 200.000₫</option>
-          <option value="3">Trên 200.000₫</option>
-        </select>
-
-        <input
-          className="filter-btn"
-          type="text"
-          placeholder="Tên sách"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <input
-          className="filter-btn"
-          type="text"
-          placeholder="Tác giả"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-        />
-      </div>
-
-      {/* Danh sách sách */}
-      <div className="book-list">
-        {filteredBooks.length === 0 ? (
-          <p>Không tìm thấy sách phù hợp.</p>
-        ) : (
-          filteredBooks.map((book) => (
-            <div
-              key={book.id}
-              className="book-card"
-              onClick={() => handleBookClick(book)}
-              style={{ cursor: "pointer" }}
-            >
-              <img src={book.image} alt={book.title} className="book-image" />
-              <div className="book-title">{book.title}</div>
-              <div className="book-price">{book.price.toLocaleString()}₫</div>
-              <div className="button-group">
-                <button>Mua ngay</button>
-                <button>Giỏ hàng</button>
+    <div className="container mt-4">
+      <h4 className="d-flex align-items-center mb-4">
+        <span>Tất cả sách</span>
+        <div className="ms-auto position-relative">
+          <button
+            className="btn btn-light filter-icon-btn"
+            onClick={() => setShowFilter(!showFilter)}
+            title="Lọc sách"
+          >
+            <FaFilter />
+          </button>
+          {showFilter && (
+            <div className="filter-dropdown shadow-sm">
+              <div
+                className={`filter-option ${sortBy === "name" ? "active" : ""}`}
+                onClick={() => {
+                  setSortBy("name");
+                  setShowFilter(false);
+                }}
+              >
+                Lọc theo Tên
+              </div>
+              <div
+                className={`filter-option ${sortBy === "price" ? "active" : ""}`}
+                onClick={() => {
+                  setSortBy("price");
+                  setShowFilter(false);
+                }}
+              >
+                Lọc theo Giá
               </div>
             </div>
-          ))
-        )}
+          )}
+        </div>
+      </h4>
+
+      <div className="d-flex flex-wrap justify-content-between">
+        {sortedBooks.map((book) => (
+          <div key={book.id} style={{ width: "19%" }} className="mb-4">
+            <div className="book-card position-relative">
+              <FaHeart
+                className={`heart-icon ${favoriteIds.includes(book.id) ? "active" : ""}`}
+                onClick={() => handleAddToFavorites(book)}
+                title="Thêm vào yêu thích"
+              />
+              <div
+                onClick={() => handleBookClick(book)}
+                style={{ cursor: "pointer" }}
+              >
+                <img
+                  src={book.image}
+                  alt={book.title}
+                  className="book-image"
+                />
+                <div className="book-title">{book.title}</div>
+                <div className="book-price">{book.price.toLocaleString()}₫</div>
+              </div>
+              <div className="button-group">
+                <button className="btn btn-outline-primary btn-sm">Mua ngay</button>
+                <button className="btn btn-success btn-sm">Giỏ hàng</button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

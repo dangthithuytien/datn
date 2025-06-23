@@ -1,3 +1,4 @@
+/* ==================== TỔNG QUAN ==================== */
 .container {
   max-width: 1300px;
   margin: 20px auto;
@@ -9,6 +10,7 @@
   box-sizing: border-box;
 }
 
+/* ==================== THẺ SÁCH ==================== */
 .book-card {
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
@@ -20,6 +22,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 
 .book-card:hover {
@@ -27,11 +30,26 @@
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
-.book-image {
-  width: 100%;
+.image-container {
   height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 5px;
+  background-color: #f9f9f9;
+}
+
+.book-image {
+  max-height: 100%;
+  max-width: 100%;
   object-fit: contain;
-  border-radius: 6px;
+
+  transition: transform 0.3s ease;
+}
+
+.book-image:hover {
+  transform: scale(1.05);
 }
 
 .book-title {
@@ -50,16 +68,24 @@
   text-align: center;
 }
 
-  .button-group .btn {
+.button-group {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: 0 0 5px rgba(58, 128, 58, 0.3);
+}
+
+.button-group .btn {
   flex: 1;
-  font-size: 0.75rem;      /* nhỏ chữ hơn */
-  padding: 4px 6px;         /* thu nhỏ padding */
+  font-size: 0.75rem;
+  padding: 4px 6px;
   border-radius: 0;
   margin: 0;
   text-align: center;
 }
 
- .button-group .btn:first-child {
+.button-group .btn:first-child {
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
 }
@@ -67,15 +93,21 @@
 .button-group .btn:last-child {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
-  margin-left: -1px; /* loại bỏ khoảng hở */
+  margin-left: -1px;
 }
 
-.no-gap-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 6px;
-  font-size: 0.75rem;
+.filter-icon-btn {
+  background-color: transparent;
+  border: 1.5px solid #71e9b9;
+  color: #065a3c;
+  padding: 4px 8px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.filter-icon-btn:hover {
+  background-color: #0a5321;
   color: white;
 }
 
@@ -104,6 +136,7 @@
   color: #1b5e20;
   font-weight: bold;
 }
+
 @media (min-width: 768px) {
   .col-1-5 {
     width: 20%;
@@ -125,23 +158,20 @@
 .heart-icon:hover {
   color: red;
 }
-
-.btn-priority-green {
-  background-color: #2e7d32;
-  color: white;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 8px 20px;
-  font-size: 1rem;
-  border: 2px solid #1b5e20;
-  border-radius: 6px;
-  box-shadow: 0 6px 12px rgba(46, 125, 50, 0.3);
-  transition: all 0.3s ease;
+.filter-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  z-index: 10;
+  width: 150px;
+  border: 1px solid #ddd;
 }
 
-.btn-priority-green:hover {
-  background-color: #1b5e20;
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(27, 94, 32, 0.4);
+.filter-option {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.filter-option:hover {
+  background-color: #f1f1f1;
 }

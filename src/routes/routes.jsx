@@ -21,6 +21,11 @@ import OrdersRent from "../pages/OrdersRent";
 import OrderRentDetail from "../pages/OrderRentDetail";
 import OrderSellDetail from "../pages/OrderSellDetail";
 import FavoriteBooks from "../pages/FavoriteBooks";
+import AllRentBooks from "../pages/AllRentBooks";
+
+
+
+
 
 
 export const appRoutes = [
@@ -60,4 +65,7 @@ export const appRoutes = [
   { path: "/about", element: <About /> },
   { path: "/news", element: <News /> },
   { path: "/contact", element: <Contact /> },
+
+
+  { path: "/rent-books/all", element: <AllRentBooks /> },
 ];

@@ -1,10 +1,93 @@
+/* ==================== TỔNG QUAN ==================== */
+.container {
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 15px 2cm;
+  background-color: #f4fff4;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
+  box-sizing: border-box;
+}
+
+/* ==================== THẺ YÊU THÍCH ==================== */
 .favorite-card {
-  border: 1px solid #ddd;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
   transition: transform 0.2s;
-  cursor: pointer;
 }
 
 .favorite-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
+
+.favorite-card img {
+  height: 180px;
+  object-fit: cover;
+}
+
+.favorite-card .card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.favorite-card .card-text {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+/* ==================== NÚT XÓA GÓC PHẢI ==================== */
+.favorite-card .btn-danger {
+  font-size: 16px;
+  padding: 2px 8px;
+  line-height: 1;
+  border-radius: 50%;
+  font-weight: bold;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
+}
+
+/* ==================== PHẦN TIÊU ĐỀ ==================== */
+h3.text-success {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+h4.text-primary {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 576px) {
+  .card-title {
+    font-size: 14px;
+  }
+  .card-text {
+    font-size: 13px;
+  }
+}
+.pagination .page-link {
+  color: #1b5e20;
+}
+.pagination .page-item.active .page-link {
+  background-color: #1b5e20;
+  border-color: #1b5e20;
+  color: #fff;
+}
+.favorite-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #2e7d32; /* màu lá đậm */
+  border-left: 5px solid #43a047;
+  padding-left: 12px;
+}
+
