@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaAngleDown, FaFilter, FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import AllRent from "./AllRent";
 import "../components/style/allbook.css";
+
 
 const categories = [
   { name: "Tiểu thuyết" },
@@ -40,7 +40,7 @@ const allBooks = [
     author: "Tác giả B",
     price: 140000,
     category: "Khoa học",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
+    image: "https://i.pinimg.com/originals/5b/af/f3/5baff3a874af2020544b306e34b5b269.jpg"
   },
   {
     id: 3,
@@ -48,7 +48,7 @@ const allBooks = [
     author: "Tác giả C",
     price: 160000,
     category: "Lịch sử",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
+    image: "https://i.pinimg.com/236x/79/e3/f3/79e3f32c79474c41b7588b7247806dbb--wattpad.jpg"
   },
   {
     id: 4,
@@ -56,7 +56,7 @@ const allBooks = [
     author: "Tác giả C",
     price: 160000,
     category: "Lịch sử",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
+    image: "https://lh3.googleusercontent.com/proxy/dshHw9mkAy2iyn9begIzj-4mZjcctNlOQ9QZdvO5pHZGuPWrWUVyPXjoASVBw1xVaPDfOzaviJGtqxNlc-A"
   },
   {
     id: 5,
@@ -64,7 +64,7 @@ const allBooks = [
     author: "Tác giả C",
     price: 160000,
     category: "Lịch sử",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
+    image: "https://vnkings.com/wp-content/uploads/2016/05/hiu4a.png"
   },
   {
     id: 6,
@@ -72,7 +72,7 @@ const allBooks = [
     author: "Tác giả C",
     price: 160000,
     category: "Lịch sử",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
+    image: "https://nukaly11.files.wordpress.com/2020/09/lam-tinh-yeu-nhieu-hon-han.jpg?w=940"
   },
   {
     id: 7,
@@ -80,7 +80,7 @@ const allBooks = [
     author: "Tác giả C",
     price: 160000,
     category: "Lịch sử",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
+    image: "https://cn-e-pic.itoon.org/cartoon-posters/886172437d.webp"
   },
   {
     id: 8,
@@ -88,7 +88,7 @@ const allBooks = [
     author: "Tác giả C",
     price: 160000,
     category: "Lịch sử",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
+    image: "https://cn-e-pic.itoon.org/cartoon-posters/1421672a15.webp"
   },
   {
     id: 9,
@@ -96,7 +96,7 @@ const allBooks = [
     author: "Tác giả C",
     price: 160000,
     category: "Lịch sử",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s"
+    image: "https://i.pinimg.com/236x/d7/33/b2/d733b2322e36f0b0a29f5ae77e5e33b4.jpg"
   },
 ];
 
@@ -104,6 +104,12 @@ const AllBook = () => {
   const [sortBy, setSortBy] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [favoriteIds, setFavoriteIds] = useState([]);
+
+  useEffect(() => {
+    const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
+    setFavoriteIds(favorites.map((b) => b.id));
+  }, []);
 
   const handleAddToCart = (book) => {
     const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
@@ -125,10 +131,15 @@ const AllBook = () => {
     if (!isExist) {
       favorites.push(book);
       localStorage.setItem("favoriteBooks", JSON.stringify(favorites));
+      setFavoriteIds([...favoriteIds, book.id]);
       alert("Đã thêm vào yêu thích!");
     } else {
       alert("Sách đã có trong danh sách yêu thích.");
     }
+  };
+
+  const isFavorite = (bookId) => {
+    return favoriteIds.includes(bookId);
   };
 
   const filteredBooks = selectedCategory
@@ -221,7 +232,7 @@ const AllBook = () => {
               <div key={book.id} className="col-6 col-md-3 mb-4">
                 <div className="book-card position-relative">
                   <FaHeart
-                    className="heart-icon"
+                    className={`heart-icon ${isFavorite(book.id) ? "active" : ""}`}
                     onClick={() => handleAddToFavorites(book)}
                     title="Thêm vào yêu thích"
                   />

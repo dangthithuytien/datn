@@ -19,40 +19,51 @@
 
 .saleall-products-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* mỗi hàng 5 sản phẩm */
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* nhỏ hơn */
+  gap: 24px; /* tăng khoảng cách */
+  justify-content: center;
 }
 
 .saleall-product-card {
-  background-color: #fff;
-  border: 1px solid #eee;
+  height: 300px; /* tăng chiều cao */
   padding: 10px;
-  border-radius: 6px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 8px #ccc;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
-  transition: 0.3s;
 }
 
 .saleall-product-card:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .product-image {
   width: 100%;
-  height: 200px;
-  object-fit: contain; /* hoặc cover nếu muốn bao trọn */
+  height: 140px;
+  object-fit: contain;
   border-radius: 4px;
 }
 
 .product-name {
-  font-size: 16px;
-  margin: 10px 0;
+  font-size: 14px;
+  margin: 6px 0;
+  text-align: center;
+  font-weight: 600;
 }
 
 .prices {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
 }
 
 .old-price {
@@ -67,56 +78,57 @@
 
 .discount-percent {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 6px;
+  left: 6px;
   background-color: red;
   color: white;
-  font-size: 12px;
-  padding: 4px 8px;
+  font-size: 11px;
+  padding: 3px 6px;
   border-radius: 4px;
   font-weight: bold;
   line-height: 1;
   min-width: 36px;
   text-align: center;
 }
+
 .product-buttons {
-  margin-top: 12px;
+  margin-top: auto;
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap; /* Không xuống dòng */
+  border-radius: 6px;
+  gap: 0;
+  box-shadow: 0 0 5px rgba(58, 128, 58, 0.3);
+  overflow: hidden;
 }
 
-.btn-buy,
-.btn-add {
-  padding: 8px 14px;
-  font-size: 14px;
-  font-weight: 600;
+.product-buttons button {
+  font-size: 0.75rem;
+  padding: 5px 10px;
   border: none;
-  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 100px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease;
+  width: 50%;
+  border-radius: 0;
 }
 
-.btn-buy {
-  background: linear-gradient(to right, #4caf50, #388e3c);
+.product-buttons button:first-child {
+  background-color: #4caf50;
   color: white;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
 }
 
-.btn-add {
-  background: linear-gradient(to right, #ff9800, #f57c00);
+.product-buttons button:first-child:hover {
+  background-color: #388e3c;
+}
+
+.product-buttons button:last-child {
+  background-color: #81c784;
   color: white;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 
-.btn-buy:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(to right, #388e3c, #2e7d32);
-}
-
-.btn-add:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(to right, #f57c00, #e65100);
+.product-buttons button:last-child:hover {
+  background-color: #a6afa6;
 }

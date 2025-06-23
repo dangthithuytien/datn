@@ -138,3 +138,17 @@
   padding: 10px;
   border-radius: 6px;
 }
+.heart-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #ccc;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.heart-icon:hover {
+  color: #dc3545;
+  transform: scale(1.2);
+}
