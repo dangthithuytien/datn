@@ -1,119 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { FaAngleDown, FaFilter, FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { getAllSaleBooks } from "../components/Service/saleBookService";
+import { getAllCategories } from "../components/Service/categoriesService";
 import "../components/style/allbook.css";
 
-
-const categories = [
-  { name: "Tiểu thuyết" },
-  { name: "Khoa học" },
-  { name: "Lịch sử" },
-  { name: "Tâm lý học" },
-  { name: "Công nghệ" },
-  { name: "Nấu ăn" },
-  { name: "Thiếu nhi" },
-  { name: "Y học" },
-  { name: "Tôn giáo" }, { name: "Tiểu thuyết" },
-  { name: "Khoa học" },
-  { name: "Lịch sử" },
-  { name: "Tâm lý học" },
-  { name: "Công nghệ" },
-  { name: "Nấu ăn" },
-  { name: "Thiếu nhi" },
-  { name: "Y học" },
-  { name: "Tôn giáo" }
-];
-
-const allBooks = [
-  {
-    id: 1,
-    title: "Sách Tiểu thuyết 1",
-    author: "Tác giả A",
-    price: 150000,
-    category: "Tiểu thuyết",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBUMhRkLozAdMwukKjYEX0DxcnW1z4qVLaZA&s",
-    description: "Cuốn tiểu thuyết này mở ra một thế giới đầy màu sắc..."
-  },
-  {
-    id: 2,
-    title: "Sách Khoa học 1",
-    author: "Tác giả B",
-    price: 140000,
-    category: "Khoa học",
-    image: "https://i.pinimg.com/originals/5b/af/f3/5baff3a874af2020544b306e34b5b269.jpg"
-  },
-  {
-    id: 3,
-    title: "Sách Lịch sử 1",
-    author: "Tác giả C",
-    price: 160000,
-    category: "Lịch sử",
-    image: "https://i.pinimg.com/236x/79/e3/f3/79e3f32c79474c41b7588b7247806dbb--wattpad.jpg"
-  },
-  {
-    id: 4,
-    title: "Sách Lịch sử 1",
-    author: "Tác giả C",
-    price: 160000,
-    category: "Lịch sử",
-    image: "https://lh3.googleusercontent.com/proxy/dshHw9mkAy2iyn9begIzj-4mZjcctNlOQ9QZdvO5pHZGuPWrWUVyPXjoASVBw1xVaPDfOzaviJGtqxNlc-A"
-  },
-  {
-    id: 5,
-    title: "Sách Lịch sử 1",
-    author: "Tác giả C",
-    price: 160000,
-    category: "Lịch sử",
-    image: "https://vnkings.com/wp-content/uploads/2016/05/hiu4a.png"
-  },
-  {
-    id: 6,
-    title: "Sách Lịch sử 1",
-    author: "Tác giả C",
-    price: 160000,
-    category: "Lịch sử",
-    image: "https://nukaly11.files.wordpress.com/2020/09/lam-tinh-yeu-nhieu-hon-han.jpg?w=940"
-  },
-  {
-    id: 7,
-    title: "Sách Lịch sử 1",
-    author: "Tác giả C",
-    price: 160000,
-    category: "Lịch sử",
-    image: "https://cn-e-pic.itoon.org/cartoon-posters/886172437d.webp"
-  },
-  {
-    id: 8,
-    title: "Sách Lịch sử 1",
-    author: "Tác giả C",
-    price: 160000,
-    category: "Lịch sử",
-    image: "https://cn-e-pic.itoon.org/cartoon-posters/1421672a15.webp"
-  },
-  {
-    id: 9,
-    title: "Sách Lịch sử 1",
-    author: "Tác giả C",
-    price: 160000,
-    category: "Lịch sử",
-    image: "https://i.pinimg.com/236x/d7/33/b2/d733b2322e36f0b0a29f5ae77e5e33b4.jpg"
-  },
-];
-
 const AllBook = () => {
+  const [allBooks, setAllBooks] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const baseURL = "https://localhost:7003";
 
   useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await getAllSaleBooks();
+        setAllBooks(response);
+      } catch (err) {
+        console.error("Lỗi khi lấy danh sách sách:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchCategories = async () => {
+      try {
+        const response = await getAllCategories();
+        setCategories(response);
+      } catch (err) {
+        console.error("Lỗi khi lấy danh mục:", err);
+      }
+    };
+
+    fetchBooks();
+    fetchCategories();
+
     const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-    setFavoriteIds(favorites.map((b) => b.id));
+    setFavoriteIds(favorites.map((b) => b.SaleBookId));
   }, []);
 
   const handleAddToCart = (book) => {
     const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const index = cart.findIndex((item) => item.id === book.id);
+    const index = cart.findIndex((item) => item.SaleBookId === book.SaleBookId);
 
     if (index !== -1) {
       cart[index].quantity += 1;
@@ -127,30 +59,30 @@ const AllBook = () => {
 
   const handleAddToFavorites = (book) => {
     const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-    const isExist = favorites.some((item) => item.id === book.id);
+    const isExist = favorites.some((item) => item.SaleBookId === book.SaleBookId);
     if (!isExist) {
       favorites.push(book);
       localStorage.setItem("favoriteBooks", JSON.stringify(favorites));
-      setFavoriteIds([...favoriteIds, book.id]);
+      setFavoriteIds([...favoriteIds, book.SaleBookId]);
       alert("Đã thêm vào yêu thích!");
     } else {
       alert("Sách đã có trong danh sách yêu thích.");
     }
   };
 
-  const isFavorite = (bookId) => {
-    return favoriteIds.includes(bookId);
-  };
+  const isFavorite = (bookId) => favoriteIds.includes(bookId);
 
   const filteredBooks = selectedCategory
-    ? allBooks.filter((book) => book.category === selectedCategory)
+    ? allBooks.filter((book) =>
+        book.CategoryIds?.some((id) => id === selectedCategory)
+      )
     : allBooks;
 
   const sortedBooks = [...filteredBooks];
   if (sortBy === "name") {
-    sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
+    sortedBooks.sort((a, b) => a.Title.localeCompare(b.Title));
   } else if (sortBy === "price") {
-    sortedBooks.sort((a, b) => a.price - b.price);
+    sortedBooks.sort((a, b) => (a.FinalPrice || a.Price) - (b.FinalPrice || b.Price));
   }
 
   const displayedBooks = sortedBooks.slice(0, 8);
@@ -158,29 +90,35 @@ const AllBook = () => {
   return (
     <div className="container mt-3">
       <div className="row">
+        {/* DANH MỤC */}
         <div className="col-md-3 mb-4">
           <h4 className="category-title">Danh mục sản phẩm</h4>
           <div className="category-list-wrapper">
             <ul className="list-group category-list">
               <li
-                className={`list-group-item category-item ${!selectedCategory ? "active" : ""}`}
+                className={`list-group-item category-item ${
+                  !selectedCategory ? "active" : ""
+                }`}
                 onClick={() => setSelectedCategory(null)}
               >
                 Tất cả
               </li>
-              {categories.map((cat, idx) => (
+              {categories.map((cat) => (
                 <li
-                  key={idx}
-                  className={`list-group-item category-item ${selectedCategory === cat.name ? "active" : ""}`}
-                  onClick={() => setSelectedCategory(cat.name)}
+                  key={cat.CategoryId}
+                  className={`list-group-item category-item ${
+                    selectedCategory === cat.CategoryId ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedCategory(cat.CategoryId)}
                 >
-                  {cat.name}
+                  {cat.CategoryName}
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
+        {/* SÁCH */}
         <div className="col-md-9">
           <h4 className="d-flex align-items-center">
             <span>Danh mục Sách Bán</span>
@@ -227,42 +165,51 @@ const AllBook = () => {
             </div>
           </h4>
 
-          <div className="row">
-            {displayedBooks.map((book) => (
-              <div key={book.id} className="col-6 col-md-3 mb-4">
-                <div className="book-card position-relative">
-                  <FaHeart
-                    className={`heart-icon ${isFavorite(book.id) ? "active" : ""}`}
-                    onClick={() => handleAddToFavorites(book)}
-                    title="Thêm vào yêu thích"
-                  />
-                  <Link to={`/book/${book.id}`} state={{ book }}>
-                    <div className="image-container">
-                      <img
-                        src={book.image}
-                        alt={book.title}
-                        className="book-image"
-                      />
+          {loading ? (
+            <p>Đang tải sách...</p>
+          ) : (
+            <div className="row">
+              {displayedBooks.map((book) => (
+                <div key={book.SaleBookId} className="col-6 col-md-3 mb-4">
+                  <div className="book-card position-relative">
+                    <FaHeart
+                      className={`heart-icon ${
+                        isFavorite(book.SaleBookId) ? "active" : ""
+                      }`}
+                      onClick={() => handleAddToFavorites(book)}
+                      title="Thêm vào yêu thích"
+                    />
+                    <Link to={`/book/${book.SaleBookId}`} state={{ book }}>
+                      <div className="image-container">
+                        <img
+                          src={`${baseURL}${book.ImageUrl}`}
+                          alt={book.Title}
+                          className="book-image"
+                        />
+                      </div>
+                      <h5 className="book-title">{book.Title}</h5>
+                    </Link>
+                    <p className="book-price">
+                     {(book.Price * 1000).toLocaleString("vi-VN")}đ
+
+                    </p>
+                    <p style={{ fontSize: "13px", marginBottom: "8px", color: "#555" }}>
+                      Kích thước: {book.PackagingSize}
+                    </p>
+                    <div className="button-group">
+                      <button
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => handleAddToCart(book)}
+                      >
+                        Giỏ hàng
+                      </button>
+                      <button className="btn btn-primary btn-sm">Mua ngay</button>
                     </div>
-                    <h5 className="book-title">{book.title}</h5>
-                  </Link>
-                  <p className="book-price">
-                    {book.price.toLocaleString()}đ
-                  </p>
-                  <div className="button-group">
-                    <button
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={() => handleAddToCart(book)}
-                    >
-                      Giỏ hàng
-                    </button>
-                    <button className="btn btn-primary btn-sm">Mua ngay</button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

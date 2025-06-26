@@ -22,7 +22,7 @@ import OrderRentDetail from "../pages/OrderRentDetail";
 import OrderSellDetail from "../pages/OrderSellDetail";
 import FavoriteBooks from "../pages/FavoriteBooks";
 import AllRentBooks from "../pages/AllRentBooks";
-
+import RentBookDetails from "../pages/RentBookDetails";
 
 
 
@@ -37,7 +37,7 @@ export const appRoutes = [
 
   // Chi tiết sách (bán và thuê)
   { path: "/book/:id", element: <DetailsBook /> },
-  { path: "/rent/:id", element: <DetailsBook /> },
+
 
   // Giỏ hàng sách mua
   { path: "/cart", element: <CartBuy /> },
@@ -68,4 +68,6 @@ export const appRoutes = [
 
 
   { path: "/rent-books/all", element: <AllRentBooks /> },
+  { path: "/rent/:id", element: <RentBookDetails /> },
+
 ];
