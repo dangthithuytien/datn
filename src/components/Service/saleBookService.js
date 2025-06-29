@@ -23,3 +23,14 @@ export const getSaleBookById = async (id) => {
     throw error;
   }
 };
+
+// Lấy sách có khuyến mãi (PromotionId khác null)
+export const getPromotedBooks = async () => {
+  try {
+    const response = await apiClient.get(SALE_BOOK_ENDPOINT);
+    return response.data.filter((book) => book.PromotionId); // chỉ sách có khuyến mãi
+  } catch (error) {
+    console.error("Lỗi lấy sách khuyến mãi:", error);
+    throw error;
+  }
+};

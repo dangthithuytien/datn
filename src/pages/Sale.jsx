@@ -1,96 +1,139 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import "../components/style/sale.css";
-
-const productsOnSale = [
-  {
-    id: 1,
-    name: "Áo sơ mi nam",
-    oldPrice: 500000,
-    newPrice: 350000,
-    image: "sach.jpg",
-  },
-  {
-    id: 2,
-    name: "Giày thể thao nữ",
-    oldPrice: 1200000,
-    newPrice: 900000,
-    image: "sach.jpg",
-  },
-  {
-    id: 3,
-    name: "Balo thời trang",
-    oldPrice: 800000,
-    newPrice: 600000,
-    image: "sach.jpg",
-  },
-  {
-    id: 4,
-    name: "Túi đeo chéo",
-    oldPrice: 600000,
-    newPrice: 450000,
-    image: "sach.jpg",
-  },
-  {
-    id: 5,
-    name: "Áo khoác mùa đông",
-    oldPrice: 1500000,
-    newPrice: 1100000,
-    image: "sach.jpg",
-  },
-  {
-    id: 6,
-    name: "Đồng hồ thời trang",
-    oldPrice: 2000000,
-    newPrice: 1500000,
-    image: "sach.jpg",
-  },
-];
-
-const calcDiscountPercent = (oldPrice, newPrice) =>
-  Math.round(((oldPrice - newPrice) / oldPrice) * 100);
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { FaHeart } from "react-icons/fa";
+import { getPromotedBooks } from "../components/Service/saleBookService";
+import "../components/style/sale.css"; // giữ nếu có CSS chung
 
 const Sale = () => {
-  const navigate = useNavigate();
-  const handleViewAllClick = () => navigate("/sale-all");
+  const [books, setBooks] = useState([]);
+  const [favoriteIds, setFavoriteIds] = useState([]);
+  const baseURL = "https://localhost:7003";
+
+  useEffect(() => {
+    const fetchPromotedBooks = async () => {
+      try {
+        const response = await getPromotedBooks();
+        const mapped = response.map((book) => {
+          const originalPrice = book.Price;
+          const finalPrice = book.FinalPrice;
+          const discountPercent =
+            book.DiscountPercentage !== undefined
+              ? book.DiscountPercentage
+              : originalPrice && finalPrice
+              ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
+              : null;
+
+          return {
+            id: book.SaleBookId,
+            title: book.Title,
+            image: book.ImageUrl?.startsWith("/")
+              ? `${baseURL}${book.ImageUrl}`
+              : book.ImageUrl,
+            price: originalPrice,
+            finalPrice: finalPrice,
+            discountPercent: discountPercent,
+            packagingSize: book.PackagingSize,
+          };
+        });
+
+        setBooks(mapped.slice(0, 10));
+      } catch (err) {
+        console.error("Lỗi lấy sách khuyến mãi:", err);
+      }
+
+      const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
+      setFavoriteIds(favorites.map((b) => b.SaleBookId));
+    };
+
+    fetchPromotedBooks();
+  }, []);
+
+  const handleAddToCart = (book) => {
+    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
+    const index = cart.findIndex((item) => item.id === book.id);
+    if (index !== -1) {
+      cart[index].quantity += 1;
+    } else {
+      cart.push({ ...book, quantity: 1 });
+    }
+    localStorage.setItem("cartBuy", JSON.stringify(cart));
+    alert("Đã thêm vào giỏ hàng!");
+  };
+
+  const handleAddToFavorites = (book) => {
+    const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
+    const isExist = favorites.some((item) => item.SaleBookId === book.id);
+    if (!isExist) {
+      favorites.push(book);
+      localStorage.setItem("favoriteBooks", JSON.stringify(favorites));
+      setFavoriteIds([...favoriteIds, book.id]);
+      alert("Đã thêm vào yêu thích!");
+    } else {
+      alert("Sách đã có trong danh sách yêu thích.");
+    }
+  };
 
   return (
-    <div className="flashsale-container">
-      <div className="flashsale-header">
-        <div className="flashsale-left">
-          <h2 className="flashsale-title">Giá Tốt Mỗi Ngày</h2>
-        </div>
-        <div className="view-all-btn" onClick={handleViewAllClick}>
+    <div className="container mt-4">
+      <h4 className="d-flex align-items-center mb-4">
+        <span>Sách khuyến mãi</span>
+        <Link
+          to="/sale-all"
+          className="ms-auto text-success"
+          style={{ fontSize: "1rem", fontWeight: 600 }}
+        >
           Xem tất cả
-        </div>
-      </div>
+        </Link>
+      </h4>
 
-      <div className="flashsale-products-list">
-        {productsOnSale.map((product) => {
-          const discountPercent = calcDiscountPercent(
-            product.oldPrice,
-            product.newPrice
-          );
-          return (
-            <div key={product.id} className="flashsale-product-card">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="product-image"
+      <div className="sale-grid-container">
+        {books.map((book) => (
+          <div key={book.id} className="sale-grid-item">
+            <div className="book-card position-relative">
+              <FaHeart
+                className={`heart-icon ${
+                  favoriteIds.includes(book.id) ? "active" : ""
+                }`}
+                onClick={() => handleAddToFavorites(book)}
               />
-              <h3 className="product-name">{product.name}</h3>
-              <div className="prices">
-                <span className="old-price">
-                  {product.oldPrice.toLocaleString()}₫
+              {book.discountPercent !== null && (
+                <div className="discount-badge">-{book.discountPercent}%</div>
+              )}
+              <Link to={`/book/${book.id}`} state={{ book }}>
+                <img
+                  src={book.image}
+                  alt={book.title}
+                  className="book-image"
+                />
+                <h5 className="book-title">{book.title}</h5>
+              </Link>
+
+              <p className="book-price">
+                <span style={{ textDecoration: "line-through", color: "#999" }}>
+                  {(book.price * 1000).toLocaleString("vi-VN")}đ
                 </span>
-                <span className="new-price">
-                  {product.newPrice.toLocaleString()}₫
+                <br />
+                <span style={{ color: "#c62828", fontWeight: 600 }}>
+                  {(book.finalPrice * 1000).toLocaleString("vi-VN")}đ
                 </span>
+              </p>
+
+              <p style={{ fontSize: "13px", color: "#555" }}>
+                Kích thước: {book.packagingSize}
+              </p>
+
+              <div className="button-group">
+                <button
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => handleAddToCart(book)}
+                >
+                  Giỏ hàng
+                </button>
+                <button className="btn btn-primary btn-sm">Mua ngay</button>
               </div>
-              <div className="discount-percent">-{discountPercent}%</div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

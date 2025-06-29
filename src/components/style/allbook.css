@@ -31,7 +31,6 @@
   background-color: #fafafa;
 }
 
-/* Scrollbar cho WebKit (Chrome, Edge, Safari) */
 .category-list-wrapper::-webkit-scrollbar {
   width: 6px;
 }
@@ -92,28 +91,39 @@
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
+.book-card a {
+  text-decoration: none !important;
+}
+
 .book-image {
   width: 100%;
   height: 150px;
   object-fit: contain;
-
 }
 
 .book-title {
   font-weight: 600;
   font-size: 16px;
-  margin: 10px 0 6px;
+  margin: 6px 0 4px;
   text-align: center;
   color: #2d7031;
 }
 
 .book-price {
-  color: #1b5e20;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  color: #d32f2f; /* đỏ nổi bật hơn */
+  font-size: 25px;
+  font-weight: bold;
+  margin: 4px 0;
   text-align: center;
 }
+
+.book-card p {
+  margin: 2px 0;
+  font-size: 18px;
+  color: #555;
+  text-align: center;
+}
+
 
 .button-group {
   display: flex;
@@ -123,7 +133,7 @@
   box-shadow: 0 0 5px rgba(58, 128, 58, 0.3);
 }
 
- .button-group button {
+.button-group button {
   flex: 1;
   font-size: 0.85rem;
   padding: 6px 10px;
@@ -136,7 +146,7 @@
 .button-group button:last-child {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
-  margin-left: -1px; /* loại bỏ khoảng hở */
+  margin-left: -1px;
 }
 
 /* ==================== BỘ LỌC ==================== */
@@ -190,6 +200,8 @@ h4.d-flex.align-items-center {
   border-left: 5px solid #43a047;
   padding-left: 12px;
 }
+
+/* ==================== ICON YÊU THÍCH ==================== */
 .heart-icon {
   position: absolute;
   top: 8px;
@@ -200,6 +212,11 @@ h4.d-flex.align-items-center {
   z-index: 10;
   transition: color 0.3s ease;
 }
+
 .heart-icon:hover {
+  color: red;
+}
+
+.heart-icon.active {
   color: red;
 }

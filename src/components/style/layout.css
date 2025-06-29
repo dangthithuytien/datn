@@ -1,0 +1,31 @@
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Cố định header */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Nội dung bên dưới header cuộn được */
+.layout-content {
+  margin-top: 60px; /* Độ cao header */
+}
+
+/* Main chứa nội dung chính */
+.layout-main {
+  padding: 20px;
+}
+
+/* Footer vẫn ở cuối nội dung */
+footer {
+  margin-top: 40px;
+}

@@ -1,0 +1,203 @@
+/* --- ExchangePointsModal.jsx specific styles --- */
+
+/* Tiêu đề Modal */
+.modal-title {
+    color: #28a745;
+    font-weight: bold;
+}
+
+/* Header Modal - Thêm border dưới nhẹ */
+.modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 15px;
+}
+
+/* Nút đóng modal */
+.modal-header .btn-close {
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+.modal-header .btn-close:hover {
+    color: #495057;
+}
+
+/* Tab Navigation */
+.nav-tabs {
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.nav-tabs .nav-link {
+    color: #6c757d;
+    font-weight: 600;
+    padding: 10px 20px;
+    border: none;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #28a745;
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: white;
+    background-color: #28a745;
+    border-color: #28a745;
+    border-bottom-color: transparent;
+}
+
+/* Nội dung Tab */
+.tab-content {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    padding: 20px;
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+
+    /* --- THÊM DÒNG NÀY ĐỂ CỐ ĐỊNH CHIỀU CAO NỘI DUNG CÁC TAB --- */
+    min-height: 400px; /* Điều chỉnh giá trị này theo nội dung dài nhất của bạn */
+    /* Nếu bạn muốn cuộn riêng từng tab thay vì cả modal body,
+       hãy thêm overflow-y: auto; vào đây và loại bỏ nó khỏi .modal-body
+       (hoặc đặt max-height thấp hơn cho .modal-body) */
+}
+
+/* Tiêu đề trong nội dung tab */
+.tab-content h4 {
+    color: #343a40;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Các Card ưu đãi */
+.card {
+    border: 1px solid #dcdcdc;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    color: #28a745;
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.card-text.text-muted {
+    font-size: 0.85rem;
+    color: #888 !important;
+}
+
+/* Nút "Đổi ngay" */
+.card-body .btn-primary {
+    background-color: #28a745;
+    border-color: #28a745;
+    font-weight: 500;
+    margin-top: 15px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.card-body .btn-primary:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* Bảng lịch sử */
+.table {
+    margin-top: 20px;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    border-color: #218838;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f2fcf4;
+}
+
+.table tbody tr:hover {
+    background-color: #e6ffe6;
+}
+
+/* Footer Modal */
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding-top: 15px;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Điều chỉnh tổng thể cho text */
+.p-3 p {
+    line-height: 1.6;
+}
+
+.text-success {
+    color: #28a745 !important;
+    font-weight: 500;
+}
+.text-warning {
+    color: #ffc107 !important;
+    font-weight: 500;
+}
+.text-danger {
+    color: #dc3545 !important;
+    font-weight: 500;
+}
+
+
+/* --- CỐ ĐỊNH MODAL BODY (như đã làm trước đó) --- */
+
+.modal-body {
+    max-height: 70vh; /* Chiều cao tối đa của toàn bộ body modal */
+    overflow-y: auto; /* Cho phép cuộn dọc khi tổng nội dung vượt quá max-height */
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.modal-dialog {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 1rem);
+}
+
+.tab-pane {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-content > .tab-pane {
+  padding-top: 20px;
+}
