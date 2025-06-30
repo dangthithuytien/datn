@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getSaleBookById } from "../components/Service/saleBookService";
+import { getRentBookById } from "../components/Service/rentBookService";
 import "../components/style/detailsbook.css";
 
-const DetailsBook = () => {
+const baseURL = "https://localhost:7003";
+
+const RentBookDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState(null);
-  const [quantity, setQuantity] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const baseURL = "https://localhost:7003";
 
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const data = await getSaleBookById(id);
+        const data = await getRentBookById(id);
         setBook(data);
-      } catch (error) {
-        console.error("Không thể lấy chi tiết sách:", error);
+      } catch (err) {
+        console.error("Lỗi khi lấy chi tiết sách thuê:", err);
       }
     };
+
     fetchBook();
   }, [id]);
 
@@ -32,27 +33,34 @@ const DetailsBook = () => {
     setMousePosition({ x: 0, y: 0 });
   };
 
-  const handleDecrease = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
-  };
-
-  const handleIncrease = () => {
-    setQuantity(quantity + 1);
-  };
-
-  const handleAddToCart = () => {
+  const handleAddToRentCart = () => {
     if (!book) return;
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const existingItem = cart.find((item) => item.SaleBookId === book.SaleBookId);
 
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      cart.push({ ...book, quantity });
+    const rentCart = JSON.parse(localStorage.getItem("rentCart")) || [];
+    const exists = rentCart.find((item) => item.id === book.RentBookId);
+
+    if (exists) {
+      alert("Sách đã có trong giỏ thuê.");
+      return;
     }
 
-    localStorage.setItem("cartBuy", JSON.stringify(cart));
-    alert("✅ Đã thêm vào giỏ hàng!");
+    const today = new Date();
+    const returnDate = new Date();
+    returnDate.setDate(today.getDate() + 3);
+
+    const rentItem = {
+      id: book.RentBookId,
+      title: book.Title,
+      rentPrice: book.Price,
+      image: `${baseURL}${book.ImageUrl}`,
+      rentDate: today.toISOString().split("T")[0],
+      returnDate: returnDate.toISOString().split("T")[0],
+      quantity: 1,
+      deposit: 50000,
+    };
+
+    localStorage.setItem("rentCart", JSON.stringify([...rentCart, rentItem]));
+    alert("✅ Đã thêm vào giỏ thuê!");
   };
 
   if (!book) {
@@ -91,12 +99,12 @@ const DetailsBook = () => {
         <div className="col-md-7 details-info">
           <h2 className="details-title">{book.Title}</h2>
 
-          {/* Giá nổi bật */}
+          {/* Giá thuê */}
           <p
             className="book-price-lg text-danger fw-bold"
             style={{ fontSize: "28px", marginBottom: "12px" }}
           >
-            {(book.Price * 1000).toLocaleString("vi-VN")}đ
+            {book.Price.toLocaleString("vi-VN")}đ/ngày
           </p>
 
           {/* Thông tin phụ */}
@@ -107,29 +115,20 @@ const DetailsBook = () => {
             <p><strong>Kích thước:</strong> {book.PackagingSize || "Không rõ"}</p>
           </div>
 
-          {/* Số lượng */}
-          <div className="quantity-control d-flex align-items-center mb-3 gap-2">
-            <button className="btn btn-sm btn-outline-secondary" onClick={handleDecrease}>-</button>
-            <input
-              type="text"
-              readOnly
-              value={quantity}
-              className="form-control form-control-sm text-center"
-              style={{ width: "50px" }}
-            />
-            <button className="btn btn-sm btn-outline-secondary" onClick={handleIncrease}>+</button>
-          </div>
-
+          
+          {/* Nút hành động */}
           <div className="d-flex gap-3 mt-3">
-            <button className="btn btn-outline-primary" onClick={handleAddToCart}>
-              Thêm vào giỏ
+            <button className="btn btn-outline-primary" onClick={handleAddToRentCart}>
+              Thêm vào giỏ thuê
             </button>
-            <button className="btn btn-success">Mua ngay</button>
+            <button className="btn btn-success" onClick={() => navigate("/rent-cart")}>
+              Thuê ngay
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Mô tả và bảng thông tin chi tiết */}
+      {/* Mô tả & Thông tin chi tiết */}
       <div className="row mt-5 details-bottom">
         <div className="col-md-7">
           <h4>Mô tả sách</h4>
@@ -144,16 +143,12 @@ const DetailsBook = () => {
                 <td>{book.Title}</td>
               </tr>
               <tr>
-                <th>Giá</th>
-                <td>{(book.Price * 1000).toLocaleString("vi-VN")}đ</td>
+                <th>Giá thuê</th>
+                <td>{book.Price.toLocaleString("vi-VN")}đ/ngày</td>
               </tr>
               <tr>
-                <th>Số lượng còn</th>
-                <td>{book.Quantity}</td>
-              </tr>
-              <tr>
-                <th>Khuyến mãi</th>
-                <td>{book.PromotionName || "Không có"}</td>
+                <th>Tiền cọc</th>
+                <td>50.000đ</td>
               </tr>
             </tbody>
           </table>
@@ -163,4 +158,4 @@ const DetailsBook = () => {
   );
 };
 
-export default DetailsBook;
+export default RentBookDetails;

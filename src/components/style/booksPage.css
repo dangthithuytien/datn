@@ -37,6 +37,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Các thuộc tính mới/sửa đổi */
+ /* height: 350px; /* Đặt chiều cao cố định cho mỗi card sách */
+  justify-content: space-between; /* Đảm bảo nội dung được phân bổ đều trong card */
 }
 
 .book-card:hover {
@@ -57,6 +60,13 @@
   margin-top: 8px;
   margin-bottom: 6px;
   text-align: center;
+  /* Các thuộc tính mới/sửa đổi */
+  height: 40px; /* Đặt chiều cao cố định cho tiêu đề để chứa 2 dòng */
+  overflow: hidden; /* Ẩn phần văn bản tràn */
+  text-overflow: ellipsis; /* Hiển thị dấu "..." cho phần văn bản bị cắt */
+  display: -webkit-box; /* Bật flexbox cũ của Webkit */
+  -webkit-line-clamp: 2; /* Giới hạn tiêu đề chỉ hiển thị 2 dòng */
+  -webkit-box-orient: vertical; /* Đặt hướng của flexbox là chiều dọc */
 }
 
 .book-price {
@@ -105,14 +115,18 @@
   background-color: #a6afa6;
 }
 
-.filter-buttons {
+/* Đổi tên class filter-buttons thành book-filters */
+.book-filters {
   display: flex;
   gap: 8px;
   margin: 10px 0;
   justify-content: center;
+  padding: 10px;
+  border-radius: 6px;
 }
 
-.filter-btn {
+/* Đổi tên class filter-btn thành filter-button */
+.filter-button {
   background-color: transparent;
   border: 1.5px solid #71e9b9;
   color: #043f2d;
@@ -123,21 +137,17 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.filter-btn:hover {
+.filter-button:hover {
   background-color: #0a5321;
   color: white;
 }
 
-.filter-btn.active {
+.filter-button.active {
   background-color: #0056b3;
   color: white;
   border-color: #0056b3;
 }
-.filter-buttons {
 
-  padding: 10px;
-  border-radius: 6px;
-}
 .heart-icon {
   position: absolute;
   top: 10px;
@@ -151,4 +161,45 @@
 .heart-icon:hover {
   color: #dc3545;
   transform: scale(1.2);
+}
+
+.heart-icon.active {
+  color: #dc3545; /* Màu đỏ khi sách đã được yêu thích */
+}
+
+.book-size {
+  font-size: 13px;
+  color: #555;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Thêm CSS cho filter dropdown */
+.filter-dropdown {
+  position: absolute;
+  top: 100%; /* Đặt dropdown ngay dưới nút */
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  z-index: 100; /* Đảm bảo dropdown hiển thị trên các phần tử khác */
+  min-width: 150px;
+  padding: 5px 0;
+}
+
+.filter-dropdown .filter-option {
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.filter-dropdown .filter-option:hover {
+  background-color: #f0f0f0;
+}
+
+.filter-dropdown .filter-option.active {
+  background-color: #007bff;
+  color: white;
 }

@@ -39,7 +39,10 @@ const CartBuy = () => {
       item.id === id
         ? {
             ...item,
-            quantity: type === "increase" ? item.quantity + 1 : Math.max(1, item.quantity - 1),
+            quantity:
+              type === "increase"
+                ? item.quantity + 1
+                : Math.max(1, item.quantity - 1),
           }
         : item
     );
@@ -57,14 +60,20 @@ const CartBuy = () => {
   const calculateSelectedTotal = () => {
     return cartItems
       .filter((item) => selectedItems.includes(item.id))
-      .reduce((total, item) => total + item.price * item.quantity, 0);
+      .reduce(
+        (total, item) =>
+          total + ((item.price ?? 0) * (item.quantity ?? 1)),
+        0
+      );
   };
 
   const applyDiscount = () => {
     if (discountCode.toUpperCase() === "SALE10") {
       const discountValue = calculateSelectedTotal() * 0.1;
       setDiscountAmount(discountValue);
-      alert(`Áp dụng mã giảm giá thành công: Giảm ${discountValue.toLocaleString()}đ`);
+      alert(
+        `Áp dụng mã giảm giá thành công: Giảm ${discountValue.toLocaleString()}đ`
+      );
     } else {
       setDiscountAmount(0);
       alert("Mã giảm giá không hợp lệ");
@@ -77,8 +86,11 @@ const CartBuy = () => {
       return;
     }
 
-    const selectedProducts = cartItems.filter((item) => selectedItems.includes(item.id));
-    const totalAmount = calculateSelectedTotal() - discountAmount + shippingFee;
+    const selectedProducts = cartItems.filter((item) =>
+      selectedItems.includes(item.id)
+    );
+    const totalAmount =
+      calculateSelectedTotal() - discountAmount + shippingFee;
 
     localStorage.setItem("checkoutItems", JSON.stringify(selectedProducts));
     localStorage.setItem("checkoutDiscount", JSON.stringify(discountAmount));
@@ -127,7 +139,7 @@ const CartBuy = () => {
                     <img src={item.image} alt={item.title} width="60" />
                   </td>
                   <td>{item.title}</td>
-                  <td>{item.price.toLocaleString()}đ</td>
+                  <td>{(item.price ?? 0).toLocaleString()}đ</td>
                   <td>
                     <div className="d-flex align-items-center gap-2 justify-content-center">
                       <button
@@ -136,7 +148,7 @@ const CartBuy = () => {
                       >
                         -
                       </button>
-                      <span>{item.quantity}</span>
+                      <span>{item.quantity ?? 1}</span>
                       <button
                         className="btn btn-sm btn-outline-secondary"
                         onClick={() => updateQuantity(item.id, "increase")}
@@ -145,13 +157,19 @@ const CartBuy = () => {
                       </button>
                     </div>
                   </td>
-                  <td>{(item.price * item.quantity).toLocaleString()}đ</td>
+                  <td>
+                    {((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString()}đ
+                  </td>
                   <td>
                     <div className="d-flex gap-2 justify-content-center">
                       <button
                         className="btn btn-outline-success btn-sm"
                         title="Xem chi tiết"
-                        onClick={() => navigate(`/book/${item.id}`, { state: { book: item } })}
+                        onClick={() =>
+                          navigate(`/book/${item.id}`, {
+                            state: { book: item },
+                          })
+                        }
                       >
                         <FaSearch style={{ color: "#2e7d32" }} />
                       </button>
