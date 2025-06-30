@@ -1,39 +1,72 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaFilter, FaAngleDown, FaHeart } from "react-icons/fa";
-import { getAllRentBooks } from "../components/Service/rentBookService";
-import "../components/style/rentbook.css";
+import {
+  getAllRentBooks,
+  getAllRentBookItems,
+} from "../components/Service/rentBookService";
+import "../components/style/rentbook.css"; // Đảm bảo CSS của bạn vẫn ổn
 
 const baseURL = "https://localhost:7003";
 
 const RentBooksPage = () => {
-  const [books, setBooks] = useState([]);
+  const [displayItems, setDisplayItems] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [sortBy, setSortBy] = useState("");
 
   useEffect(() => {
-    const fetchBooks = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getAllRentBooks();
-        setBooks(data);
+        const [booksData, itemsData] = await Promise.all([
+          getAllRentBooks(),
+          getAllRentBookItems(),
+        ]);
+
+        const booksMap = booksData.reduce((acc, book) => {
+          acc[book.RentBookId] = book;
+          return acc;
+        }, {});
+
+        const flattenedItems = itemsData.map((item) => {
+          const parentBook = booksMap[item.RentBookId];
+          const price = parentBook ? parentBook.Price : 0;
+
+          return {
+            ...item,
+            Title: parentBook ? parentBook.Title : "Unknown Title",
+            ImageUrl: parentBook ? parentBook.ImageUrl : "",
+            Price: price,
+            id: item.RentBookItemId,
+          };
+        });
+
+        setDisplayItems(flattenedItems);
       } catch (error) {
-        console.error("Lỗi khi tải sách thuê:", error);
+        console.error("Lỗi khi tải dữ liệu:", error);
       }
     };
 
-    fetchBooks();
+    fetchData();
   }, []);
 
-  const sortedBooks = [...books].sort((a, b) => {
+  const sortedItems = [...displayItems].sort((a, b) => {
     if (sortBy === "name") return a.Title.localeCompare(b.Title);
-    if (sortBy === "price") return a.Price - b.Price;
+    if (sortBy === "price") return (a.Price || 0) - (b.Price || 0);
     return 0;
   });
 
-  const handleAddToRentCart = (book) => {
+  // ĐÃ SỬA HÀM formatPrice: Chỉ dùng toLocaleString
+  const formatPrice = (price) => {
+    if (typeof price !== 'number' || isNaN(price)) {
+        return "N/A đ";
+    }
+    return `${price.toLocaleString("vi-VN")} đ`;
+  };
+
+  const handleAddToRentCart = (item) => {
     const existingCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-    if (existingCart.find((item) => item.id === (book.id || book.RentBookId))) {
-      alert("Sách đã có trong giỏ thuê.");
+    if (existingCart.find((cartItem) => cartItem.id === item.id)) {
+      alert("Mục sách này đã có trong giỏ thuê.");
       return;
     }
 
@@ -42,34 +75,37 @@ const RentBooksPage = () => {
     returnDate.setDate(today.getDate() + 3);
 
     const rentItem = {
-      id: book.id || book.RentBookId,
-      title: book.Title,
-      rentPrice: book.Price,
-      image: `${baseURL}${book.ImageUrl}`,
+      id: item.id,
+      title: item.Title,
+      rentPrice: item.Price,
+      image: `${baseURL}${item.ImageUrl}`,
       rentDate: today.toISOString().split("T")[0],
       returnDate: returnDate.toISOString().split("T")[0],
       quantity: 1,
-      deposit: 50000,
+      status: item.status,
+      condition: item.Condition,
     };
 
     localStorage.setItem("rentCart", JSON.stringify([...existingCart, rentItem]));
     alert("✅ Đã thêm vào giỏ thuê!");
   };
 
-  const handleAddToFavorites = (book) => {
+  const handleAddToFavorites = (item) => {
     const favorites = JSON.parse(localStorage.getItem("favoriteRentBooks")) || [];
-    const isExist = favorites.some((item) => item.id === (book.id || book.RentBookId));
+    const isExist = favorites.some((favItem) => favItem.id === item.id);
     if (!isExist) {
       favorites.push({
-        id: book.id || book.RentBookId,
-        title: book.Title,
-        rentPrice: book.Price,
-        image: `${baseURL}${book.ImageUrl}`,
+        id: item.id,
+        title: item.Title,
+        rentPrice: item.Price,
+        image: `${baseURL}${item.ImageUrl}`,
+        status: item.status,
+        condition: item.Condition,
       });
       localStorage.setItem("favoriteRentBooks", JSON.stringify(favorites));
       alert("❤️ Đã thêm vào yêu thích!");
     } else {
-      alert("Sách đã có trong danh sách yêu thích.");
+      alert("Mục sách này đã có trong danh sách yêu thích.");
     }
   };
 
@@ -77,19 +113,39 @@ const RentBooksPage = () => {
     <div className="container mt-4">
       <h4 className="d-flex align-items-center mb-4">
         <span>Danh mục Sách thuê</span>
-        <Link to="/rent-books/all" className="btn btn-link ms-2" style={{ textDecoration: "none", fontSize: "18px", color: "#007bff" }}>
+        <Link
+          to="/rent-books/all"
+          className="btn btn-link ms-2"
+          style={{ textDecoration: "none", fontSize: "18px", color: "#007bff" }}
+        >
           <FaAngleDown />
         </Link>
         <div className="ms-auto position-relative">
-          <button className="btn btn-light filter-icon-btn" onClick={() => setShowFilter(!showFilter)} title="Lọc sách">
+          <button
+            className="btn btn-light filter-icon-btn"
+            onClick={() => setShowFilter(!showFilter)}
+            title="Lọc sách"
+          >
             <FaFilter />
           </button>
           {showFilter && (
             <div className="filter-dropdown shadow-sm">
-              <div className={`filter-option ${sortBy === "name" ? "active" : ""}`} onClick={() => { setSortBy("name"); setShowFilter(false); }}>
+              <div
+                className={`filter-option ${sortBy === "name" ? "active" : ""}`}
+                onClick={() => {
+                  setSortBy("name");
+                  setShowFilter(false);
+                }}
+              >
                 Lọc theo Tên
               </div>
-              <div className={`filter-option ${sortBy === "price" ? "active" : ""}`} onClick={() => { setSortBy("price"); setShowFilter(false); }}>
+              <div
+                className={`filter-option ${sortBy === "price" ? "active" : ""}`}
+                onClick={() => {
+                  setSortBy("price");
+                  setShowFilter(false);
+                }}
+              >
                 Lọc theo Giá
               </div>
             </div>
@@ -98,21 +154,24 @@ const RentBooksPage = () => {
       </h4>
 
       <div className="d-flex flex-wrap justify-content-between">
-        {sortedBooks.slice(0, 10).map((book, index) => (
-          <div key={index} style={{ width: "19%", position: "relative" }} className="mb-4">
+        {sortedItems.slice(0, 10).map((item) => (
+          <div key={item.id} style={{ width: "19%", position: "relative" }} className="mb-4">
             <div className="book-card position-relative">
-              <FaHeart className="heart-icon" onClick={() => handleAddToFavorites(book)} title="Thêm vào yêu thích" />
-              <Link to={`/rent/${book.RentBookId}`} style={{ textDecoration: "none", color: "inherit" }}>
+              <FaHeart className="heart-icon" onClick={() => handleAddToFavorites(item)} title="Thêm vào yêu thích" />
+              <Link to={`/rent-item-details/${item.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                 <div className="image-container">
-                  <img src={`${baseURL}${book.ImageUrl}`} alt={book.Title} className="book-image" />
+                  <img src={`${baseURL}${item.ImageUrl}`} alt={item.Title} className="book-image" />
                 </div>
-                <h5 className="book-title">{book.Title}</h5>
+                <h5 className="book-title">{item.Title}</h5>
               </Link>
               <p className="book-price">
-                Thuê: {(book.Price || 0).toLocaleString("vi-VN")}đ/ngày
+                Thuê: {formatPrice(item.Price)}/ngày
               </p>
               <div className="button-group">
-                <button className="btn btn-outline-primary btn-sm" onClick={() => handleAddToRentCart(book)}>
+                <button
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => handleAddToRentCart(item)}
+                >
                   Giỏ thuê
                 </button>
                 <Link to="/rent-cart" className="btn btn-success btn-sm">

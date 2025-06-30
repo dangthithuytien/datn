@@ -22,10 +22,7 @@ import OrderRentDetail from "../pages/OrderRentDetail";
 import OrderSellDetail from "../pages/OrderSellDetail";
 import FavoriteBooks from "../pages/FavoriteBooks";
 import AllRentBooks from "../pages/AllRentBooks";
-import RentBookDetails from "../pages/RentBookDetails";
-
-
-
+import RentBookDetails from "../pages/RentBookDetails"; // Đảm bảo đã import
 
 
 export const appRoutes = [
@@ -35,9 +32,8 @@ export const appRoutes = [
   { path: "/user-profile", element: <UserProfile /> },
   { path: "/forgot-password", element: <ForgetPass /> },
 
-  // Chi tiết sách (bán và thuê)
+  // Chi tiết sách (bán) - BookId
   { path: "/book/:id", element: <DetailsBook /> },
-
 
   // Giỏ hàng sách mua
   { path: "/cart", element: <CartBuy /> },
@@ -50,7 +46,6 @@ export const appRoutes = [
   { path: "/orders-rent/:id", element: <OrderRentDetail /> },
   { path: "/orders-sell/:id", element: <OrderSellDetail /> },
 
-
   // Danh mục sách bán
   { path: "/books", element: <AllBook /> },
   { path: "/books-page", element: <BooksPage /> },
@@ -58,7 +53,7 @@ export const appRoutes = [
 
   // Khác
   { path: "/sale", element: <Sale /> },
-  { path: "/rent-books", element: <RentBooksPage /> },
+  { path: "/rent-books", element: <RentBooksPage /> }, // Trang danh sách các RentBookItem
   { path: "/rent-cart", element: <RentCart /> },
 
   // Trang giới thiệu
@@ -66,8 +61,15 @@ export const appRoutes = [
   { path: "/news", element: <News /> },
   { path: "/contact", element: <Contact /> },
 
-
   { path: "/rent-books/all", element: <AllRentBooks /> },
-  { path: "/rent/:id", element: <RentBookDetails /> },
 
+  // Cập nhật hoặc thêm route cho trang chi tiết RentBookItem
+  // Dòng này cần phải khớp với `Link to="/rent-item-details/${item.id}"` trong RentBooksPage.js
+  { path: "/rent-item-details/:id", element: <RentBookDetails /> },
+
+  // Bạn có thể giữ hoặc xóa dòng này tùy thuộc vào việc bạn có cần một trang chi tiết RentBook (sách gốc) không
+  // Nếu bạn đã chuyển sang hiển thị chi tiết từng RentBookItem, thì có thể xóa hoặc đổi tên route này
+  // để tránh nhầm lẫn hoặc trùng lặp chức năng.
+  // Ví dụ: `{ path: "/rent-book-general/:id", element: <RentBookDetails /> }`
+  { path: "/rent/:id", element: <RentBookDetails /> }, // Route này có thể gây nhầm lẫn nếu bạn đã chuyển hoàn toàn sang /rent-item-details/:id
 ];
