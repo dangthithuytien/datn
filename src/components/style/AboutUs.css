@@ -1,70 +1,336 @@
-/* Container chính */
+/* General Styling */
 .about-container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 0 20px;
-  font-family: "Segoe UI", sans-serif;
-  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
+  color: #333;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fcfcfc;
 }
 
-/* Hero section */
+/* Hero Section */
 .about-hero {
   text-align: center;
-  margin-bottom: 40px;
+  padding: 60px 20px;
+  background-color: #eaf7ed;
+  margin-bottom: 50px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
 }
 
 .about-hero h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
+  font-size: 3.2em;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 700;
 }
 
 .about-hero .highlight {
-  color: #2e7d32;
+  color: #27ae60;
+  position: relative;
+}
+
+.about-hero .highlight::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 3px;
+  background-color: #27ae60;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+
+.about-hero .highlight:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }
 
 .about-hero p {
-  font-size: 1.1rem;
+  font-size: 1.3em;
   color: #555;
+  font-style: italic;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-/* Nội dung chính */
-.about-content .about-section {
-  margin-bottom: 30px;
-}
-
-.about-content h2 {
-  font-size: 1.6rem;
-  color: #1b5e20;
-  margin-bottom: 12px;
-  border-left: 4px solid #66bb6a;
-  padding-left: 10px;
-}
-
-.about-content p,
-.about-content ul {
-  margin-left: 20px;
-}
-
-.about-content ul li {
-  margin-bottom: 8px;
-}
-
-/* Footer liên hệ */
-.about-footer {
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 1px solid #ddd;
+/* Main Image Section */
+.main-image-section {
   text-align: center;
+  margin-bottom: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-about-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.5s ease;
+}
+
+.main-image-section:hover .main-about-image {
+  transform: scale(1.03);
+}
+
+.main-image-description {
+  margin-top: 30px;
+  font-size: 1.2em;
+  color: #666;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  font-style: italic;
+  padding: 0 15px;
+}
+
+/* About Content - Sections with image and text */
+.about-content {
+  margin-bottom: 80px;
+}
+
+.about-section {
+  display: flex;
+  align-items: center;
+  padding: 60px 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 40px;
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease;
+  border-radius: 10px;
+}
+
+.about-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.about-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.content-text {
+  flex: 1;
+  padding: 0 40px;
+}
+
+.content-text h2 {
+  font-size: 2.5em;
+  color: #2980b9;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.content-text p,
+.content-text ul {
+  font-size: 1.15em;
+  color: #444;
+  margin-bottom: 15px;
+  line-height: 1.8;
+}
+
+.content-text ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.content-text ul li {
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 30px;
+  font-weight: 500;
+}
+
+.content-text ul li::before {
+  content: "✓";
+  color: #27ae60;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.content-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40px;
+}
+
+.content-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease-in-out;
+}
+
+.content-image img:hover {
+  transform: scale(1.05);
+}
+
+/* Layout for all sections: text on left, image on right */
+.content-left-image-right {
+  flex-direction: row; /* Đảm bảo văn bản trái, ảnh phải */
+}
+
+/* Remove or comment out the content-right-image-left if you don't need it */
+/* .content-right-image-left {
+  flex-direction: row-reverse;
+} */
+
+
+/* Footer Section */
+.about-footer {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #eaf0f6;
+  border-radius: 12px;
+  margin-top: 50px;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .about-footer h2 {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
-  color: #2e7d32;
+  font-size: 2.5em;
+  color: #2c3e50;
+  margin-bottom: 25px;
+  font-weight: 700;
 }
 
 .about-footer p {
-  font-size: 1rem;
-  margin-bottom: 5px;
+  font-size: 1.15em;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.contact-info span {
+  display: block;
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.contact-info a {
+  color: #2980b9;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact-info a:hover {
+  color: #1a527a;
+  text-decoration: underline;
+}
+
+.social-links {
+  margin-top: 30px;
+}
+
+.social-links a {
+  color: #2980b9;
+  font-size: 1.8em;
+  margin: 0 15px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-links a:hover {
+  color: #27ae60;
+  transform: translateY(-3px);
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-out forwards;
+  opacity: 0;
+}
+
+.main-image-section.fade-in { animation-delay: 0.2s; }
+.about-section.fade-in:nth-child(1) { animation-delay: 0.4s; }
+.about-section.fade-in:nth-child(2) { animation-delay: 0.6s; }
+.about-section.fade-in:nth-child(3) { animation-delay: 0.8s; }
+.about-section.fade-in:nth-child(4) { animation-delay: 1.0s; }
+.about-footer.fade-in { animation-delay: 1.2s; }
+
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .about-hero h1 {
+    font-size: 2.8em;
+  }
+  .about-section {
+    padding: 40px 0;
+  }
+  .content-text, .content-image {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-section {
+    flex-direction: column; /* Vẫn xếp chồng ảnh và văn bản trên màn hình nhỏ */
+    text-align: center;
+  }
+
+  .content-text,
+  .content-image {
+    padding: 20px 0;
+  }
+
+  .content-text ul {
+    text-align: left;
+    padding-left: 40px;
+  }
+
+  .main-image-description {
+    padding: 0 10px;
+  }
+
+  /* Đảm bảo ảnh luôn ở trên văn bản khi xếp chồng trên mobile */
+  /* Do chúng ta chỉ dùng content-left-image-right, nên mặc định ảnh sẽ ở dưới văn bản khi flex-direction: column. */
+  /* Nếu bạn muốn ảnh trên văn bản trên mobile, hãy thêm dòng này: */
+  .about-section .content-image {
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero h1 {
+    font-size: 2.2em;
+  }
+
+  .about-hero p {
+    font-size: 1.1em;
+  }
+
+  .content-text h2 {
+    font-size: 2em;
+  }
+
+  .content-text p,
+  .content-text ul {
+    font-size: 1em;
+  }
+
+  .social-links a {
+    font-size: 1.5em;
+    margin: 0 10px;
+  }
 }

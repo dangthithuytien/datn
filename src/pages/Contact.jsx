@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { FaFacebookMessenger, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import {
+  FaFacebookMessenger,
+  FaPhoneAlt,
+  FaEnvelope,
+  FaComments,
+} from "react-icons/fa";
 import "../components/style/contact.css";
 
 const Contact = () => {
@@ -99,19 +104,61 @@ const Contact = () => {
         <div className="col-md-5">
           <div className="contact-info p-3">
             <h5>Thông tin liên hệ nhanh</h5>
-            <p><FaPhoneAlt className="me-2" /> 0123 456 789</p>
-            <p><FaEnvelope className="me-2" /> lienhe@cuahangsach.vn</p>
+
+            <p>
+              <FaPhoneAlt className="me-2" />
+              0123 456 789
+            </p>
+
+            <p>
+              <FaEnvelope className="me-2" />
+              <a href="hexaclovershop@gmail.com">
+                lienhe@cuahangsach.vn
+              </a>
+            </p>
+
+            <p>
+              <FaComments className="me-2" />
+              <a
+                href="https://zalo.me/0987654321"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Chat qua Zalo
+              </a>
+            </p>
+
             <p>
               <FaFacebookMessenger className="me-2" />
-              <a href="https://m.me/cuahangsach" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://m.me/61577203287082"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Nhắn tin qua Messenger
               </a>
             </p>
-            {/* Chat box demo */}
+
+            {/* Chat box nhấn nút */}
             <div className="chat-box-demo mt-4">
               <strong>Hỗ trợ trực tuyến</strong>
-              <p>Bạn cần hỗ trợ? Chat ngay với chúng tôi!</p>
-              <button className="btn btn-outline-success btn-sm">Bắt đầu chat</button>
+              <p>Bạn cần hỗ trợ? Chat trực tiếp với nhân viên ngay!</p>
+              <a
+                href="https://zalo.me/0987654321"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline-success btn-sm me-2"
+              >
+                Chat Zalo
+              </a>
+              <a
+                href="https://m.me/61577203287082"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline-primary btn-sm"
+              >
+                Chat Messenger
+              </a>
             </div>
           </div>
         </div>

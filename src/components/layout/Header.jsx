@@ -151,7 +151,6 @@ const Header = () => {
           <nav className="bottom-nav-grid">
             <a href="/" className="bottom-nav-link"><FaBookOpen /><span>Trang chủ</span></a>
             <a href="/news" className="bottom-nav-link"><FaNewspaper /><span>Tin Tức</span></a>
-            <a href="/viewed-products" className="bottom-nav-link"><FaBox /><span>Đã Xem</span></a>
             <a href="/about" className="bottom-nav-link"><FaTags /><span>Giới Thiệu</span></a>
             <a href="/contact" className="bottom-nav-link"><FaBlog /><span>Blog</span></a>
           </nav>
