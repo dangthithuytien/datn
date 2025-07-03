@@ -1,14 +1,38 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import "../components/style/Login.css"
+import { Link, useNavigate } from "react-router-dom";
+import apiClient from "../components/Service/AxiosConfig"; // <-- Đường dẫn đúng tới Axios config
+import { tokenUtils } from "../components/Cookie/TokenUtils"; // <-- Đường dẫn đúng tới tokenUtils
+import "../components/style/Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý đăng nhập ở đây
+    try {
+      console.log("Login with:", email, password);
+      const res = await apiClient.post("/Auth/login", {
+        Email: email, // phải viết hoa nếu backend yêu cầu PascalCase
+        Password: password,
+      });
+
+      console.log("Login response:", res);
+
+      if (res.data?.IsSuccess && res.data?.Token) {
+        tokenUtils.setAccessToken(res.data.Token);
+        document.cookie = `refreshToken=${res.data.RefreshToken}; path=/; secure; samesite=strict`;
+      
+        alert("✅ Đăng nhập thành công!");
+        navigate("/");
+      } else {
+        alert("❌ Sai thông tin đăng nhập!");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("❌ Lỗi hệ thống hoặc mạng!");
+    }
   };
 
   return (
@@ -55,7 +79,7 @@ export default function Login() {
       </form>
       <div className="social-login my-4">
         <div className="divider d-flex align-items-center my-3">
-          <hr className="w-100" />
+<hr className="w-100" />
           <span className="px-3 text-muted">HOẶC</span>
           <hr className="w-100" />
         </div>

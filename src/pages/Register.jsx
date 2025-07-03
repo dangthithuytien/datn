@@ -1,125 +1,98 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import "../components/style/Register.css"; // Dùng chung CSS với Login
+import React, { useState } from 'react';
+import authService from '../components/Service/authService';
+import { useNavigate } from "react-router-dom";
 
-export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
-  const [phonenumber, setPhone] = useState("");
-  const handleSubmit = (e) => {
+
+const RegisterPage = () => {
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [dob, setDob] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [address, setAddress] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý đăng ký ở đây
+    setMessage('');
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError("Mật khẩu và xác nhận không khớp");
+      return;
+    }
+
+    const payload = {
+      UserName: userName,
+      Email: email,
+      Password: password,
+      ConfirmPassword: confirmPassword,
+      Address: address,
+      DateOfBirth: new Date(dob).toISOString()
+    };
+
+    try {
+      const res = await authService.register(payload);
+      setMessage(res.message || 'Đăng ký thành công!');
+      navigate('/confirm-email', { state: { email } });
+    } catch (err) {
+      console.error("🔥 Lỗi từ server:", err?.response?.data)
+      const msg = err?.message || err?.response?.data?.message || 'Đăng ký thất bại';
+      setError(msg);
+    }
   };
 
+
   return (
-    <div className="login-container container-md bg-white rounded-3 shadow-sm p-4 p-md-5">
-      <h1 className="text-center mb-3">ĐĂNG KÝ</h1>
-      <p className="login-subtitle text-center text-muted mb-4">
-        Vui lòng nhập thông tin đăng
-      </p>
+    <div className="container mt-5">
+      <form onSubmit={handleSubmit} className="p-4 shadow rounded bg-white" style={{ maxWidth: 500, margin: '0 auto' }}>
+        <h4 className="mb-4">Đăng ký tài khoản</h4>
 
-      <form onSubmit={handleSubmit} className="login-form">
-        {/* Phần Name */}
-        <div className="form-floating mb-3">
-          <input
-            type="Text"
-            className="form-control"
-            id="registerName"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-          <label htmlFor="registerEmail"><i className="bi bi-person me-2"></i>Họ và Tên</label>
+        <div className="mb-3">
+          <label className="form-label">Tên đăng nhập</label>
+          <input type="text" name="userName" className="form-control" value={userName} onChange={(e) => setUserName(e.target.value)} required />
         </div>
 
-        {/* Phần Email */}
-        <div className="form-floating mb-3">
-          <input
-            type="email"
-            className="form-control"
-            id="registerEmail"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <label htmlFor="registerEmail"><i className="bi bi-envelope me-2"></i>Email</label>
+        <div className="mb-3">
+          <label className="form-label">Email</label>
+          <input type="email" name="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
 
-        {/* Phần SDT */}
-        <div className="form-floating mb-3">
-          <input
-            type="tel"
-            className="form-control"
-            id="registerphonenumber"
-            placeholder="Số điện thoại"
-            value={phonenumber}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
-          <label htmlFor="registerEmail"><i class="bi bi-telephone me-2"></i>Số điện thoại</label>
+        <div className="mb-3">
+          <label className="form-label">Mật khẩu</label>
+          <input type="password" name="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
 
-        {/* Phần Mật khẩu */}
-        <div className="form-floating mb-3">
+        <div className="mb-3">
+          <label className="form-label">Xác nhận mật khẩu</label>
+          <input type="password" name="confirmPassword" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Địa chỉ</label>
           <input
-            type="password"
+            type="text"
+            name="address"
             className="form-control"
-            id="registerPassword"
-            placeholder="Mật khẩu"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             required
-          />
-          <label htmlFor="registerPassword"><i className="bi bi-lock me-2"></i>Mật khẩu</label>
+/>
         </div>
 
-        {/* Xác nhận Mật khẩu */}
-        <div className="form-floating mb-4">
-          <input
-            type="password"
-            className="form-control"
-            id="confirmPassword"
-            placeholder="Xác nhận mật khẩu"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          <label htmlFor="confirmPassword"><i className="bi bi-lock me-2"></i>Xác nhận mật khẩu</label>
+        <div className="mb-3">
+          <label className="form-label">Ngày sinh</label>
+          <input type="date" name="dateOfBirth" className="form-control" value={dob} onChange={(e) => setDob(e.target.value)} required />
         </div>
 
-        {/* Nút Đăng ký */}
-        <button type="submit" className="btn btn-success w-100 py-2">
-          <i className="bi bi-person-plus me-2"></i>
-          ĐĂNG KÝ
-        </button>
+        <button type="submit" className="btn btn-primary w-100">Đăng ký</button>
+
+        {message && <div className="alert alert-success mt-3">{message}</div>}
+        {error && <div className="alert alert-danger mt-3">{error}</div>}
       </form>
-
-      {/* Phần chuyển sang Đăng nhập */}
-      <div className="text-center mt-3">
-        <span className="text-muted">
-          Đã có tài khoản?{" "}
-          <Link to="/login" className="text-decoration-none fw-bold">
-            Đăng nhập ngay
-          </Link>
-        </span>
-      </div>
-      <div className="social-login my-4">
-        <div className="divider d-flex align-items-center my-3">
-          <hr className="w-100" />
-          <span className="px-3 text-muted">HOẶC</span>
-          <hr className="w-100" />
-        </div>
-        <button className="social-button google-button btn btn-outline-danger w-100 mb-2">
-          <i className="bi bi-google me-2"></i>ĐĂNG NHẬP GOOGLE
-        </button>
-        <button className="social-button facebook-button btn btn-outline-primary w-100">
-          <i className="bi bi-facebook me-2"></i>ĐĂNG NHẬP FACEBOOK
-        </button>
-      </div>
     </div>
   );
-}
+};
+
+export default RegisterPage;
