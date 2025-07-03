@@ -23,6 +23,8 @@ import OrderSellDetail from "../pages/OrderSellDetail";
 import FavoriteBooks from "../pages/FavoriteBooks";
 import AllRentBooks from "../pages/AllRentBooks";
 import RentBookDetails from "../pages/RentBookDetails"; // Đảm bảo đã import
+import ConfirmEmail from "../pages/ConfirmEmailPage";
+
 
 
 export const appRoutes = [
@@ -31,7 +33,7 @@ export const appRoutes = [
   { path: "/register", element: <Register /> },
   { path: "/user-profile", element: <UserProfile /> },
   { path: "/forgot-password", element: <ForgetPass /> },
-
+{ path: "/confirm-email", element: <ConfirmEmail /> },
   // Chi tiết sách (bán) - BookId
   { path: "/book/:id", element: <DetailsBook /> },
 

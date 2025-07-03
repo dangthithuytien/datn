@@ -59,7 +59,9 @@ const AllBook = () => {
 
   const handleAddToFavorites = (book) => {
     const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-    const isExist = favorites.some((item) => item.SaleBookId === book.SaleBookId);
+    const isExist = favorites.some(
+      (item) => item.SaleBookId === book.SaleBookId
+    );
     if (!isExist) {
       favorites.push(book);
       localStorage.setItem("favoriteBooks", JSON.stringify(favorites));
@@ -82,7 +84,9 @@ const AllBook = () => {
   if (sortBy === "name") {
     sortedBooks.sort((a, b) => a.Title.localeCompare(b.Title));
   } else if (sortBy === "price") {
-    sortedBooks.sort((a, b) => (a.FinalPrice || a.Price) - (b.FinalPrice || b.Price));
+    sortedBooks.sort(
+      (a, b) => (a.FinalPrice || a.Price) - (b.FinalPrice || b.Price)
+    );
   }
 
   const displayedBooks = sortedBooks.slice(0, 8);
@@ -143,7 +147,9 @@ const AllBook = () => {
               {showFilter && (
                 <div className="filter-dropdown shadow-sm">
                   <div
-                    className={`filter-option ${sortBy === "name" ? "active" : ""}`}
+                    className={`filter-option ${
+                      sortBy === "name" ? "active" : ""
+                    }`}
                     onClick={() => {
                       setSortBy("name");
                       setShowFilter(false);
@@ -152,7 +158,9 @@ const AllBook = () => {
                     Lọc theo Tên
                   </div>
                   <div
-                    className={`filter-option ${sortBy === "price" ? "active" : ""}`}
+                    className={`filter-option ${
+                      sortBy === "price" ? "active" : ""
+                    }`}
                     onClick={() => {
                       setSortBy("price");
                       setShowFilter(false);
@@ -169,45 +177,54 @@ const AllBook = () => {
             <p>Đang tải sách...</p>
           ) : (
             <div className="row">
-              {displayedBooks.map((book) => (
-                <div key={book.SaleBookId} className="col-6 col-md-3 mb-4">
-                  <div className="book-card position-relative">
-                    <FaHeart
-                      className={`heart-icon ${
-                        isFavorite(book.SaleBookId) ? "active" : ""
-                      }`}
-                      onClick={() => handleAddToFavorites(book)}
-                      title="Thêm vào yêu thích"
-                    />
-                    <Link to={`/book/${book.SaleBookId}`} state={{ book }}>
-                      <div className="image-container">
-                        <img
-                          src={`${baseURL}${book.ImageUrl}`}
-                          alt={book.Title}
-                          className="book-image"
-                        />
-                      </div>
-                      <h5 className="book-title">{book.Title}</h5>
-                    </Link>
-                    <p className="book-price">
-                     {(book.Price * 1000).toLocaleString("vi-VN")}đ
-
-                    </p>
-                    <p style={{ fontSize: "13px", marginBottom: "8px", color: "#555" }}>
-                      Kích thước: {book.PackagingSize}
-                    </p>
-                    <div className="button-group">
-                      <button
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => handleAddToCart(book)}
+              {displayedBooks
+                .filter((book) => book.IsHidden === true)
+                .map((book) => (
+                  <div key={book.SaleBookId} className="col-6 col-md-3 mb-4">
+                    <div className="book-card position-relative">
+                      <FaHeart
+                        className={`heart-icon ${
+                          isFavorite(book.SaleBookId) ? "active" : ""
+                        }`}
+                        onClick={() => handleAddToFavorites(book)}
+                        title="Thêm vào yêu thích"
+                      />
+                      <Link to={`/book/${book.SaleBookId}`} state={{ book }}>
+                        <div className="image-container">
+                          <img
+                            src={`${baseURL}${book.ImageUrl}`}
+                            alt={book.Title}
+                            className="book-image"
+                          />
+                        </div>
+                        <h5 className="book-title">{book.Title}</h5>
+                      </Link>
+                      <p className="book-price">
+                        {(book.Price * 1000).toLocaleString("vi-VN")}đ
+                      </p>
+                      <p
+                        style={{
+                          fontSize: "13px",
+                          marginBottom: "8px",
+                          color: "#555",
+                        }}
                       >
-                        Giỏ hàng
-                      </button>
-                      <button className="btn btn-primary btn-sm">Mua ngay</button>
+                        Kích thước: {book.PackagingSize}
+                      </p>
+                      <div className="button-group">
+                        <button
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() => handleAddToCart(book)}
+                        >
+                          Giỏ hàng
+                        </button>
+                        <button className="btn btn-primary btn-sm">
+                          Mua ngay
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>

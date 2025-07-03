@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../style/css.css";
 import ExchangePointsModal from "../../pages/ExchangePointsModal";
 import { getAllCategories } from "../Service/categoriesService";
+import { tokenUtils } from "../Cookie/cookieUtils";
 
 const Header = () => {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
@@ -16,6 +17,7 @@ const Header = () => {
   const [orderDropdownOpen, setOrderDropdownOpen] = useState(false);
   const [isExchangeModalOpen, setIsExchangeModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -27,7 +29,8 @@ const Header = () => {
       }
     };
     fetchCategories();
-  }, []);
+    setIsLoggedIn(!!tokenUtils.getAccessToken());
+  }, [accountDropdownOpen]);
 
   const handleMouseEnter = (setOpen) => setOpen(true);
   const handleMouseLeave = (setOpen) => setOpen(false);
@@ -63,7 +66,7 @@ const Header = () => {
               {categoryOpen && (
                 <div className="category-dropdown">
                   <div className="category-column">
-                    <h6>Danh sách danh mục</h6>
+<h6>Danh sách danh mục</h6>
                     <ul>
                       {categories.map((cat) => (
                         <li key={cat.CategoryId}>
@@ -106,39 +109,62 @@ const Header = () => {
               onMouseLeave={() => handleMouseLeave(setAccountDropdownOpen)}
               style={{ cursor: "pointer" }}
             >
+
+
+              
               <FaUser />
               <div className="small-text">Tài khoản</div>
               {accountDropdownOpen && (
-                <ul className="dropdown-menu dropdown-menu-custom show p-0">
-                  <li><Link className="dropdown-item" to="/register">Đăng ký</Link></li>
-                  <li><Link className="dropdown-item" to="/login">Đăng nhập</Link></li>
-                  <li><Link className="dropdown-item" to="/user-profile">Thông tin cá nhân</Link></li>
-                  <li className="position-relative">
-                    <div className="dropdown-item d-flex justify-content-between align-items-center"
-                      onClick={() => setOrderDropdownOpen(!orderDropdownOpen)}>
-                      Đơn hàng của bạn <span>{orderDropdownOpen ? "▲" : "▼"}</span>
-                    </div>
-                    {orderDropdownOpen && (
-                      <ul className="dropdown-submenu list-unstyled m-0">
-                        <li><Link className="dropdown-item" to="/orders-all">Đơn hàng mua</Link></li>
-                        <li><Link className="dropdown-item" to="/orders-rent">Đơn hàng thuê</Link></li>
-                      </ul>
-                    )}
-                  </li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li>
-                    <button className="dropdown-item" onClick={() => {
-                      alert("Đăng xuất thành công!");
-                      setAccountDropdownOpen(false);
-                    }}>Đăng xuất</button>
-                  </li>
-                </ul>
+               <ul className="dropdown-menu dropdown-menu-custom show p-0">
+               {!isLoggedIn ? (
+                 <>
+                   <li><Link className="dropdown-item" to="/register">Đăng ký</Link></li>
+                   <li><Link className="dropdown-item" to="/login">Đăng nhập</Link></li>
+                 </>
+               ) : (
+                 <>
+                   <li><Link className="dropdown-item" to="/user-profile">Thông tin cá nhân</Link></li>
+                   <li className="position-relative">
+                     <div className="dropdown-item d-flex justify-content-between align-items-center"
+                       onClick={() => setOrderDropdownOpen(!orderDropdownOpen)}>
+                       Đơn hàng của bạn <span>{orderDropdownOpen ? "▲" : "▼"}</span>
+                     </div>
+                     {orderDropdownOpen && (
+                       <ul className="dropdown-submenu list-unstyled m-0">
+<li><Link className="dropdown-item" to="/orders-all">Đơn hàng mua</Link></li>
+                         <li><Link className="dropdown-item" to="/orders-rent">Đơn hàng thuê</Link></li>
+                       </ul>
+                     )}
+                   </li>
+                   <li><hr className="dropdown-divider" /></li>
+                   <li>
+                     <button
+                       className="dropdown-item"
+                       onClick={() => {
+                         tokenUtils.removeAccessToken();
+                         document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                         alert("Đăng xuất thành công!");
+                         setAccountDropdownOpen(false);
+                         window.location.href = "/"; // hoặc gọi navigate("/")
+                       }}
+                     >
+                       Đăng xuất
+                     </button>
+                   </li>
+                 </>
+               )}
+             </ul>
               )}
             </div>
 
             {/* === Yêu thích === */}
             <Link to="/favorite" className="icon-text text-center" style={{ textDecoration: "none", color: "inherit" }}>
               <FaHeart style={{ color: "white" }} />
+
+
+
+
+
               <div className="small-text">Yêu thích</div>
             </Link>
           </div>
