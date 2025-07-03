@@ -15,3 +15,7 @@ export const updateUserProfile = async (formData) => {
   });
   return response.data;
 };
+export const changePassword = async (data) => {
+  const response = await apiClient.post("/User/change-password", data);
+  return response.data;
+};

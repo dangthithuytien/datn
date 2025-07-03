@@ -2,7 +2,6 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import UserProfile from "../pages/UserProfile";
-import ForgetPass from "../pages/ForgetPass";
 import DetailsBook from "../pages/DetailsBook";
 import CartBuy from "../pages/CartBuy";
 import SaleAll from "../pages/SaleAll";
@@ -24,7 +23,7 @@ import FavoriteBooks from "../pages/FavoriteBooks";
 import AllRentBooks from "../pages/AllRentBooks";
 import RentBookDetails from "../pages/RentBookDetails"; 
 import ConfirmEmail from "../pages/ConfirmEmailPage";
-
+import ResetPass from '../pages/ResetPass';
 
 
 export const appRoutes = [
@@ -32,7 +31,7 @@ export const appRoutes = [
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/user-profile", element: <UserProfile /> },
-  { path: "/forgot-password", element: <ForgetPass /> },
+  { path:"/reset-password", element: <ResetPass /> },
 { path: "/confirm-email", element: <ConfirmEmail /> },
   // Chi tiết sách (bán) - BookId
   { path: "/book/:id", element: <DetailsBook /> },
@@ -74,4 +73,5 @@ export const appRoutes = [
   // để tránh nhầm lẫn hoặc trùng lặp chức năng.
   // Ví dụ: `{ path: "/rent-book-general/:id", element: <RentBookDetails /> }`
   { path: "/rent/:id", element: <RentBookDetails /> }, // Route này có thể gây nhầm lẫn nếu bạn đã chuyển hoàn toàn sang /rent-item-details/:id
+  
 ];

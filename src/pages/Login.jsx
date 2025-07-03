@@ -71,7 +71,7 @@ export default function Login() {
           <label htmlFor="passwordInput"><i className="bi bi-lock me-2"></i>Mật khẩu</label>
         </div>
         <div className="forgot-password-link">
-  <Link to="/forgot-password">Quên mật khẩu?</Link></div>
+  <Link to="/reset-password">Quên mật khẩu?</Link></div>
         <button type="submit" className="btn btn-success w-100 py-2">
           <i className="bi bi-box-arrow-in-right me-2"></i>
           ĐĂNG NHẬP
@@ -80,7 +80,7 @@ export default function Login() {
       <div className="social-login my-4">
         <div className="divider d-flex align-items-center my-3">
 <hr className="w-100" />
-          <span className="px-3 text-muted">HOẶC</span>
+<span className="px-3 text-muted">HOẶC</span>
           <hr className="w-100" />
         </div>
         <button className="social-button google-button btn btn-outline-danger w-100 mb-2">
