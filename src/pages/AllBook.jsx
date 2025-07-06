@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { getAllSaleBooks } from "../components/Service/saleBookService";
 import { getAllCategories } from "../components/Service/categoriesService";
 import "../components/style/allbook.css";
+import { addToCartSale } from "../components/Service/cartService";
 
 const AllBook = () => {
   const [allBooks, setAllBooks] = useState([]);
@@ -43,19 +44,15 @@ const AllBook = () => {
     setFavoriteIds(favorites.map((b) => b.SaleBookId));
   }, []);
 
-  const handleAddToCart = (book) => {
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const index = cart.findIndex((item) => item.SaleBookId === book.SaleBookId);
-
-    if (index !== -1) {
-      cart[index].quantity += 1;
-    } else {
-      cart.push({ ...book, quantity: 1 });
+  const handleAddToCart = async (book) => {
+    try {
+      await addToCartSale(book.SaleBookId, 1);
+      alert("Đã thêm vào giỏ hàng!");
+    } catch (error) {
+      console.error("Lỗi thêm vào giỏ hàng:", error);
+      alert("Không thể thêm vào giỏ hàng.");
     }
-
-    localStorage.setItem("cartBuy", JSON.stringify(cart));
-    alert("Đã thêm vào giỏ hàng!");
-  };
+  };;
 
   const handleAddToFavorites = (book) => {
     const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
@@ -212,7 +209,7 @@ const AllBook = () => {
                         Kích thước: {book.PackagingSize}
                       </p>
                       <div className="button-group">
-                        <button
+                      <button
                           className="btn btn-outline-primary btn-sm"
                           onClick={() => handleAddToCart(book)}
                         >

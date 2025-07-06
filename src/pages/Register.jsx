@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import authService from '../components/Service/authService';
 import { useNavigate } from "react-router-dom";
 
-
 const RegisterPage = () => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,13 +23,15 @@ const RegisterPage = () => {
       return;
     }
 
+    const formattedDOB = new Date(dob).toISOString().split("T")[0]; // "yyyy-MM-dd"
+
     const payload = {
       UserName: userName,
       Email: email,
       Password: password,
       ConfirmPassword: confirmPassword,
       Address: address,
-      DateOfBirth: new Date(dob).toISOString()
+      DateOfBirth: formattedDOB,
     };
 
     try {
@@ -38,12 +39,11 @@ const RegisterPage = () => {
       setMessage(res.message || 'Đăng ký thành công!');
       navigate('/confirm-email', { state: { email } });
     } catch (err) {
-      console.error("🔥 Lỗi từ server:", err?.response?.data)
-      const msg = err?.message || err?.response?.data?.message || 'Đăng ký thất bại';
+      console.error("🔥 Lỗi từ server:", err?.response?.data);
+      const msg = err?.response?.data?.message || 'Đăng ký thất bại';
       setError(msg);
     }
   };
-
 
   return (
     <div className="container mt-5">
@@ -69,16 +69,10 @@ const RegisterPage = () => {
           <label className="form-label">Xác nhận mật khẩu</label>
           <input type="password" name="confirmPassword" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Địa chỉ</label>
-          <input
-            type="text"
-            name="address"
-            className="form-control"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
-/>
+          <input type="text" name="address" className="form-control" value={address} onChange={(e) => setAddress(e.target.value)} required />
         </div>
 
         <div className="mb-3">

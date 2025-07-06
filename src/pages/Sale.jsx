@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { getPromotedBooks } from "../components/Service/saleBookService";
-import "../components/style/sale.css"; // giữ nếu có CSS chung
+import "../components/style/sale.css";
 
 const Sale = () => {
   const [books, setBooks] = useState([]);
@@ -97,28 +97,27 @@ const Sale = () => {
                 onClick={() => handleAddToFavorites(book)}
               />
               {book.discountPercent !== null && (
-                <div className="discount-badge">-{book.discountPercent}%</div>
+                <div className="flame-badge">
+                  🔥
+                  <span className="discount-text">-{book.discountPercent}%</span>
+                </div>
               )}
-              <Link to={`/book/${book.id}`} state={{ book }}>
-                <img
-                  src={book.image}
-                  alt={book.title}
-                  className="book-image"
-                />
+              <Link to={`/sale-book/${book.id}`} state={{ book }}>
+                <img src={book.image} alt={book.title} className="book-image" />
                 <h5 className="book-title">{book.title}</h5>
               </Link>
 
               <p className="book-price">
-                <span style={{ textDecoration: "line-through", color: "#999" }}>
-                  {(book.price * 1000).toLocaleString("vi-VN")}đ
-                </span>
-                <br />
-                <span style={{ color: "#c62828", fontWeight: 600 }}>
+              <span className="final-price">
                   {(book.finalPrice * 1000).toLocaleString("vi-VN")}đ
                 </span>
+                {/* <span className="original-price">
+                  {(book.price * 1000).toLocaleString("vi-VN")}đ
+                </span> */}
+                
               </p>
 
-              <p style={{ fontSize: "13px", color: "#555" }}>
+              <p className="book-size">
                 Kích thước: {book.packagingSize}
               </p>
 

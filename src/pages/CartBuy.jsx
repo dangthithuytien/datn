@@ -1,83 +1,65 @@
 import React, { useEffect, useState } from "react";
+import { getCartSale, removeFromCartSale, increaseQuantity, decreaseQuantity, clearCartSale } from "../components/Service/cartService";
+import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { FaSearch, FaTrash } from "react-icons/fa";
-import "../components/style/CartBuy.css";
 
-const CartBuy = () => {
+const CartSale = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [discountCode, setDiscountCode] = useState("");
-  const [discountAmount, setDiscountAmount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    setCartItems(storedCart);
-    setSelectedItems(storedCart.map((item) => item.id));
+    fetchCart();
   }, []);
 
-  const shippingFee = 30000;
-
-  const toggleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelectedItems(cartItems.map((item) => item.id));
-    } else {
-      setSelectedItems([]);
-    }
+  const fetchCart = async () => {
+    const data = await getCartSale();
+    setCartItems(data);
+    setSelectedItems(data.map((item) => item.ProductId)); // chọn tất cả mặc định
   };
 
-  const toggleSelectItem = (id) => {
-    if (selectedItems.includes(id)) {
-      setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
-    } else {
-      setSelectedItems([...selectedItems, id]);
-    }
-  };
-
-  const updateQuantity = (id, type) => {
-    const updatedCart = cartItems.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            quantity:
-              type === "increase"
-                ? item.quantity + 1
-                : Math.max(1, item.quantity - 1),
-          }
-        : item
+  const toggleSelect = (productId) => {
+    setSelectedItems((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
     );
-    setCartItems(updatedCart);
-    localStorage.setItem("cartBuy", JSON.stringify(updatedCart));
   };
 
-  const removeItem = (id) => {
-    const updatedCart = cartItems.filter((item) => item.id !== id);
-    setCartItems(updatedCart);
-    localStorage.setItem("cartBuy", JSON.stringify(updatedCart));
-    setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
+  const toggleSelectAll = () => {
+    if (selectedItems.length === cartItems.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(cartItems.map((item) => item.ProductId));
+    }
+  };
+
+  const handleIncrease = async (id) => {
+    await increaseQuantity(id);
+    fetchCart();
+  };
+
+  const handleDecrease = async (id) => {
+    await decreaseQuantity(id);
+    fetchCart();
+  };
+
+  const handleRemove = async (id) => {
+    await removeFromCartSale(id);
+    fetchCart();
+  };
+
+  const handleClear = async () => {
+    if (window.confirm("Xóa toàn bộ giỏ hàng?")) {
+      await clearCartSale();
+      fetchCart();
+    }
   };
 
   const calculateSelectedTotal = () => {
     return cartItems
-      .filter((item) => selectedItems.includes(item.id))
-      .reduce(
-        (total, item) =>
-          total + ((item.price ?? 0) * (item.quantity ?? 1)),
-        0
-      );
-  };
-
-  const applyDiscount = () => {
-    if (discountCode.toUpperCase() === "SALE10") {
-      const discountValue = calculateSelectedTotal() * 0.1;
-      setDiscountAmount(discountValue);
-      alert(
-        `Áp dụng mã giảm giá thành công: Giảm ${discountValue.toLocaleString()}đ`
-      );
-    } else {
-      setDiscountAmount(0);
-      alert("Mã giảm giá không hợp lệ");
-    }
+      .filter((item) => selectedItems.includes(item.ProductId))
+      .reduce((total, item) => total + item.UnitPrice * item.Quantity, 0);
   };
 
   const handleCheckout = () => {
@@ -87,32 +69,30 @@ const CartBuy = () => {
     }
 
     const selectedProducts = cartItems.filter((item) =>
-      selectedItems.includes(item.id)
+      selectedItems.includes(item.ProductId)
     );
-    const totalAmount =
-      calculateSelectedTotal() - discountAmount + shippingFee;
 
-    localStorage.setItem("checkoutItems", JSON.stringify(selectedProducts));
-    localStorage.setItem("checkoutDiscount", JSON.stringify(discountAmount));
-    localStorage.setItem("checkoutTotal", JSON.stringify(totalAmount));
+    localStorage.setItem("cartBuy", JSON.stringify(selectedProducts));
+    localStorage.setItem("checkoutTotal", JSON.stringify(calculateSelectedTotal()));
     navigate("/checkout");
   };
 
   return (
     <div className="container mt-4">
+      <h3>🛒 Giỏ Hàng Bán</h3>
+
       {cartItems.length === 0 ? (
-        <p>Giỏ hàng đang trống.</p>
+        <p>Giỏ hàng trống.</p>
       ) : (
         <>
-          <table className="table mt-3 align-middle no-border-table text-center">
-            <thead className="table-header-box">
+          <table className="table table-bordered text-center align-middle mt-3">
+            <thead className="table-light">
               <tr>
                 <th>
                   <input
                     type="checkbox"
-                    className="custom-checkbox"
-                    onChange={toggleSelectAll}
                     checked={selectedItems.length === cartItems.length}
+                    onChange={toggleSelectAll}
                   />
                 </th>
                 <th>Ảnh</th>
@@ -122,98 +102,60 @@ const CartBuy = () => {
                 <th>Tạm tính</th>
                 <th>Thao tác</th>
               </tr>
-            </thead>
-
+</thead>
             <tbody>
               {cartItems.map((item) => (
-                <tr key={item.id} className="border-bottom-row">
+                <tr key={item.ProductId}>
                   <td>
                     <input
                       type="checkbox"
-                      className="custom-checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => toggleSelectItem(item.id)}
+                      checked={selectedItems.includes(item.ProductId)}
+                      onChange={() => toggleSelect(item.ProductId)}
                     />
                   </td>
                   <td>
-                    <img src={item.image} alt={item.title} width="60" />
+                    <img
+                      src={item.ImageUrl ? `https://localhost:7003${item.ImageUrl}` : "/default-avatar.png"}
+                      alt={item.ProductName}
+                      width={50}
+                      height="auto"
+                      style={{ borderRadius: "10%", objectFit: "cover" }}
+                    />
                   </td>
-                  <td>{item.title}</td>
-                  <td>{(item.price ?? 0).toLocaleString()}đ</td>
+                  <td>{item.ProductName}</td>
+                  <td>{item.UnitPrice.toLocaleString()}đ</td>
                   <td>
-                    <div className="d-flex align-items-center gap-2 justify-content-center">
-                      <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => updateQuantity(item.id, "decrease")}
-                      >
-                        -
+                    <div className="d-flex align-items-center justify-content-center gap-2">
+                      <button className="btn btn-sm btn-outline-secondary" onClick={() => handleDecrease(item.ProductId)}>
+                        <FaMinus />
                       </button>
-                      <span>{item.quantity ?? 1}</span>
-                      <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => updateQuantity(item.id, "increase")}
-                      >
-                        +
+                      <span>{item.Quantity}</span>
+                      <button className="btn btn-sm btn-outline-secondary" onClick={() => handleIncrease(item.ProductId)}>
+                        <FaPlus />
                       </button>
                     </div>
                   </td>
+                  <td>{(item.UnitPrice * item.Quantity).toLocaleString()}đ</td>
                   <td>
-                    {((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString()}đ
-                  </td>
-                  <td>
-                    <div className="d-flex gap-2 justify-content-center">
-                      <button
-                        className="btn btn-outline-success btn-sm"
-                        title="Xem chi tiết"
-                        onClick={() =>
-                          navigate(`/book/${item.id}`, {
-                            state: { book: item },
-                          })
-                        }
-                      >
-                        <FaSearch style={{ color: "#2e7d32" }} />
-                      </button>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        title="Xóa"
-                        onClick={() => removeItem(item.id)}
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
+                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemove(item.ProductId)}>
+                      <FaTrash />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div className="cart-footer d-flex align-items-center gap-3 flex-wrap mt-3">
-            <div className="total-shipping">
-              <strong>
-                Tổng thanh toán:{" "}
-                {(calculateSelectedTotal() - discountAmount + shippingFee).toLocaleString()}đ
-              </strong>
-              <div
-                className="shipping-fee mt-1"
-                style={{ fontSize: "0.9rem", color: "#555" }}
-              >
-                Phí vận chuyển: {shippingFee.toLocaleString()}đ
-              </div>
-            </div>
-
-            <div className="discount-section">
-              <input
-                type="text"
-                className="form-control discount-input"
-                placeholder="Nhập mã giảm giá"
-                value={discountCode}
-                onChange={(e) => setDiscountCode(e.target.value)}
-              />
-              <button className="btn btn-outline-primary" onClick={applyDiscount}>
-                Áp dụng
-              </button>
-            </div>
-
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <button className="btn btn-danger" onClick={handleClear}>
+              Xoá toàn bộ giỏ hàng
+            </button>
+            <h5>
+              Tổng tiền đã chọn:{" "}
+              <span style={{ color: "green" }}>
+                {calculateSelectedTotal().toLocaleString()}đ
+              </span>
+            </h5>
             <button className="btn btn-success" onClick={handleCheckout}>
               Thanh toán
             </button>
@@ -224,4 +166,4 @@ const CartBuy = () => {
   );
 };
 
-export default CartBuy;
+export default CartSale;

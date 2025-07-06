@@ -1,29 +1,35 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../components/Service/AxiosConfig"; // <-- Đường dẫn đúng tới Axios config
-import { tokenUtils } from "../components/Cookie/TokenUtils"; // <-- Đường dẫn đúng tới tokenUtils
+import { tokenUtils } from "../components/Cookie/tokenUtils"; // <-- Đường dẫn đúng tới tokenUtils
 import "../components/style/Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Login with:", email, password);
       const res = await apiClient.post("/Auth/login", {
-        Email: email, // phải viết hoa nếu backend yêu cầu PascalCase
+        Email: email,
         Password: password,
       });
-
-      console.log("Login response:", res);
-
+  
       if (res.data?.IsSuccess && res.data?.Token) {
-        tokenUtils.setAccessToken(res.data.Token);
+        const accessToken = res.data.Token;
+        tokenUtils.setAccessToken(accessToken);
         document.cookie = `refreshToken=${res.data.RefreshToken}; path=/; secure; samesite=strict`;
-      
+  
+        // 🟢 Gọi API lấy thông tin người dùng sau khi đăng nhập thành công
+        const userRes = await apiClient.get("/user/profile", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+  
+        if (userRes.data) {
+          localStorage.setItem("user", JSON.stringify(userRes.data)); // ✅ Lưu thông tin người dùng
+        }
+  
         alert("✅ Đăng nhập thành công!");
         navigate("/");
       } else {
@@ -34,6 +40,7 @@ export default function Login() {
       alert("❌ Lỗi hệ thống hoặc mạng!");
     }
   };
+  
 
   return (
     <div className="login-container container-md bg-white rounded-3 shadow-sm p-4 p-md-5">
@@ -72,7 +79,7 @@ export default function Login() {
         </div>
         <div className="forgot-password-link">
   <Link to="/reset-password">Quên mật khẩu?</Link></div>
-        <button type="submit" className="btn btn-success w-100 py-2">
+<button type="submit" className="btn btn-success w-100 py-2">
           <i className="bi bi-box-arrow-in-right me-2"></i>
           ĐĂNG NHẬP
         </button>

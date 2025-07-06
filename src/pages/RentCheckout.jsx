@@ -1,171 +1,149 @@
 import React, { useState, useEffect } from "react";
-import QRCode from "react-qr-code";
-import { useNavigate } from "react-router-dom";
-import "../components/style/rentcheckout.css";
 
-const provinces = [
-  { id: 1, name: "Hồ Chí Minh" },
-  { id: 2, name: "Hà Nội" },
-  { id: 3, name: "Đà Nẵng" },
-];
+const CheckoutRent = () => {
+  const [userInfo, setUserInfo] = useState({ name: "", phone: "", email: "" });
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
 
-const districtsData = {
-  1: [
-    { id: 1, name: "Quận 1" },
-    { id: 2, name: "Quận 2" },
-  ],
-  2: [
-    { id: 3, name: "Quận Hoàn Kiếm" },
-    { id: 4, name: "Quận Đống Đa" },
-  ],
-};
-
-const wardsData = {
-  1: {
-    1: [{ id: 1, name: "Phường Bến Nghé" }],
-    2: [{ id: 2, name: "Phường Thủ Thiêm" }],
-  },
-};
-
-const RentCheckout = () => {
-  const navigate = useNavigate();
-
-  // Thông tin khách hàng
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [province, setProvince] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
-  const [addressDetail, setAddressDetail] = useState("");
-
-  // Ngày thuê và trả
-  const [rentStartDate, setRentStartDate] = useState("");
-  const [rentEndDate, setRentEndDate] = useState("");
-
-  // Phương thức vận chuyển & thanh toán
-  const [shipping, setShipping] = useState("home_delivery");
+  const [shipping, setShipping] = useState("store_pickup");
   const [payment, setPayment] = useState("cod");
+  const [startDate, setStartDate] = useState(""); // auto today
+  const [endDate, setEndDate] = useState("");
 
-  // QR Code & Timer cho MoMo
-  const [momoCode, setMomoCode] = useState("");
-  const [momoTimer, setMomoTimer] = useState(0);
-
-  // Dữ liệu giỏ thuê
-  const [rentItems, setRentItems] = useState([]);
-
-  const shippingFee = 30000;
-
-  const calculateDays = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = endDate - startDate;
-    if (diffTime < 0) return 0;
-    return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-  };
-
-  const calculateTotalAmount = () => {
-    if (rentItems.length === 0) return 0;
-    if (!rentStartDate || !rentEndDate) return 0;
-
-    const days = calculateDays(rentStartDate, rentEndDate);
-    if (days === 0) return 0;
-
-    const baseDays = 60;
-    const basePrice = 60000;
-    const extraDayPrice = 1000;
-
-    let total = 0;
-    rentItems.forEach((item) => {
-      let priceForItem = 0;
-      if (days <= baseDays) {
-        priceForItem = basePrice * item.quantity;
-      } else {
-        const extraDays = days - baseDays;
-        priceForItem = (basePrice + extraDays * extraDayPrice) * item.quantity;
-      }
-      total += priceForItem + item.deposit;
-    });
-
-    if (shipping === "home_delivery") total += shippingFee;
-
-    return total;
-  };
+  const [rentCart, setRentCart] = useState([]);
+  const [shippingFee, setShippingFee] = useState(0);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("rentCart")) || [];
-    setRentItems(data);
+    const today = new Date().toISOString().split("T")[0];
+    setStartDate(today);
+
+    const cart = JSON.parse(localStorage.getItem("rentCartBuy")) || [];
+   
+    setRentCart(cart);
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUserInfo({
+        name: storedUser.UserName || "",
+        phone: storedUser.PhonNumber || "",
+        email: storedUser.Email || "",
+      });
+    }
+
+    fetch("https://esgoo.net/api-tinhthanh/1/0.htm")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error === 0) setProvinces(data.data);
+      });
   }, []);
 
   useEffect(() => {
-    let timer;
-    if (payment === "momo" && momoCode) {
-      setMomoTimer(60);
-      timer = setInterval(() => {
-        setMomoTimer((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            setMomoCode("");
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [payment, momoCode]);
+    setShippingFee(shipping === "home_delivery" ? 30000 : 0);
+  }, [shipping]);
 
-  const generateMomoCode = () => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    setMomoCode(code);
+  useEffect(() => {
+    if (selectedProvince) {
+      fetch(`https://esgoo.net/api-tinhthanh/2/${selectedProvince}.htm`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error === 0) setDistricts(data.data);
+        });
+    } else {
+      setDistricts([]);
+    }
+    setSelectedDistrict("");
+    setSelectedWard("");
+    setWards([]);
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      fetch(`https://esgoo.net/api-tinhthanh/3/${selectedDistrict}.htm`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error === 0) setWards(data.data);
+        });
+    } else {
+      setWards([]);
+    }
+    setSelectedWard("");
+  }, [selectedDistrict]);
+
+  const calculateRentalFee = () => {
+    if (!startDate || !endDate) return 0;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24))); // ít nhất 1 ngày
+
+    if (diffDays <= 60) return 30000;
+    return 30000 + (diffDays - 60) * 1000;
   };
 
-  const handlePlaceOrder = () => {
-    if (!name || !phone || !email) {
-      alert("Vui lòng nhập đầy đủ thông tin khách hàng.");
-      return;
+  const totalBookFee = rentCart.reduce((sum, item) => sum + item.BookPrice, 0);
+  const rentalPeriodFee = calculateRentalFee();
+  const totalAmount = totalBookFee + shippingFee + rentalPeriodFee;
+
+  const createCashOrder = async (order) => {
+    const token = localStorage.getItem("accessToken");
+const res = await fetch("https://localhost:7003/api/CashOrder/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+      body: JSON.stringify(order),
+    });
+
+    if (!res.ok) {
+      const errorDetail = await res.text(); // response chứ không phải response.text()
+  throw new Error("Lỗi khi tạo đơn hàng: " + errorDetail);
     }
-    if (!rentStartDate || !rentEndDate) {
-      alert("Vui lòng chọn ngày thuê và ngày trả.");
-      return;
-    }
-    if (calculateDays(rentStartDate, rentEndDate) === 0) {
-      alert("Ngày trả phải sau ngày thuê.");
-      return;
-    }
-    if (rentItems.length === 0) {
-      alert("Giỏ thuê sách đang trống.");
+
+    return res.json();
+  };
+  const handleCheckout = async () => {
+    if (!userInfo.phone || !selectedProvince || !selectedDistrict || !selectedWard || !startDate || !endDate) {
+      alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    const rentOrder = {
-      id: Date.now(),
-      date: new Date().toLocaleString("vi-VN"),
-      status: "Đã đặt",
-      total: calculateTotalAmount(),
-      shipping,
-      payment,
-      rentStartDate,
-      rentEndDate,
-      customer: {
-        name,
-        phone,
-        email,
-        province: provinces.find((p) => p.id == province)?.name || "",
-        district:
-          districtsData[province]?.find((d) => d.id == district)?.name || "",
-        ward: wardsData[province]?.[district]?.find((w) => w.id == ward)?.name || "",
-        addressDetail,
-      },
-      products: rentItems,
+    const addressDetail = document.querySelector('input[placeholder="Địa chỉ cụ thể"]').value;
+    if (!addressDetail) {
+      alert("⚠️ Vui lòng nhập địa chỉ cụ thể!");
+      return;
+    }
+
+    const provinceName = provinces.find((p) => p.id.toString() === selectedProvince)?.full_name || "";
+    const districtName = districts.find((d) => d.id.toString() === selectedDistrict)?.full_name || "";
+    const wardName = wards.find((w) => w.id.toString() === selectedWard)?.full_name || "";
+    const fullAddress = `${addressDetail}, ${wardName}, ${districtName}, ${provinceName}`;
+
+    const order = {
+      UserId: "string",
+      StartDate: startDate,
+      EndDate: endDate,
+      HasShippingFee: shipping === "home_delivery",
+      Address: fullAddress,
+      Phone: userInfo.phone,
+      PaymentMethod: "string",
+      CartItems: rentCart,
     };
 
-    const stored = JSON.parse(localStorage.getItem("rentOrders")) || [];
-    localStorage.setItem("rentOrders", JSON.stringify([...stored, rentOrder]));
-    localStorage.removeItem("rentCart");
-
-    alert("Đơn hàng thuê đã được đặt!");
-    navigate("/orders-rent");
+    try {
+     await createCashOrder(order)
+     console.log("yyyyyy",order)
+      alert("✅ Đặt thuê sách thành công!");
+      localStorage.removeItem("rentCartBuy");
+      window.location.href = "/";
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   return (
@@ -173,210 +151,69 @@ const RentCheckout = () => {
       <h3>📘 Thanh toán đơn thuê sách</h3>
 
       <div className="checkout-section">
-        <h3 className="checkout-section-title">Thông tin khách hàng</h3>
-        <div className="checkout-input-group">
-          <input
-            type="text"
-            placeholder="Họ tên"
-            className="checkout-input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="tel"
-            placeholder="Số điện thoại"
-            className="checkout-input"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            className="checkout-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        <h5>Thông tin khách hàng</h5>
+        <input type="text" className="checkout-input" value={userInfo.name} readOnly />
+        <input type="tel" className="checkout-input" value={userInfo.phone} readOnly />
+        <input type="email" className="checkout-input" value={userInfo.email} readOnly />
 
-          <select
-            value={province}
-            onChange={(e) => {
-              setProvince(e.target.value);
-              setDistrict("");
-              setWard("");
-            }}
-            className="checkout-input"
-          >
-            <option value="">Chọn Tỉnh/Thành phố</option>
-            {provinces.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+        <select className="checkout-input" value={selectedProvince} onChange={(e) => setSelectedProvince(e.target.value)}>
+          <option value="">Thành phố</option>
+          {provinces.map((p) => (
+            <option key={p.id} value={p.id}>{p.full_name}</option>
+          ))}
+        </select>
 
-          <select
-            value={district}
-            onChange={(e) => {
-              setDistrict(e.target.value);
-              setWard("");
-            }}
-            disabled={!province}
-            className="checkout-input"
-          >
-            <option value="">Chọn Quận/Huyện</option>
-            {province &&
-              districtsData[province]?.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-          </select>
+        <select className="checkout-input" value={selectedDistrict} onChange={(e) => setSelectedDistrict(e.target.value)} disabled={!selectedProvince}>
+          <option value="">Chọn Quận/Huyện</option>
+          {districts.map((d) => (
+            <option key={d.id} value={d.id}>{d.full_name}</option>
+          ))}
+        </select>
+<select className="checkout-input" value={selectedWard} onChange={(e) => setSelectedWard(e.target.value)} disabled={!selectedDistrict}>
+          <option value="">Chọn Phường/Xã</option>
+          {wards.map((w) => (
+            <option key={w.id} value={w.id}>{w.full_name}</option>
+          ))}
+        </select>
 
-          <select
-            value={ward}
-            onChange={(e) => setWard(e.target.value)}
-            disabled={!district}
-            className="checkout-input"
-          >
-            <option value="">Chọn Phường/Xã</option>
-            {district &&
-              wardsData[province]?.[district]?.map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.name}
-                </option>
-              ))}
-          </select>
-
-          <input
-            type="text"
-            placeholder="Địa chỉ cụ thể"
-            className="checkout-input"
-            style={{ flex: "1 1 100%" }}
-            value={addressDetail}
-            onChange={(e) => setAddressDetail(e.target.value)}
-          />
-        </div>
+        <input type="text" placeholder="Địa chỉ cụ thể" className="checkout-input" />
       </div>
 
-      {/* Chọn ngày thuê và trả */}
       <div className="checkout-section">
-        <label>Ngày thuê:</label>
-        <input
-          type="date"
-          className="form-control mb-2"
-          value={rentStartDate}
-          onChange={(e) => setRentStartDate(e.target.value)}
-          min={new Date().toISOString().split("T")[0]}
-        />
-        <label>Ngày trả:</label>
-        <input
-          type="date"
-          className="form-control mb-2"
-          value={rentEndDate}
-          onChange={(e) => setRentEndDate(e.target.value)}
-          min={rentStartDate || new Date().toISOString().split("T")[0]}
-        />
+        <h5>Ngày thuê:</h5>
+        <input type="date" className="checkout-input" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        <h5>Ngày trả:</h5>
+        <input type="date" className="checkout-input" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
       </div>
 
-      {/* Phương thức vận chuyển */}
       <div className="checkout-section">
-        <h4>Phương thức vận chuyển</h4>
+        <h5>Phương thức vận chuyển</h5>
         <label>
-          <input
-            type="radio"
-            value="store_pickup"
-            checked={shipping === "store_pickup"}
-            onChange={() => setShipping("store_pickup")}
-          />{" "}
+          <input type="radio" name="shipping" value="store_pickup" checked={shipping === "store_pickup"} onChange={() => setShipping("store_pickup")} />
           Nhận tại cửa hàng
         </label>
-        <label style={{ marginLeft: "15px" }}>
-          <input
-            type="radio"
-            value="home_delivery"
-            checked={shipping === "home_delivery"}
-            onChange={() => setShipping("home_delivery")}
-          />{" "}
-          Giao tận nơi (+{shippingFee.toLocaleString()}đ)
-        </label>
-      </div>
-
-      {/* Phương thức thanh toán */}
-      <div className="checkout-section">
-        <h4>Phương thức thanh toán</h4>
         <label>
-          <input
-            type="radio"
-            name="payment"
-            value="cod"
-            checked={payment === "cod"}
-            onChange={() => setPayment("cod")}
-          />{" "}
-          COD
+          <input type="radio" name="shipping" value="home_delivery" checked={shipping === "home_delivery"} onChange={() => setShipping("home_delivery")} />
+          Giao tận nơi (+30.000đ)
         </label>
-        <label style={{ marginLeft: "15px" }}>
-          <input
-            type="radio"
-            name="payment"
-            value="momo"
-            checked={payment === "momo"}
-            onChange={() => setPayment("momo")}
-          />{" "}
-          Ví MoMo
-        </label>
-        <label style={{ marginLeft: "15px" }}>
-          <input
-            type="radio"
-            name="payment"
-            value="bank"
-checked={payment === "bank"}
-onChange={() => setPayment("bank")}
-/>{" "}
-Chuyển khoản ngân hàng
-</label>
-
-php-template
-Copy
-Edit
-    {payment === "momo" && (
-      <div className="qr-code-container mt-3">
-        {!momoCode ? (
-          <button className="btn btn-outline-primary" onClick={generateMomoCode}>
-            Gửi mã MoMo (60 giây)
-          </button>
-        ) : (
-          <>
-            <p>Vui lòng quét mã QR để thanh toán:</p>
-            <QRCode value={`https://momo.vn/pay/${momoCode}`} size={128} />
-            <p className="mt-2">Mã: {momoCode}</p>
-            <p>Thời gian còn lại: {momoTimer}s</p>
-          </>
-        )}
       </div>
-    )}
-  </div>
 
-  {/* Tổng thanh toán */}
-  <div className="checkout-footer d-flex align-items-center gap-3 flex-wrap mt-4">
-    <div className="total-shipping">
-      <strong>
-        Tổng thanh toán:{" "}
-        <span style={{ color: "#28a745" }}>
-          {calculateTotalAmount().toLocaleString()}đ
-        </span>
-      </strong>
-      {shipping === "home_delivery" && (
-        <div style={{ fontSize: "0.9rem", color: "#777" }}>
-          Phí vận chuyển: {shippingFee.toLocaleString()}đ
-        </div>
-      )}
+      <div className="checkout-section">
+        <h5>Phương thức thanh toán</h5>
+        <label><input type="radio" name="payment" value="cod" checked={payment === "cod"} onChange={() => setPayment("cod")} /> COD</label>
+        <label><input type="radio" name="payment" value="momo" checked={payment === "momo"} onChange={() => setPayment("momo")} /> Ví MoMo</label>
+        <label><input type="radio" name="payment" value="bank" checked={payment === "bank"} onChange={() => setPayment("bank")} /> Chuyển khoản ngân hàng</label>
+      </div>
+
+      <div className="checkout-section checkout-footer">
+        <p>Tiền sách: {totalBookFee.toLocaleString()}đ</p>
+        {shippingFee > 0 && <p>Phí vận chuyển: {shippingFee.toLocaleString()}đ</p>}
+        {startDate && endDate && <p>Phí thuê ({startDate} → {endDate}): {rentalPeriodFee.toLocaleString()}đ</p>}
+        <h5>Tổng thanh toán: <span style={{ color: "#28a745" }}>{totalAmount.toLocaleString()}đ</span></h5>
+        <button className="btn btn-success mt-2" onClick={handleCheckout}>Đặt thuê</button>
+      </div>
     </div>
-    <button className="btn btn-success" onClick={handlePlaceOrder}>
-      Thanh toán
-    </button>
-  </div>
-</div>
-);
+  );
 };
 
-export default RentCheckout;
+export default CheckoutRent;

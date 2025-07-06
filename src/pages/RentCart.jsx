@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { FaSearch, FaTrash } from "react-icons/fa";
-import "../components/style/RentCart.css";
+import {
+  getCartRent,
+  removeFromCartRent,
+  clearCartRent,
+ 
+} from "../components/Service/CartRentService";
 
 const RentCart = () => {
   const [rentItems, setRentItems] = useState([]);
@@ -9,23 +14,19 @@ const RentCart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("rentCart")) || [];
-    setRentItems(data);
-    setSelectedItems(data.map((item) => item.id)); // mặc định chọn hết
+    fetchRentCart();
   }, []);
 
-  const removeItem = (index) => {
-    const updated = rentItems.filter((_, i) => i !== index);
-    setRentItems(updated);
-    localStorage.setItem("rentCart", JSON.stringify(updated));
-
-    const updatedSelected = updated.map((item) => item.id);
-    setSelectedItems((prev) => prev.filter((id) => updatedSelected.includes(id)));
+  const fetchRentCart = async () => {
+    const data = await getCartRent();
+    console.log("Rent items:", data); // kiểm tra thực tế
+    setRentItems(data);
+    setSelectedItems(data.map((item) => item.RentBookItemId)); // chọn tất cả mặc định
   };
 
-  const toggleSelectItem = (id) => {
+  const toggleSelect = (id) => {
     setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
@@ -33,30 +34,56 @@ const RentCart = () => {
     if (selectedItems.length === rentItems.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(rentItems.map((item) => item.id));
+      setSelectedItems(rentItems.map((item) => item.RentBookItemId));
     }
   };
 
+  const handleRemove = async (id) => {
+    await removeFromCartRent(id);
+    fetchRentCart();
+  };
+
+  const handleClear = async () => {
+    if (window.confirm("Xóa toàn bộ giỏ thuê?")) {
+      await clearCartRent();
+      fetchRentCart();
+    }
+  };
+
+
+  const calculateSelectedTotal = () => {
+    return rentItems
+      .filter((item) => selectedItems.includes(item.RentBookItemId))
+      .reduce((total, item) => total + item.BookPrice, 0);
+  };
+  
+
   const handleCheckout = () => {
     if (selectedItems.length === 0) {
-      alert("Vui lòng chọn ít nhất 1 sản phẩm để thanh toán.");
+      alert("Vui lòng chọn sản phẩm để thanh toán!");
       return;
     }
-    const selected = rentItems.filter((item) => selectedItems.includes(item.id));
-    localStorage.setItem("rentCheckoutItems", JSON.stringify(selected));
+    const selectedProducts = rentItems.filter((item) =>
+      selectedItems.includes(item.RentBookItemId)
+    );
+    localStorage.setItem("rentCartBuy", JSON.stringify(selectedProducts));
+    localStorage.setItem(
+      "rentCheckoutTotal",
+      JSON.stringify(calculateSelectedTotal())
+    );
     navigate("/rent-checkout");
   };
 
   return (
     <div className="container mt-4">
-      <h3>📘 Giỏ hàng thuê sách</h3>
+      <h3>🛒 Giỏ Hàng Thuê Sách</h3>
 
       {rentItems.length === 0 ? (
-        <p>Giỏ hàng thuê đang trống.</p>
+        <p>Giỏ thuê trống.</p>
       ) : (
         <>
-          <table className="table mt-3 align-middle text-center">
-            <thead className="table-success">
+          <table className="table table-bordered text-center align-middle mt-3">
+            <thead className="table-light">
               <tr>
                 <th>
                   <input
@@ -68,60 +95,71 @@ const RentCart = () => {
                 <th>Ảnh</th>
                 <th>Tên sách</th>
                 <th>Tình trạng</th>
-                <th>Giá thuê/ngày</th>
+                <th>Số lượng thuê</th>
+              
                 <th>Tiền cọc</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {rentItems.map((item, index) => (
-                <tr key={index}>
+              {rentItems.map((item) => (
+<tr key={item.RentBookItemId}>
                   <td>
                     <input
                       type="checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => toggleSelectItem(item.id)}
+                      checked={selectedItems.includes(item.RentBookItemId)}
+                      onChange={() => toggleSelect(item.RentBookItemId)}
                     />
                   </td>
                   <td>
                     <img
-                      src={item.image}
-                      alt={item.title}
-                      style={{ width: "60px", height: "80px", objectFit: "cover" }}
+                      src={
+                        item.imageUrl
+                          ? `https://localhost:7003${item.imageUrl}`
+                          : "/default-avatar.png"
+                      }
+                      alt={item.RentBookTitle}
+                      width={50}
+                      height="auto"
+                      style={{ borderRadius: "10%", objectFit: "cover" }}
                     />
                   </td>
-                  <td>{item.title}</td>
-                  <td>Mới 80%</td>
-                  <td>{item.rentPrice.toLocaleString()}đ</td>
-                  <td>{item.deposit.toLocaleString()}đ</td>
+                  <td>{item.RentBookTitle}</td>
+                  <td>{item.Condition}</td>
                   <td>
-                    <div className="d-flex gap-2 justify-content-center">
-                      <button
-                        className="btn btn-outline-success btn-sm"
-                        title="Xem chi tiết"
-                        onClick={() =>
-                          navigate(`/rent/${item.id}`, { state: { book: item } })
-                        }
-                      >
-                        <FaSearch style={{ color: "#2e7d32" }} />
-                      </button>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        title="Xóa"
-                        onClick={() => removeItem(index)}
-                      >
-                        <FaTrash />
-                      </button>
+                    <div className="d-flex align-items-center justify-content-center gap-2">
+                    
+                      <span>{item.Quantity}</span>
+                     
                     </div>
+                  </td>
+                 
+                  <td>{item.BookPrice}đ</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => handleRemove(item.RentBookItemId)}
+                    >
+                      <FaTrash />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div className="d-flex justify-content-end mt-3">
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <button className="btn btn-danger" onClick={handleClear}>
+              Xoá toàn bộ giỏ thuê
+            </button>
+            <h5>
+              Tổng tiền thuê đã chọn:{" "}
+              <span style={{ color: "green" }}>
+                {calculateSelectedTotal().toLocaleString()}đ
+              </span>
+            </h5>
             <button className="btn btn-success" onClick={handleCheckout}>
-              Tiến hành thanh toán
+              Thanh toán thuê
             </button>
           </div>
         </>

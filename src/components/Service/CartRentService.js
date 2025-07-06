@@ -1,30 +1,43 @@
 import axios from "./AxiosConfig";
 
-const CartRentService = {
-  async add(rentBookItemId) {
-    const response = await axios.post(
-      "/CartRent/add",
-      { rentBookItemId }, // Gửi đúng dạng object
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    return response.data;
-  },
-
-  async getCart() {
-    const response = await axios.get("/CartRent");
-    return response.data;
-  },
-
-  async remove(bookItemId) {
-    const response = await axios.delete(`/CartRent/remove/${bookItemId}`);
-    return response.data;
-  },
-
-  async clear() {
-    await axios.delete("/CartRent/clear");
-  },
+export const addToRentCart = async (rentBookItemId) => {
+  const response = await axios.post("/CartRent/addrent", rentBookItemId, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  console.log(">>> Thêm giỏ thuê thành công:", response.data);
+  return response.data;
 };
 
-export default CartRentService;
+export const getCartRent = async () => {
+  const response = await axios.get("/CartRent", {
+    withCredentials: true,
+  });
+  console.log(">> API /CartRent response:", response.data);
+  return response.data;
+};
+
+export const removeFromCartRent = async (bookItemId) => {
+  const response = await axios.delete(`/CartRent/removerent/${bookItemId}`);
+  return response.data;
+};
+
+export const clearCartRent = async () => {
+  await axios.delete("/CartRent/clearrent");
+};
+
+export const getRentCartWithDetails = async () => {
+  const rentItems = await getCartRent();
+
+  const rentCartWithDetails = rentItems.map((item) => {
+    const cached = JSON.parse(localStorage.getItem(`rentBook-${item.RentBookItemId}`)) || {};
+    return {
+      ...item,
+      title: cached.title || "(không rõ tên)",
+      image: cached.image || "/placeholder.jpg",
+    };
+  });
+
+  return rentCartWithDetails;
+};

@@ -1,13 +1,11 @@
-// src/pages/UserProfile.jsx
 import React, { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile, changePassword } from "../components/Service/userService";
 import "../components/style/UserProfile.css";
 
-
 const UserProfile = () => {
   const [user, setUser] = useState({
     userName: "",
-    phoneNumber: "",  
+    phoneNumber: "",
     address: "",
     dateOfBirth: "",
     imageUser: "",
@@ -31,7 +29,6 @@ const UserProfile = () => {
         const data = await getUserProfile();
         console.log("✅ API trả về:", data);
 
-        // ⚠️ Map đúng tên trường
         setUser({
           userName: data.UserName || "",
           phoneNumber: data.PhonNumber || "",
@@ -40,8 +37,10 @@ const UserProfile = () => {
           imageUser: data.ImageUser || "",
           email: data.Email || "",
           point: data.Points || 0,
-
         });
+
+        // ✅ Thêm dòng này
+        localStorage.setItem("user", JSON.stringify(data));
 
         if (data.ImageUser) {
           setPreviewImage(`https://localhost:7003${data.ImageUser}`);
@@ -88,9 +87,8 @@ const UserProfile = () => {
 
   return (
     <div className="user-profile-container">
-      <h1 className="main-title">THÔNG TIN NGƯuỜI DÙNG</h1>
+      <h1 className="main-title">THÔNG TIN NGƯỜI DÙNG</h1>
       <div className="grid-layout-v2">
-        {/* Cột trái */}
         <div className="quick-access">
           <div className="quick-links">
             <h3>Truy cập nhanh</h3>
@@ -102,12 +100,10 @@ const UserProfile = () => {
           </div>
         </div>
 
-        {/* Cột phải */}
         <div className="profile-info-section">
           {activeTab === "profile" && (
             <div className="section personal-info">
               <h2 className="section-title">Thông tin cá nhân</h2>
-
               <div className="avatar-section">
                 <img
                   src={previewImage}
@@ -116,26 +112,15 @@ const UserProfile = () => {
                   height={100}
                   style={{ borderRadius: "10%", objectFit: "cover" }}
                 />
-                <label htmlFor="avatar-upload" className="update-avatar-button">
-                  Cập nhật ảnh
-                </label>
-                <input
-                  type="file"
-                  id="avatar-upload"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={handleImageChange}
-                />
+                <label htmlFor="avatar-upload" className="update-avatar-button">Cập nhật ảnh</label>
+                <input type="file" id="avatar-upload" accept="image/*" style={{ display: "none" }} onChange={handleImageChange} />
               </div>
 
               <div className="two-column-form">
                 <div className="column">
                   <div className="form-group">
                     <label>Họ & Tên</label>
-                    <input
-                      value={user.userName}
-                      onChange={(e) => handleChange("userName", e.target.value)}
-                    />
+                    <input value={user.userName} onChange={(e) => handleChange("userName", e.target.value)} />
                   </div>
                   <div className="form-group">
                     <label>Email</label>
@@ -143,10 +128,7 @@ const UserProfile = () => {
                   </div>
                   <div className="form-group">
                     <label>Số điện thoại</label>
-                    <input
-                      value={user.phoneNumber}
-                      onChange={(e) => handleChange("phoneNumber", e.target.value)}
-                    />
+                    <input value={user.phoneNumber} onChange={(e) => handleChange("phoneNumber", e.target.value)} />
                   </div>
                   <div className="form-group">
                     <label>Điểm tích lũy</label>
@@ -163,77 +145,54 @@ const UserProfile = () => {
                       onChange={(e) => handleChange("dateOfBirth", e.target.value)}
                     />
                   </div>
-<div className="form-group">
+                  <div className="form-group">
                     <label>Địa chỉ</label>
-                    <input
-                      value={user.address}
-                      onChange={(e) => handleChange("address", e.target.value)}
-                    />
+                    <input value={user.address} onChange={(e) => handleChange("address", e.target.value)} />
                   </div>
                 </div>
               </div>
-
-              <button className="save-button" onClick={handleSubmit}>
-                Lưu thay đổi
-              </button>
+<button className="save-button" onClick={handleSubmit}>Lưu thay đổi</button>
             </div>
           )}
 
           {activeTab === "password" && (
             <div className="section change-password">
               <h2 className="section-title">Đổi mật khẩu</h2>
-
               <div className="form-group">
                 <label>Mật khẩu hiện tại</label>
-                <input
-                  type="password"
-                  autoComplete="new-password" // <- Dòng quan trọng
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                />
+                <input type="password" autoComplete="new-password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
               </div>
               <div className="form-group">
                 <label>Mật khẩu mới</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
+                <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
               </div>
 
               <button
-              onClick={async () => {
-                try {
-                  if (!currentPassword || !newPassword) {
-                    alert("Vui lòng nhập đầy đủ mật khẩu.");
-                    return;
+                onClick={async () => {
+                  try {
+                    if (!currentPassword || !newPassword) {
+                      alert("Vui lòng nhập đầy đủ mật khẩu.");
+                      return;
+                    }
+
+                    await changePassword({ CurrentPassword: currentPassword, NewPassword: newPassword });
+                    alert("✅ Đổi mật khẩu thành công!");
+                    setCurrentPassword("");
+                    setNewPassword("");
+                    setActiveTab("profile");
+                  } catch (err) {
+                    console.error("❌ Đổi mật khẩu lỗi:", err);
+                    alert("❌ Mật khẩu hiện tại không đúng hoặc lỗi hệ thống.");
                   }
-              
-                  await changePassword({
-                    CurrentPassword: currentPassword,
-                    NewPassword: newPassword,
-                  });
-              
-                  alert("✅ Đổi mật khẩu thành công!");
-                  setCurrentPassword("");
-                  setNewPassword("");
-                  setActiveTab("profile");
-                } catch (err) {
-                  console.error("❌ Đổi mật khẩu lỗi:", err);
-                  alert("❌ Mật khẩu hiện tại không đúng hoặc lỗi hệ thống.");
-                }
-              }}
+                }}
               >
                 Đổi mật khẩu
               </button>
             </div>
           )}
-
         </div>
-
       </div>
     </div>
-
   );
 };
 

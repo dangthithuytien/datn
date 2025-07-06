@@ -24,6 +24,9 @@ import AllRentBooks from "../pages/AllRentBooks";
 import RentBookDetails from "../pages/RentBookDetails"; 
 import ConfirmEmail from "../pages/ConfirmEmailPage";
 import ResetPass from '../pages/ResetPass';
+import DetailsSale from "../pages/DetailsSale";
+import OrderSellDetails from '../pages/OrderSellDetails';
+
 
 
 export const appRoutes = [
@@ -46,6 +49,8 @@ export const appRoutes = [
   { path: "/orders-rent", element: <OrdersRent /> },
   { path: "/orders-rent/:id", element: <OrderRentDetail /> },
   { path: "/orders-sell/:id", element: <OrderSellDetail /> },
+  // moi
+  {path:"/orders-sell/:id", element : <OrderSellDetails /> },
 
   // Danh mục sách bán
   { path: "/books", element: <AllBook /> },
@@ -56,6 +61,7 @@ export const appRoutes = [
   { path: "/sale", element: <Sale /> },
   { path: "/rent-books", element: <RentBooksPage /> }, // Trang danh sách các RentBookItem
   { path: "/rent-cart", element: <RentCart /> },
+{ path: "/sale-book/:id", element: <DetailsSale /> },
 
   // Trang giới thiệu
   { path: "/about", element: <About /> },

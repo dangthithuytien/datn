@@ -5,7 +5,8 @@ import {
   getAllRentBooks,
   getAllRentBookItems,
 } from "../components/Service/rentBookService";
-import "../components/style/rentbook.css"; // Đảm bảo CSS của bạn vẫn ổn
+import "../components/style/rentbook.css";
+import { addToRentCart } from "../components/Service/CartRentService";
 
 const baseURL = "https://localhost:7003";
 
@@ -29,15 +30,19 @@ const RentBooksPage = () => {
 
         const flattenedItems = itemsData.map((item) => {
           const parentBook = booksMap[item.RentBookId];
-          const price = parentBook ? parentBook.Price : 0;
+          const price = parentBook ? parentBook.Price * 1000 : 0;
 
-          return {
+          const result = {
             ...item,
-            Title: parentBook ? parentBook.Title : "Unknown Title",
-            ImageUrl: parentBook ? parentBook.ImageUrl : "",
+            Title: parentBook?.Title || "Unknown Title",
+            ImageUrl: parentBook?.ImageUrl || "",
             Price: price,
             id: item.RentBookItemId,
+            PackagingSize: parentBook?.PackagingSize || "Không rõ",
           };
+
+          console.log("✅ Rent item:", result); // Debug log
+          return result;
         });
 
         setDisplayItems(flattenedItems);
@@ -55,41 +60,20 @@ const RentBooksPage = () => {
     return 0;
   });
 
-  // ĐÃ SỬA HÀM formatPrice: Chỉ dùng toLocaleString
   const formatPrice = (price) => {
-    if (typeof price !== 'number' || isNaN(price)) {
-        return "N/A đ";
-    }
+    if (typeof price !== "number" || isNaN(price)) return "N/A đ";
     return `${price.toLocaleString("vi-VN")} đ`;
   };
-
-  const handleAddToRentCart = (item) => {
-    const existingCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-    if (existingCart.find((cartItem) => cartItem.id === item.id)) {
-      alert("Mục sách này đã có trong giỏ thuê.");
-      return;
+const handleAddToRentCart = async (item) => {
+    console.log("Sách thêm giỏ thuê:", item.id);
+    try {
+      await addToRentCart(item.id); // <-- item.id chính là RentBookItemId
+      alert("✅ Đã thêm sách thuê vào giỏ!");
+    } catch (error) {
+      console.error("Lỗi thêm vào giỏ thuê:", error);
+     alert("❌ Không thể thêm sách vào giỏ thuê.");
     }
-
-    const today = new Date();
-    const returnDate = new Date();
-    returnDate.setDate(today.getDate() + 3);
-
-    const rentItem = {
-      id: item.id,
-      title: item.Title,
-      rentPrice: item.Price,
-      image: `${baseURL}${item.ImageUrl}`,
-      rentDate: today.toISOString().split("T")[0],
-      returnDate: returnDate.toISOString().split("T")[0],
-      quantity: 1,
-      status: item.status,
-      condition: item.Condition,
-    };
-
-    localStorage.setItem("rentCart", JSON.stringify([...existingCart, rentItem]));
-    alert("✅ Đã thêm vào giỏ thuê!");
   };
-
   const handleAddToFavorites = (item) => {
     const favorites = JSON.parse(localStorage.getItem("favoriteRentBooks")) || [];
     const isExist = favorites.some((favItem) => favItem.id === item.id);
@@ -157,15 +141,28 @@ const RentBooksPage = () => {
         {sortedItems.slice(0, 10).map((item) => (
           <div key={item.id} style={{ width: "19%", position: "relative" }} className="mb-4">
             <div className="book-card position-relative">
-              <FaHeart className="heart-icon" onClick={() => handleAddToFavorites(item)} title="Thêm vào yêu thích" />
-              <Link to={`/rent-item-details/${item.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+              <FaHeart
+                className="heart-icon"
+                onClick={() => handleAddToFavorites(item)}
+                title="Thêm vào yêu thích"
+              />
+              <Link
+                to={`/rent-item-details/${item.id}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
                 <div className="image-container">
-                  <img src={`${baseURL}${item.ImageUrl}`} alt={item.Title} className="book-image" />
+                  <img
+                    src={`${baseURL}${item.ImageUrl}`}
+                    alt={item.Title}
+                    className="book-image"
+                  />
                 </div>
                 <h5 className="book-title">{item.Title}</h5>
               </Link>
-              <p className="book-price">
-                Thuê: {formatPrice(item.Price)}/ngày
+              <p className="book-price">{formatPrice(item.Price)}</p>
+            <p style={{ fontSize: "13px", color: "#555", marginBottom: "8px" }}>
+
+                Kích thước: {item.PackagingSize}
               </p>
               <div className="button-group">
                 <button

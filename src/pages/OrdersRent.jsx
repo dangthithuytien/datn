@@ -10,34 +10,66 @@ const OrdersRent = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("rentOrders")) || [];
-    setOrders(stored);
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const currentUser = JSON.parse(localStorage.getItem("user"));
+
+        const res = await fetch("https://localhost:7003/api/admin/rentorders", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Không thể lấy danh sách đơn thuê");
+
+        const allOrders = await res.json();
+
+        const userOrders = allOrders.filter(
+          (o) => o.UserId == currentUser?.UserId
+        );
+
+        setOrders(userOrders);
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    fetchOrders();
   }, []);
 
   const updateOrderStatus = (id, newStatus) => {
     const updated = orders.map((o) =>
-      o.id === id ? { ...o, status: newStatus } : o
+      o.OrderId === id ? { ...o, Status: newStatus } : o
     );
     setOrders(updated);
-    localStorage.setItem("rentOrders", JSON.stringify(updated));
+  };
+
+  // Ánh xạ mã trạng thái về tên trạng thái
+  const getStatusText = (status) => {
+    switch (status) {
+      case 0: return "Đã đặt";
+      case 1: return "Đang giao";
+      case 2: return "Đã giao";
+      case 3: return "Đã hủy";
+      default: return "Khác";
+    }
   };
 
   const filteredOrders =
     statusFilter === "Tất cả"
       ? orders
-      : orders.filter((order) => order.status === statusFilter);
+      : orders.filter((order) => getStatusText(order.Status) === statusFilter);
 
   return (
     <div className="container mt-4 mb-5">
       <h2>📘 Danh sách đơn thuê</h2>
 
-      <div className="status-filter">
+      <div className="status-filter mb-3">
         {OrderStatusTabs.map((tab) => (
           <button
             key={tab}
             className={`btn ${
               statusFilter === tab ? "btn-success" : "btn-outline-success"
-            }`}
+            } me-2`}
             onClick={() => setStatusFilter(tab)}
           >
             {tab}
@@ -53,66 +85,50 @@ const OrdersRent = () => {
             <thead>
               <tr>
                 <th>Mã đơn</th>
-                <th>Ảnh</th>
-                <th>Tên sách</th>
-                <th>Phương thức</th>
+                <th>Ngày thuê</th>
+                <th>Ngày trả</th>
                 <th>Tổng tiền</th>
+                <th>Tiền cọc</th>
                 <th>Trạng thái</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => {
-                const firstItem = order.products[0];
-                return (
-                  <tr key={order.id}>
-                    <td>#{order.id}</td>
-                    <td>
-                      <img
-                        src={firstItem.image}
-                        alt="ảnh"
-                        width="60"
-                        height="80"
-                      />
-                    </td>
-                    <td>{firstItem.title}</td>
-                    <td>{order.payment}</td>
-                    <td>{order.total.toLocaleString()}đ</td>
-                    <td>{order.status}</td>
-                    <td>
-                      {order.status === "Đã đặt" && (
-                        <button
-                          className="btn btn-sm btn-danger mb-1"
-                          onClick={() =>
-                            updateOrderStatus(order.id, "Đã hủy")
-                          }
-                        >
-                          Hủy đơn
-                        </button>
-                      )}
-                      {order.status === "Đang giao" && (
-                        <button
-                          className="btn btn-sm btn-primary mb-1"
-                          onClick={() =>
-                            updateOrderStatus(order.id, "Đã giao")
-                          }
-                        >
-                          Đã nhận hàng
-                        </button>
-                      )}
-                      <br />
+              {filteredOrders.map((order) => (
+                <tr key={order.OrderId}>
+                  <td>#{order.OrderId}</td>
+                  <td>{new Date(order.StartDate).toLocaleDateString()}</td>
+<td>{new Date(order.EndDate).toLocaleDateString()}</td>
+                  <td>{order.TotalFee.toLocaleString()}đ</td>
+                  <td>{order.TotalDeposit.toLocaleString()}đ</td>
+                  <td>{getStatusText(order.Status)}</td>
+                  <td>
+                    {order.Status === 0 && (
                       <button
-                        className="btn btn-sm btn-outline-secondary mt-1"
-                        onClick={() =>
-                          navigate(`/orders-rent/${order.id}`)
-                        }
+                        className="btn btn-sm btn-danger mb-1"
+                        onClick={() => updateOrderStatus(order.OrderId, 3)}
                       >
-                        Xem chi tiết
+                        Hủy đơn
                       </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                    )}
+                    {order.Status === 1 && (
+                      <button
+                        className="btn btn-sm btn-primary mb-1"
+                        onClick={() => updateOrderStatus(order.OrderId, 2)}
+                      >
+                        Đã nhận hàng
+                      </button>
+                    )}
+                    <br />
+                    <button
+                      className="btn btn-sm btn-outline-secondary mt-1"
+                      onClick={() => navigate(`/orders-rent/${order.OrderId}`)}
+                    >
+                      Xem chi tiết
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

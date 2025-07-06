@@ -1,33 +1,42 @@
-// File: DetailsBook.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getSaleBookById } from "../components/Service/saleBookService";
+import "../components/style/detailsSale.css";
 import CommentSection from "./CommentSection";
-import "../components/style/detailsbook.css";
 
-const DetailsBook = () => {
+const DetailsSale = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
   const baseURL = "https://localhost:7003";
 
   useEffect(() => {
     const fetchBook = async () => {
       try {
         const data = await getSaleBookById(id);
-        setBook(data);
+        const originalPrice = data.Price;
+        const finalPrice = data.FinalPrice;
+        const discountPercent =
+          data.DiscountPercentage !== undefined
+            ? data.DiscountPercentage
+            : originalPrice && finalPrice
+            ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
+            : null;
+
+        setBook({ ...data, finalPrice, discountPercent });
       } catch (error) {
-        console.error("Không thể lấy chi tiết sách:", error);
+        console.error("Không thể lấy chi tiết sách khuyến mãi:", error);
       }
     };
+
     fetchBook();
   }, [id]);
 
   const handleMouseMove = (e) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
+    const { clientX, clientY } = e;
+    setMousePosition({ x: clientX, y: clientY });
   };
 
   const handleMouseLeave = () => {
@@ -60,7 +69,7 @@ const DetailsBook = () => {
   if (!book) {
     return (
       <div className="container mt-4">
-        <h3>Không tìm thấy sách</h3>
+        <h3>Không tìm thấy sách khuyến mãi</h3>
         <button className="btn btn-secondary" onClick={() => navigate(-1)}>
           Quay lại
         </button>
@@ -71,28 +80,53 @@ const DetailsBook = () => {
   return (
     <div className="container mt-4 details-container">
       <div className="row">
+        {/* Hình ảnh */}
         <div
           className="col-md-5 details-image-wrapper"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          <img
-            src={`${baseURL}${book.ImageUrl}`}
-            alt={book.Title}
-            className="img-fluid details-image"
-            style={{
-              transformOrigin: `${mousePosition.x}px ${mousePosition.y}px`,
-              transform: mousePosition.x ? "scale(1.3)" : "scale(1)",
-              transition: "transform 0.2s ease-out",
-            }}
-          />
+          <div className="book-sale-box position-relative">
+           
+            <img
+              src={`${baseURL}${book.ImageUrl}`}
+              alt={book.Title}
+              className="img-fluid details-image"
+              style={{
+                transformOrigin: `${mousePosition.x}px ${mousePosition.y}px`,
+                transform: mousePosition.x ? "scale(1.3)" : "scale(1)",
+                transition: "transform 0.2s ease-out",
+              }}
+            />
+          </div>
         </div>
 
+        {/* Thông tin sách */}
         <div className="col-md-7 details-info">
-          <h2 className="details-title">{book.Title}</h2>
-          <p className="book-price-lg text-danger fw-bold" style={{ fontSize: "28px" }}>
-            {(book.Price * 1000).toLocaleString("vi-VN")}đ
-          </p>
+         <h2 className="details-title d-flex align-items-center gap-2">
+  {book.Title}
+  {book.discountPercent > 0 && (
+    <span className="flame-badge-inline">
+      🔥 <span className="discount">-{book.discountPercent}%</span>
+    </span>
+  )}
+</h2>
+
+
+          <div className="price-section mb-3">
+            <span
+              className="sale-price text-danger fw-bold"
+              style={{ fontSize: "28px" }}
+            >
+              {(book.finalPrice * 1000).toLocaleString("vi-VN")}đ
+            </span>
+            <span
+              style={{ fontSize: "20px" }}
+              className="original-price text-muted text-decoration-line-through ms-3"
+            >
+              {(book.Price * 1000).toLocaleString("vi-VN")}đ
+            </span>
+          </div>
 
           <div className="mb-3">
             <p><strong>Nhà xuất bản:</strong> {book.Publisher || "Không có"}</p>
@@ -101,8 +135,14 @@ const DetailsBook = () => {
             <p><strong>Kích thước:</strong> {book.PackagingSize || "Không rõ"}</p>
           </div>
 
+          {/* Số lượng */}
           <div className="quantity-control d-flex align-items-center mb-3 gap-2">
-            <button className="btn btn-sm btn-outline-secondary" onClick={handleDecrease}>-</button>
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={handleDecrease}
+            >
+              -
+            </button>
             <input
               type="text"
               readOnly
@@ -110,17 +150,26 @@ const DetailsBook = () => {
               className="form-control form-control-sm text-center"
               style={{ width: "50px" }}
             />
-            <button className="btn btn-sm btn-outline-secondary" onClick={handleIncrease}>+</button>
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={handleIncrease}
+            >
+              +
+            </button>
           </div>
 
           <div className="details-buttons d-flex gap-3 mt-3">
-            <button className="btn-add-to-cart" onClick={handleAddToCart}>🛒 Thêm vào giỏ</button>
-            <button className="btn-buy-now">⚡ Mua ngay</button>
+            <button className="btn-add-to-cart" onClick={handleAddToCart}>
+              🛒 Thêm vào giỏ
+            </button>
+            <button className="btn-buy-now">
+              ⚡ Mua ngay
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Mô tả & chi tiết */}
+      {/* Mô tả và chi tiết */}
       <div className="row mt-5 details-bottom">
         <div className="col-md-7">
           <h4>Mô tả sách</h4>
@@ -130,10 +179,22 @@ const DetailsBook = () => {
           <h4>Thông tin chi tiết</h4>
           <table className="table table-bordered">
             <tbody>
-              <tr><th>Tiêu đề</th><td>{book.Title}</td></tr>
-              <tr><th>Giá</th><td>{(book.Price * 1000).toLocaleString("vi-VN")}đ</td></tr>
-              <tr><th>NXB</th><td>{book.Publisher || "Không có"}</td></tr>
-              <tr><th>Số lượng</th><td>{book.Quantity}</td></tr>
+              <tr>
+                <th>Tiêu đề</th>
+                <td>{book.Title}</td>
+              </tr>
+              <tr>
+                <th>Giá bán</th>
+                <td>{book.Price}</td>
+              </tr>
+              <tr>
+                <th>NXB</th>
+                <td>{book.Publisher}</td>
+              </tr>
+              <tr>
+                <th>Số lượng</th>
+                <td>{book.Quantity}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -145,4 +206,4 @@ const DetailsBook = () => {
   );
 };
 
-export default DetailsBook;
+export default DetailsSale;

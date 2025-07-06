@@ -18,7 +18,7 @@ const Header = () => {
   const [isExchangeModalOpen, setIsExchangeModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -141,7 +141,7 @@ const Header = () => {
                      <button
                        className="dropdown-item"
                        onClick={() => {
-                         tokenUtils.removeAccessToken();
+                        tokenUtils.removeAccessToken()
                          document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                          alert("Đăng xuất thành công!");
                          setAccountDropdownOpen(false);
