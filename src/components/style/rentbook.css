@@ -64,7 +64,7 @@
   color: #1b5e20;
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 8px;
+
   text-align: center;
 }
 
@@ -73,6 +73,7 @@
   justify-content: center;
   overflow: hidden;
   width: 100%;
+  
   box-shadow: 0 0 5px rgba(58, 128, 58, 0.3);
 }
 

@@ -8,7 +8,12 @@ import { MdCancel, MdArrowBack, MdShoppingCartCheckout } from "react-icons/md";
 import { BsBoxSeam, BsCheck2 } from "react-icons/bs";
 
 const OrderStatusTabs = ["Tất cả", "Đã đặt", "Đang giao", "Đã giao", "Đã hủy"];
-const cancelReasons = ["Thay đổi ý định", "Đặt nhầm", "Tìm được chỗ khác rẻ hơn", "Khác"];
+const cancelReasons = [
+  "Thay đổi ý định",
+  "Đặt nhầm",
+  "Tìm được chỗ khác rẻ hơn",
+  "Khác",
+];
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -17,25 +22,49 @@ const AllOrders = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("sellOrders")) || [];
-    setOrders(stored);
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const currentUser = JSON.parse(localStorage.getItem("user")); // 👈 user hiện tại
+
+        const res = await fetch("https://localhost:7003/api/admin/saleorders", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const allOrders = await res.json();
+        console.log("Dữ liệu người dùng:", currentUser);
+        console.log("Dữ liệu đơn hàng:", allOrders);
+        // ⚠️ Kiểm tra key chính xác: 'userId' hay 'UserId' hay 'UserID'
+        const userOrders = allOrders.filter(
+          (order) => order.UserId == currentUser?.UserId // hoặc currentUser?.UserId nếu tên khác
+        );
+
+        setOrders(userOrders);
+      } catch (error) {
+        console.error("Lỗi khi lấy đơn hàng người dùng:", error);
+      }
+    };
+
+    fetchOrders();
   }, []);
 
   const handleCancelOrder = (orderId, reason) => {
     const updated = orders.map((o) =>
-      o.id === orderId ? { ...o, status: "Đã hủy", cancelReason: reason } : o
+      o.orderId === orderId
+        ? { ...o, status: "Đã hủy", cancelReason: reason }
+        : o
     );
     setOrders(updated);
-    localStorage.setItem("sellOrders", JSON.stringify(updated));
     setShowReasonInput(null);
   };
 
   const handleConfirmReceived = (orderId) => {
     const updated = orders.map((o) =>
-      o.id === orderId ? { ...o, status: "Đã giao" } : o
+      o.orderId === orderId ? { ...o, status: "Đã giao" } : o
     );
     setOrders(updated);
-    localStorage.setItem("sellOrders", JSON.stringify(updated));
   };
 
   const handleBuyAgain = (products) => {
@@ -52,7 +81,6 @@ const AllOrders = () => {
     <div className="container mt-4">
       <h2>Danh sách đơn hàng</h2>
 
-      {/* Tabs trạng thái */}
       <div className="d-flex mb-3" style={{ width: "100%" }}>
         {OrderStatusTabs.map((tab, index) => (
           <button
@@ -74,7 +102,6 @@ const AllOrders = () => {
         ))}
       </div>
 
-      {/* Bảng đơn */}
       {filteredOrders.length === 0 ? (
         <p>Không có đơn hàng nào.</p>
       ) : (
@@ -82,70 +109,41 @@ const AllOrders = () => {
           <thead className="table-success">
             <tr>
               <th>Mã đơn</th>
-              <th>Sản phẩm</th>
-              <th>Phương thức</th>
+              <th>Ngày tạo</th>
+              <th>Phương thức thanh toán</th>
+              <th>Tiền giảm</th>
               <th>Tổng tiền</th>
-              <th>Trạng thái</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
-              <tr key={order.id}>
-                <td>#{order.id}</td>
-                <td>
-                  {order.products.map((item, idx) => (
-                    <div key={idx} className="d-flex align-items-center mb-1">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        style={{
-                          width: "40px",
-                          height: "50px",
-                          objectFit: "cover",
-                          marginRight: "10px",
-                        }}
-                      />
-                      <div>
-                        <div>{item.title}</div>
-                        <small>
-                          SL: {item.quantity} | Giá:{" "}
-                          {(item.price * item.quantity).toLocaleString()}đ
-                        </small>
-                      </div>
-                    </div>
-                  ))}
-                </td>
-                <td>{order.payment}</td>
-                <td>{order.total.toLocaleString()}đ</td>
-                <td>
-                  {order.status}
-                  {order.status === "Đã hủy" && order.cancelReason && (
-                    <div style={{ fontSize: "small", color: "gray" }}>
-                      (Lý do: {order.cancelReason})
-                    </div>
-                  )}
-                </td>
+              <tr key={order.OrderId}>
+                <td>#{order.OrderId}</td>
+
+                <td>{order.OrderDate}</td>
+                <td>{order.PaymentMethod}</td>
+                <td>{order.DiscountAmount}đ</td>
+                <td>{order.TotalAmount}đ</td>
+
                 <td>
                   <div className="action-icons d-flex flex-wrap gap-1 justify-content-center">
-                    {/* Xem chi tiết */}
                     <button
                       className="btn btn-info btn-sm"
                       title="Xem chi tiết"
-                      onClick={() => navigate(`/orders-sell/${order.id}`)}
+                      onClick={() => navigate(`/orders-sells/${order.OrderId}`)}
                     >
                       <HiOutlineSearch />
                     </button>
 
-                    {/* Hủy đơn */}
                     {order.status === "Đã đặt" && (
                       <>
-                        {showReasonInput === order.id ? (
+                        {showReasonInput === order.orderId ? (
                           <div style={{ width: "100%" }}>
                             <select
                               className="form-select mb-1"
                               onChange={(e) =>
-                                handleCancelOrder(order.id, e.target.value)
+                                handleCancelOrder(order.orderId, e.target.value)
                               }
                               defaultValue=""
                             >
@@ -170,7 +168,7 @@ const AllOrders = () => {
                           <button
                             className="btn btn-danger btn-sm"
                             title="Hủy đơn"
-                            onClick={() => setShowReasonInput(order.id)}
+                            onClick={() => setShowReasonInput(order.orderId)}
                           >
                             <MdCancel />
                           </button>
@@ -178,19 +176,17 @@ const AllOrders = () => {
                       </>
                     )}
 
-                    {/* Xác nhận đã nhận */}
                     {order.status === "Đang giao" && (
                       <button
                         className="btn btn-primary btn-sm"
                         title="Đã nhận hàng"
-                        onClick={() => handleConfirmReceived(order.id)}
+                        onClick={() => handleConfirmReceived(order.orderId)}
                       >
                         <BsBoxSeam className="me-1" />
                         <BsCheck2 />
                       </button>
                     )}
 
-                    {/* Mua lại */}
                     {order.status === "Đã hủy" && (
                       <button
                         className="btn btn-outline-secondary btn-sm"

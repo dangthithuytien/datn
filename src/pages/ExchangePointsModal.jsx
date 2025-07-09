@@ -3,15 +3,9 @@ import { Modal, Tab, Tabs, Button, Spinner } from "react-bootstrap";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../components/style/Voucher.css";
+import { getAuthHeaders } from "../components/Cookie/authUtils";
 
-// Base URL API
 const baseURL = "https://localhost:7003";
-
-// ✅ Gắn token vào header mặc định của axios
-const token = localStorage.getItem("token");
-if (token) {
-  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-}
 
 const ExchangePointsModal = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("exchange");
@@ -21,7 +15,6 @@ const ExchangePointsModal = ({ isOpen, onClose }) => {
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Lấy danh sách mã giảm giá
   useEffect(() => {
     if (!isOpen) return;
 
@@ -40,7 +33,7 @@ const ExchangePointsModal = ({ isOpen, onClose }) => {
 
     const fetchHistory = async () => {
       try {
-        const res = await axios.get(`${baseURL}/api/Voucher/history`);
+        const res = await axios.get(`${baseURL}/api/Voucher/history`, getAuthHeaders());
         setHistoryList(res.data);
       } catch (error) {
         console.error("Lỗi khi lấy lịch sử voucher:", error);
@@ -54,14 +47,18 @@ const ExchangePointsModal = ({ isOpen, onClose }) => {
     fetchHistory();
   }, [isOpen]);
 
-  // Xử lý đổi mã
   const handleExchange = async (id) => {
     try {
-      const res = await axios.post(`${baseURL}/api/Voucher/exchange-discount/${id}`);
+      const res = await axios.post(
+        `${baseURL}/api/Voucher/exchange-discount/${id}`,
+        {},
+        getAuthHeaders()
+      );
       setMessage(res.data.message || "Đổi mã thành công!");
       setSuccess(true);
+
       // Reload lịch sử sau khi đổi
-      const historyRes = await axios.get(`${baseURL}/api/Voucher/history`);
+      const historyRes = await axios.get(`${baseURL}/api/Voucher/history`, getAuthHeaders());
       setHistoryList(historyRes.data);
     } catch (error) {
       const errMsg = error?.response?.data?.message || "Đổi mã thất bại.";
@@ -87,7 +84,7 @@ const ExchangePointsModal = ({ isOpen, onClose }) => {
                 <p className="text-center text-muted">Không có mã giảm giá nào.</p>
               ) : (
                 <div className="row">
-                  {discountCodes.map((code) => (
+{discountCodes.map((code) => (
                     <div key={code.DiscountCodeId} className="col-md-6 mb-3">
                       <div className="card h-100">
                         <div className="card-body">

@@ -201,3 +201,13 @@
 .tab-content > .tab-pane {
   padding-top: 20px;
 }
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+.card-title {
+  font-weight: bold;
+}
+.alert {
+  font-size: 15px;
+}

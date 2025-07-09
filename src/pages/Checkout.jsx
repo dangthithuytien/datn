@@ -1,216 +1,291 @@
 import React, { useState, useEffect } from "react";
-import QRCode from "react-qr-code";
 import "../components/style/Checkout.css";
-
-const provinces = [
-  { id: 1, name: "Hồ Chí Minh" },
-  { id: 2, name: "Hà Nội" },
-  { id: 3, name: "Đà Nẵng" },
-];
-
-const districtsData = {
-  1: [
-    { id: 1, name: "Quận 1" },
-    { id: 2, name: "Quận 2" },
-  ],
-  2: [
-    { id: 3, name: "Quận Hoàn Kiếm" },
-    { id: 4, name: "Quận Đống Đa" },
-  ],
-};
-
-const wardsData = {
-  1: {
-    1: [{ id: 1, name: "Phường Bến Nghé" }],
-    2: [{ id: 2, name: "Phường Thủ Thiêm" }],
-  },
-};
+import { getCartSale } from "../components/Service/cartService";
 
 const Checkout = () => {
-  const [discountCode, setDiscountCode] = useState("");
+  const [discountValue, setDiscountValue] = useState(0);
   const [shipping, setShipping] = useState("store_pickup");
   const [payment, setPayment] = useState("cod");
   const [totalAmount, setTotalAmount] = useState(0);
-  const [momoCode, setMomoCode] = useState("");
-  const [momoTimer, setMomoTimer] = useState(0);
-  const [bank, setBank] = useState("vcb");
+  const [shippingFee, setShippingFee] = useState(0);
+  const [availableVouchers, setAvailableVouchers] = useState([]);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
 
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
 
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    phone: "",
+    email: ""
+  });
+
+  const rawTotal = totalAmount + shippingFee;
+  const discountAmount = (rawTotal * discountValue) / 100;
+  const finalAmount = rawTotal - discountAmount;
+
   useEffect(() => {
     const storedTotal = JSON.parse(localStorage.getItem("checkoutTotal")) || 0;
     setTotalAmount(storedTotal);
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUserInfo({
+        name: storedUser.UserName || "",
+        phone: storedUser.PhonNumber || "",
+        email: storedUser.Email || ""
+      });
+    }
   }, []);
 
   useEffect(() => {
-    let timer;
-    if (payment === "momo" && momoCode) {
-      setMomoTimer(60);
-      timer = setInterval(() => {
-        setMomoTimer((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            setMomoCode("");
-            return 0;
-          }
-          return prev - 1;
+    setShippingFee(shipping === "home_delivery" ? 20000 : 0);
+  }, [shipping]);
+
+  useEffect(() => {
+    fetch("https://esgoo.net/api-tinhthanh/1/0.htm")
+      .then(res => res.json())
+      .then(data => {
+        if (data.error === 0) setProvinces(data.data);
+      });
+
+    const fetchVouchers = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const res = await fetch("https://localhost:7003/api/Voucher/history", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-      }, 1000);
+        const data = await res.json();
+        const unused = data.filter(v => !v.IsUsed);
+        setAvailableVouchers(unused);
+      } catch (err) {
+        console.error("Lỗi khi lấy voucher:", err);
+      }
+    };
+
+    fetchVouchers();
+  }, []);
+
+  useEffect(() => {
+    if (selectedProvince) {
+      fetch(`https://esgoo.net/api-tinhthanh/2/${selectedProvince}.htm`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.error === 0) setDistricts(data.data);
+        });
+    } else {
+      setDistricts([]);
     }
-    return () => clearInterval(timer);
-  }, [payment, momoCode]);
+    setSelectedDistrict("");
+    setSelectedWard("");
+    setWards([]);
+  }, [selectedProvince]);
 
-  const generateMomoCode = () => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    setMomoCode(code);
+  useEffect(() => {
+    if (selectedDistrict) {
+      fetch(`https://esgoo.net/api-tinhthanh/3/${selectedDistrict}.htm`)
+        .then(res => res.json())
+.then(data => {
+if (data.error === 0) setWards(data.data);
+        });
+    } else {
+      setWards([]);
+    }
+    setSelectedWard("");
+  }, [selectedDistrict]);
+
+  const addToCartSession = async (product) => {
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch("https://localhost:7003/api/CartSale/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ProductId: product.ProductId,
+        Quantity: product.Quantity,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error("❌ Lỗi khi thêm sản phẩm vào session: " + errorText);
+    }
   };
 
-  const getMomoQRData = () => {
-    return momoCode ? `https://momo.vn/pay/${momoCode}` : "";
+  const createCashOrder = async (orderData) => {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await fetch("https://localhost:7003/api/SaleOrders/create-cash", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+      body: JSON.stringify(orderData),
+    });
+
+    if (!response.ok) {
+      const errorDetail = await response.text();
+      throw new Error("Lỗi khi tạo đơn hàng: " + errorDetail);
+    }
+
+    return response.json();
   };
 
-  const handlePaymentChange = (value) => {
-    setPayment(value);
-    if (value !== "momo") setMomoCode("");
-  };
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const handlePlaceOrder = () => {
-    const name = document.querySelector('input[placeholder="Họ tên"]').value;
-    const phone = document.querySelector('input[placeholder="Số điện thoại"]').value;
-    const email = document.querySelector('input[placeholder="Email"]').value;
+  const handlePlaceOrder = async () => {
     const addressDetail = document.querySelector('input[placeholder="Địa chỉ cụ thể"]').value;
-
     const products = JSON.parse(localStorage.getItem("cartBuy")) || [];
+
     if (products.length === 0) {
-      alert("Giỏ hàng trống!");
+      alert("🛒 Giỏ hàng trống!");
       return;
     }
 
-    const order = {
-      id: Date.now(),
-      date: new Date().toLocaleString("vi-VN"),
-      status: "Đã đặt",
-      total: totalAmount,
-      shipping,
-      payment,
-      customer: {
-        name,
-        phone,
-        email,
-        province: provinces.find((p) => p.id == selectedProvince)?.name || "",
-        district: districtsData[selectedProvince]?.find((d) => d.id == selectedDistrict)?.name || "",
-        ward: wardsData[selectedProvince]?.[selectedDistrict]?.find((w) => w.id == selectedWard)?.name || "",
-        addressDetail,
-      },
-      products,
+    if (!userInfo.phone || !selectedProvince || !selectedDistrict || !selectedWard || !addressDetail) {
+      alert("⚠️ Vui lòng nhập đầy đủ thông tin người nhận.");
+      return;
+    }
+
+    const provinceName = provinces.find((p) => p.id.toString() === selectedProvince)?.full_name || "";
+    const districtName = districts.find((d) => d.id.toString() === selectedDistrict)?.full_name || "";
+    const wardName = wards.find((w) => w.id.toString() === selectedWard)?.full_name || "";
+    const fullAddress = `${addressDetail}, ${wardName}, ${districtName}, ${provinceName}`;
+
+    const orderData = {
+      UserId: "string",
+      Address: fullAddress,
+      Phone: userInfo.phone,
+      HasShippingFee: shipping === "home_delivery",
+      VoucherCode: selectedVoucher?.Code || "",
+      SelectedProductIds: products.map(p => p.ProductId),
     };
 
-    const storedOrders = JSON.parse(localStorage.getItem("sellOrders")) || [];
-    localStorage.setItem("sellOrders", JSON.stringify([...storedOrders, order]));
+    try {
+      for (const product of products) {
+        await addToCartSession(product);
+      }
 
-    localStorage.removeItem("cartBuy");
-    localStorage.removeItem("checkoutTotal");
+      await delay(300);
 
-    alert("Đặt hàng thành công!");
-    window.location.href = "/"; // hoặc chuyển đến trang đơn hàng
+      const sessionCart = await getCartSale();
+      if (!sessionCart || sessionCart.length === 0) {
+        alert("❌ Đặt hàng thất bại: Giỏ hàng session rỗng.");
+        return;
+      }
+
+      await createCashOrder(orderData);
+console.log("sadsadsadaaaaa",orderData)
+alert("✅ Đặt hàng thành công!");
+      localStorage.removeItem("cartBuy");
+      localStorage.removeItem("checkoutTotal");
+      window.location.href = "/";
+    } catch (error) {
+      console.error(error);
+      alert("❌ Đặt hàng thất bại: " + error.message);
+    }
   };
 
   return (
     <div className="container mt-4">
-      {/* Thông tin khách hàng */}
       <div className="checkout-section">
         <h3 className="checkout-section-title">Thông tin khách hàng</h3>
         <div className="checkout-input-group">
-          <input type="text" placeholder="Họ tên" className="checkout-input" />
-          <input type="tel" placeholder="Số điện thoại" className="checkout-input" />
-          <input type="email" placeholder="Email" className="checkout-input" />
-
-          <select value={selectedProvince} onChange={(e) => {
-            setSelectedProvince(e.target.value);
-            setSelectedDistrict("");
-            setSelectedWard("");
-          }} className="checkout-input">
+          <input type="text" value={userInfo.name} className="checkout-input" readOnly />
+          <input type="tel" value={userInfo.phone} className="checkout-input" readOnly />
+          <input type="email" value={userInfo.email} className="checkout-input" readOnly />
+          <select value={selectedProvince} onChange={(e) => setSelectedProvince(e.target.value)} className="checkout-input">
             <option value="">Chọn Tỉnh/Thành phố</option>
             {provinces.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
+              <option key={p.id} value={p.id.toString()}>{p.full_name}</option>
             ))}
           </select>
-
-          <select value={selectedDistrict} onChange={(e) => {
-            setSelectedDistrict(e.target.value);
-            setSelectedWard("");
-          }} className="checkout-input">
+          <select value={selectedDistrict} onChange={(e) => setSelectedDistrict(e.target.value)} className="checkout-input" disabled={!selectedProvince}>
             <option value="">Chọn Quận/Huyện</option>
-            {selectedProvince &&
-              districtsData[selectedProvince]?.map((d) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
+            {districts.map((d) => (
+              <option key={d.id} value={d.id.toString()}>{d.full_name}</option>
+            ))}
           </select>
-
-          <select value={selectedWard} onChange={(e) => setSelectedWard(e.target.value)} className="checkout-input">
+          <select value={selectedWard} onChange={(e) => setSelectedWard(e.target.value)} className="checkout-input" disabled={!selectedDistrict}>
             <option value="">Chọn Phường/Xã</option>
-            {selectedDistrict &&
-              wardsData[selectedProvince]?.[selectedDistrict]?.map((w) => (
-                <option key={w.id} value={w.id}>{w.name}</option>
-              ))}
+            {wards.map((w) => (
+              <option key={w.id} value={w.id.toString()}>{w.full_name}</option>
+            ))}
           </select>
-
           <input type="text" placeholder="Địa chỉ cụ thể" className="checkout-input" style={{ flex: "1 1 100%" }} />
         </div>
       </div>
 
-      {/* Phương thức vận chuyển */}
       <div className="checkout-section">
         <h3 className="checkout-section-title">Phương thức vận chuyển</h3>
-        <label><input type="radio" name="shipping" value="store_pickup" checked={shipping === "store_pickup"} onChange={() => setShipping("store_pickup")} /> Đến cửa hàng lấy</label>
-        <label><input type="radio" name="shipping" value="home_delivery" checked={shipping === "home_delivery"} onChange={() => setShipping("home_delivery")} /> Giao tận nơi</label>
+        <label>
+          <input type="radio" name="shipping" value="store_pickup" checked={shipping === "store_pickup"} onChange={() => setShipping("store_pickup")} />
+          Đến cửa hàng lấy
+        </label>
+        <label>
+          <input type="radio" name="shipping" value="home_delivery" checked={shipping === "home_delivery"} onChange={() => setShipping("home_delivery")} />
+          Giao tận nơi
+        </label>
       </div>
 
-      {/* Phương thức thanh toán */}
       <div className="checkout-section">
         <h3 className="checkout-section-title">Phương thức thanh toán</h3>
-        <label><input type="radio" name="payment" value="cod" checked={payment === "cod"} onChange={() => handlePaymentChange("cod")} /> COD</label>
-        <label><input type="radio" name="payment" value="momo" checked={payment === "momo"} onChange={() => handlePaymentChange("momo")} /> MoMo</label>
-        <label><input type="radio" name="payment" value="bank" checked={payment === "bank"} onChange={() => handlePaymentChange("bank")} /> Internet Banking</label>
-
-        {payment === "momo" && (
-          <div className="qr-code-container">
-            {!momoCode ? (
-              <button onClick={generateMomoCode}>Gửi mã MoMo (60 giây)</button>
-            ) : (
-              <>
-                <p>Vui lòng thanh toán mã sau trong 60 giây:</p>
-                <QRCode value={getMomoQRData()} size={128} />
-                <h4>{momoCode}</h4>
-                <p>Thời gian còn lại: {momoTimer} giây</p>
-                <button onClick={generateMomoCode}>Gửi lại mã</button>
-              </>
-            )}
-          </div>
-        )}
-
-        {payment === "bank" && (
-          <div>
-            <label>Ngân hàng:
-              <select value={bank} onChange={(e) => setBank(e.target.value)}>
-                <option value="vcb">Vietcombank</option>
-                <option value="tpbank">TPBank</option>
-              </select>
-            </label>
-          </div>
-        )}
+        <label>
+          <input type="radio" name="payment" value="cod" checked={payment === "cod"} onChange={() => setPayment("cod")} />
+          COD
+        </label>
+        <label>
+          <input type="radio" name="payment" value="momo" disabled />
+          MoMo
+</label>
+        <label>
+<input type="radio" name="payment" value="bank" disabled />
+          Internet Banking
+        </label>
       </div>
 
-      {/* Tổng hóa đơn + Mã giảm giá */}
       <div className="checkout-section checkout-footer">
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <input type="text" placeholder="Nhập mã giảm giá" value={discountCode} onChange={(e) => setDiscountCode(e.target.value)} className="discount-input" />
-          <button className="btn btn-success">Áp dụng</button>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+          <select
+            className="discount-input"
+            value={selectedVoucher?.Code || ""}
+            onChange={(e) => {
+              const selected = availableVouchers.find(v => v.Code === e.target.value);
+              setSelectedVoucher(selected || null);
+              setDiscountValue(selected ? selected.DiscountValue : 0);
+            }}
+          >
+            <option value="">-- Chọn mã giảm giá --</option>
+            {availableVouchers.map(voucher => (
+              <option key={voucher.Code} value={voucher.Code}>
+                {voucher.DiscountCodeName} - Giảm {voucher.DiscountValue}%
+              </option>
+            ))}
+          </select>
         </div>
+
+        {selectedVoucher && (
+          <p style={{ color: "green", marginTop: "10px" }}>
+            Đã áp dụng mã: <strong>{selectedVoucher.Code}</strong> - Giảm {discountValue}%
+          </p>
+        )}
+
         <div style={{ marginTop: "10px" }}>
-          <strong>Tổng hóa đơn: <span style={{ color: "#28a745" }}>{totalAmount.toLocaleString()}đ</span></strong>
+          <strong>
+            Tổng hóa đơn: <span style={{ color: "#28a745" }}>{finalAmount.toLocaleString()}đ</span>
+            {discountAmount > 0 && <small> (đã giảm {discountAmount.toLocaleString()}đ)</small>}
+          </strong>
           <button className="btn btn-success ms-3" onClick={handlePlaceOrder}>Đặt hàng</button>
         </div>
       </div>

@@ -1,0 +1,171 @@
+/* ====== PHẦN BÌNH LUẬN (COMMENT SECTION) ====== */
+.details-comments {
+  margin-top: 50px;
+  padding: 30px 2cm;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 2;
+}
+
+.details-comments h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2e7d32;
+}
+
+/* ====== Bộ lọc bình luận ====== */
+.comment-filter button {
+  min-width: 80px;
+}
+
+.comment-box {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.comment-box textarea,
+.comment-box input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical;
+  background-color: #f9f9f9;
+}
+
+.comment-box button {
+  align-self: flex-end;
+  padding: 8px 16px;
+  background-color: #2e7d32;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.comment-box button:hover {
+  background-color: #1b5e20;
+}
+
+.comment-list {
+  margin-top: 25px;
+}
+
+.comment-item {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #f0f7f0;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.comment-item p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.comment-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.comment-username {
+  font-size: 1rem;
+  color: #2e7d32;
+}
+
+.comment-actions button {
+  font-size: 0.85rem;
+  color: #104a1d;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.comment-actions button:hover {
+  text-decoration: underline;
+}
+
+/* Phản hồi form */
+.reply-form input {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.reply-form button {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+/* ====== Lùi cấp độ phản hồi ====== */
+.comment-indent-1 {
+  margin-left: 30px;
+}
+.comment-indent-2 {
+  margin-left: 60px;
+}
+.comment-indent-3 {
+  margin-left: 90px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 767px) {
+  .details-comments {
+    padding: 20px 15px;
+  }
+
+  .comment-item {
+    flex-direction: column;
+  }
+
+  .comment-avatar {
+    margin-bottom: 10px;
+  }
+}
+/* Tô màu xanh lá khi radio được chọn */
+.form-check-input:checked {
+  background-color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+/* Bo viền radio */
+.form-check-input {
+  border: 2px solid #ccc;
+  width: 16px;
+  height: 16px;
+  margin-top: 0;
+}
+.delete-comment-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #2e7d32; /* Xanh lá đậm */
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.delete-comment-btn:hover {
+  color: #1b5e20;
+  transform: scale(1.1);
+}

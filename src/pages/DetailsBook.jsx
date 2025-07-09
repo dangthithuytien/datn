@@ -1,6 +1,8 @@
+// File: DetailsBook.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getSaleBookById } from "../components/Service/saleBookService";
+import CommentSection from "./CommentSection";
 import "../components/style/detailsbook.css";
 
 const DetailsBook = () => {
@@ -9,6 +11,7 @@ const DetailsBook = () => {
   const [book, setBook] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
   const baseURL = "https://localhost:7003";
 
   useEffect(() => {
@@ -24,8 +27,7 @@ const DetailsBook = () => {
   }, [id]);
 
   const handleMouseMove = (e) => {
-    const { clientX, clientY } = e;
-    setMousePosition({ x: clientX, y: clientY });
+    setMousePosition({ x: e.clientX, y: e.clientY });
   };
 
   const handleMouseLeave = () => {
@@ -69,7 +71,6 @@ const DetailsBook = () => {
   return (
     <div className="container mt-4 details-container">
       <div className="row">
-        {/* Hình ảnh sách */}
         <div
           className="col-md-5 details-image-wrapper"
           onMouseMove={handleMouseMove}
@@ -87,19 +88,12 @@ const DetailsBook = () => {
           />
         </div>
 
-        {/* Thông tin sách */}
         <div className="col-md-7 details-info">
           <h2 className="details-title">{book.Title}</h2>
-
-          {/* Giá nổi bật */}
-          <p
-            className="book-price-lg text-danger fw-bold"
-            style={{ fontSize: "28px", marginBottom: "12px" }}
-          >
+          <p className="book-price-lg text-danger fw-bold" style={{ fontSize: "28px" }}>
             {(book.Price * 1000).toLocaleString("vi-VN")}đ
           </p>
 
-          {/* Thông tin phụ */}
           <div className="mb-3">
             <p><strong>Nhà xuất bản:</strong> {book.Publisher || "Không có"}</p>
             <p><strong>Dịch giả:</strong> {book.Translator || "Không có"}</p>
@@ -107,7 +101,6 @@ const DetailsBook = () => {
             <p><strong>Kích thước:</strong> {book.PackagingSize || "Không rõ"}</p>
           </div>
 
-          {/* Số lượng */}
           <div className="quantity-control d-flex align-items-center mb-3 gap-2">
             <button className="btn btn-sm btn-outline-secondary" onClick={handleDecrease}>-</button>
             <input
@@ -120,16 +113,14 @@ const DetailsBook = () => {
             <button className="btn btn-sm btn-outline-secondary" onClick={handleIncrease}>+</button>
           </div>
 
-          <div className="d-flex gap-3 mt-3">
-            <button className="btn btn-outline-primary" onClick={handleAddToCart}>
-              Thêm vào giỏ
-            </button>
-            <button className="btn btn-success">Mua ngay</button>
+          <div className="details-buttons d-flex gap-3 mt-3">
+            <button className="btn-add-to-cart" onClick={handleAddToCart}>🛒 Thêm vào giỏ</button>
+            <button className="btn-buy-now">⚡ Mua ngay</button>
           </div>
         </div>
       </div>
 
-      {/* Mô tả và bảng thông tin chi tiết */}
+      {/* Mô tả & chi tiết */}
       <div className="row mt-5 details-bottom">
         <div className="col-md-7">
           <h4>Mô tả sách</h4>
@@ -139,26 +130,17 @@ const DetailsBook = () => {
           <h4>Thông tin chi tiết</h4>
           <table className="table table-bordered">
             <tbody>
-              <tr>
-                <th>Tiêu đề</th>
-                <td>{book.Title}</td>
-              </tr>
-              <tr>
-                <th>Giá</th>
-                <td>{(book.Price * 1000).toLocaleString("vi-VN")}đ</td>
-              </tr>
-              <tr>
-                <th>Số lượng còn</th>
-                <td>{book.Quantity}</td>
-              </tr>
-              <tr>
-                <th>Khuyến mãi</th>
-                <td>{book.PromotionName || "Không có"}</td>
-              </tr>
+              <tr><th>Tiêu đề</th><td>{book.Title}</td></tr>
+              <tr><th>Giá</th><td>{(book.Price * 1000).toLocaleString("vi-VN")}đ</td></tr>
+              <tr><th>NXB</th><td>{book.Publisher || "Không có"}</td></tr>
+              <tr><th>Số lượng</th><td>{book.Quantity}</td></tr>
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* ==== BÌNH LUẬN ==== */}
+      <CommentSection bookId={book.SaleBookId} storageKeyPrefix="comments-sale" />
     </div>
   );
 };

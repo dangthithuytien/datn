@@ -4,7 +4,9 @@ import {
   getRentBookById,
   getAllRentBookItems,
 } from "../components/Service/rentBookService";
-import "../components/style/detailsbook.css";
+import "../components/style/detailsRent.css";
+import CommentSection from "./CommentSection";
+
 
 const baseURL = "https://localhost:7003";
 
@@ -20,11 +22,11 @@ const RentBookDetails = () => {
   useEffect(() => {
     const fetchItemDetails = async () => {
       setIsLoading(true); // Bắt đầu tải
-      setError(null);    // Đặt lại lỗi
+      setError(null); // Đặt lại lỗi
 
       try {
         const allItems = await getAllRentBookItems();
-        const foundItem = allItems.find(item => item.RentBookItemId === id);
+        const foundItem = allItems.find((item) => item.RentBookItemId === id);
 
         if (foundItem) {
           setRentBookItem(foundItem);
@@ -62,13 +64,13 @@ const RentBookDetails = () => {
 
   // HÀM formatPrice ĐÃ ĐƯỢC CẬP NHẬT để luôn hiển thị X.000 đ
   const formatPrice = (price) => {
-    if (typeof price !== 'number' || isNaN(price)) {
-        return "N/A đ"; // Trả về giá trị mặc định nếu price không phải số
+    if (typeof price !== "number" || isNaN(price)) {
+      return "N/A đ"; // Trả về giá trị mặc định nếu price không phải số
     }
 
-    const formatter = new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
+    const formatter = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
       minimumFractionDigits: 0, // Đảm bảo không có số thập phân
       maximumFractionDigits: 0, // Đảm bảo không có số thập phân
     });
@@ -82,7 +84,9 @@ const RentBookDetails = () => {
     if (!rentBookItem || !parentBook) return;
 
     const rentCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-    const exists = rentCart.find((cartItem) => cartItem.id === rentBookItem.RentBookItemId);
+    const exists = rentCart.find(
+      (cartItem) => cartItem.id === rentBookItem.RentBookItemId
+    );
 
     if (exists) {
       alert("Mục sách này đã có trong giỏ thuê.");
@@ -176,15 +180,30 @@ const RentBookDetails = () => {
             Giá thuê: {formatPrice(parentBook.Price)}/ngày
           </p>
 
-
           <div className="mb-3">
-            <p><strong>Nhà xuất bản:</strong> {parentBook.Publisher || "Không có"}</p>
-            <p><strong>Dịch giả:</strong> {parentBook.Translator || "Không có"}</p>
-            <p><strong>Số trang:</strong> {parentBook.PageCount || "Không rõ"}</p>
-            <p><strong>Kích thước:</strong> {parentBook.PackagingSize || "Không rõ"}</p>
+            <p>
+              <strong>Nhà xuất bản:</strong>{" "}
+              {parentBook.Publisher || "Không có"}
+            </p>
+            <p>
+              <strong>Dịch giả:</strong> {parentBook.Translator || "Không có"}
+            </p>
+            <p>
+              <strong>Số trang:</strong> {parentBook.PageCount || "Không rõ"}
+            </p>
+            <p>
+              <strong>Kích thước:</strong>{" "}
+              {parentBook.PackagingSize || "Không rõ"}
+            </p>
             <p>
               <strong>Trạng thái:</strong>{" "}
-              <strong className={rentBookItem.status === "Available" ? "text-success" : "text-danger"}>
+              <strong
+                className={
+                  rentBookItem.status === "Available"
+                    ? "text-success"
+                    : "text-danger"
+                }
+              >
                 {rentBookItem.status === "Available" ? "Còn hàng" : "Đã thuê"}
               </strong>
             </p>
@@ -208,7 +227,10 @@ const RentBookDetails = () => {
                 Đã thuê
               </button>
             )}
-            <button className="btn btn-success" onClick={() => navigate("/rent-cart")}>
+            <button
+              className="btn btn-success"
+              onClick={() => navigate("/rent-cart")}
+            >
               Thuê ngay
             </button>
           </div>
@@ -248,6 +270,12 @@ const RentBookDetails = () => {
           </table>
         </div>
       </div>
+      {/* ==== BÌNH LUẬN ==== */}
+    <CommentSection
+  bookId={rentBookItem.RentBookItemId}
+  storageKeyPrefix="comments-rent"
+/>
+
     </div>
   );
 };

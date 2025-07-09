@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { getPromotedBooks } from "../components/Service/saleBookService";
-import "../components/style/sale.css"; // CSS giống AllBook
+import "../components/style/sale.css"; // dùng chung CSS với Sale.jsx
 
 const SaleAll = () => {
   const [books, setBooks] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
-  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const booksPerPage = 15;
   const baseURL = "https://localhost:7003";
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPromotedBooks = async () => {
+    const fetchBooks = async () => {
       try {
         const response = await getPromotedBooks();
 
@@ -26,14 +29,15 @@ const SaleAll = () => {
               : null;
 
           return {
+            ...book,
             id: book.SaleBookId,
             title: book.Title,
             image: book.ImageUrl?.startsWith("/")
               ? `${baseURL}${book.ImageUrl}`
               : book.ImageUrl,
             price: originalPrice,
-            finalPrice: finalPrice,
-            discountPercent: discountPercent,
+            finalPrice,
+            discountPercent,
             packagingSize: book.PackagingSize,
           };
         });
@@ -44,10 +48,10 @@ const SaleAll = () => {
       }
 
       const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-      setFavoriteIds(favorites.map((b) => b.SaleBookId));
+      setFavoriteIds(favorites.map((b) => b.SaleBookId || b.id));
     };
 
-    fetchPromotedBooks();
+    fetchBooks();
   }, []);
 
   const handleAddToCart = (book) => {
@@ -66,8 +70,8 @@ const SaleAll = () => {
 
   const handleAddToFavorites = (book) => {
     const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-    const isExist = favorites.some((item) => item.SaleBookId === book.id);
-    if (!isExist) {
+    const exists = favorites.some((item) => item.id === book.id || item.SaleBookId === book.id);
+    if (!exists) {
       favorites.push(book);
       localStorage.setItem("favoriteBooks", JSON.stringify(favorites));
       setFavoriteIds([...favoriteIds, book.id]);
@@ -81,45 +85,52 @@ const SaleAll = () => {
     navigate(`/book/${book.id}`, { state: { book } });
   };
 
-  // Tính số placeholder để đủ 5 sách mỗi hàng
-  const placeholderCount = (5 - (books.length % 5)) % 5;
+  // ==== Phân trang ====
+  const indexOfLast = currentPage * booksPerPage;
+  const indexOfFirst = indexOfLast - booksPerPage;
+  const currentBooks = books.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(books.length / booksPerPage);
+
+  const placeholders = (5 - (currentBooks.length % 5)) % 5;
 
   return (
     <div className="container mt-4">
-      <h4 className="d-flex align-items-center mb-4">
-        <span>Tất cả sách khuyến mãi</span>
-      </h4>
+      <h2 className="text-center mb-4">Tất cả sách khuyến mãi</h2>
 
-      <div className="d-flex flex-wrap justify-content-between">
-        {books.map((book) => (
-          <div key={book.id} className="book-item" style={{ width: "19%" }}>
+      <div className="sale-grid-container">
+        {currentBooks.map((book) => (
+          <div key={book.id} className="sale-grid-item">
             <div className="book-card position-relative">
               <FaHeart
                 className={`heart-icon ${favoriteIds.includes(book.id) ? "active" : ""}`}
                 onClick={() => handleAddToFavorites(book)}
               />
               {book.discountPercent !== null && (
-                <div className="discount-badge">-{book.discountPercent}%</div>
+                <div className="flame-badge">
+                  🔥 <span className="discount-text">-{book.discountPercent}%</span>
+                </div>
               )}
               <div onClick={() => handleBookClick(book)} style={{ cursor: "pointer" }}>
                 <img src={book.image} alt={book.title} className="book-image" />
-                <div className="book-title">{book.title}</div>
-                <div className="book-price">
-                  <span className="text-muted text-decoration-line-through me-1">
+                <h5 className="book-title">{book.title}</h5>
+              </div>
+
+              <p className="book-price">
+                {book.price !== book.finalPrice && (
+                  <span className="original-price">
                     {(book.price * 1000).toLocaleString("vi-VN")}₫
                   </span>
-                  <br />
-                  <span className="text-danger fw-bold">
-                    {(book.finalPrice * 1000).toLocaleString("vi-VN")}₫
-                  </span>
-                </div>
-                <div className="text-secondary small">
-                  Kích thước: {book.packagingSize || "Không rõ"}
-                </div>
-              </div>
-              <div className="button-group mt-2">
+                )}
+                <span className="final-price">
+                  {(book.finalPrice * 1000).toLocaleString("vi-VN")}₫
+                </span>
+              </p>
+
+              <p className="book-size">Kích thước: {book.packagingSize || "Không rõ"}</p>
+
+              <div className="button-group">
                 <button
-                  className="btn btn-outline-primary btn-sm me-1"
+                  className="btn btn-outline-primary btn-sm"
                   onClick={() => handleAddToCart(book)}
                 >
                   Giỏ hàng
@@ -130,17 +141,43 @@ const SaleAll = () => {
           </div>
         ))}
 
-        {/* Chèn ô trống giữ layout nếu thiếu sách */}
-        {Array.from({ length: placeholderCount }).map((_, index) => (
-          <div
-            key={`placeholder-${index}`}
-            className="book-item"
-            style={{ width: "19%", visibility: "hidden" }}
-          >
-            <div className="book-card"></div>
+        {/* Chèn khung trống giữ layout nếu không đủ 5 quyển */}
+        {Array.from({ length: placeholders }).map((_, idx) => (
+          <div key={`placeholder-${idx}`} className="sale-grid-item" style={{ visibility: "hidden" }}>
+            <div className="book-card" />
           </div>
         ))}
       </div>
+
+      {/* ==== PHÂN TRANG ==== */}
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-4">
+          <nav>
+            <ul className="pagination">
+              <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                  &laquo;
+                </button>
+              </li>
+              {[...Array(totalPages)].map((_, index) => (
+                <li
+                  key={index}
+                  className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                >
+                  <button className="page-link" onClick={() => setCurrentPage(index + 1)}>
+                    {index + 1}
+                  </button>
+                </li>
+              ))}
+              <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                  &raquo;
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      )}
     </div>
   );
 };

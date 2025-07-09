@@ -2,32 +2,23 @@ import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import {
   FaBookOpen, FaSearch, FaShoppingCart, FaUser, FaBlog, FaTags,
-  FaNewspaper, FaBox, FaHeart, FaCoins
+  FaNewspaper, FaHeart, FaCoins
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style/css.css";
 import ExchangePointsModal from "../../pages/ExchangePointsModal";
-import { getAllCategories } from "../Service/categoriesService";
+import { tokenUtils } from "../Cookie/cookieUtils";
 
 const Header = () => {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
-  const [categoryOpen, setCategoryOpen] = useState(false);
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false);
   const [orderDropdownOpen, setOrderDropdownOpen] = useState(false);
   const [isExchangeModalOpen, setIsExchangeModalOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getAllCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Lỗi khi gọi API danh mục:", error);
-      }
-    };
-    fetchCategories();
-  }, []);
+    setIsLoggedIn(!!tokenUtils.getAccessToken());
+  }, [accountDropdownOpen]);
 
   const handleMouseEnter = (setOpen) => setOpen(true);
   const handleMouseLeave = (setOpen) => setOpen(false);
@@ -51,31 +42,6 @@ const Header = () => {
           </div>
 
           <div className="col-4 d-flex justify-content-end align-items-center gap-3">
-            {/* === Danh mục === */}
-            <div
-              className="icon-text text-center position-relative"
-              onMouseEnter={() => handleMouseEnter(setCategoryOpen)}
-              onMouseLeave={() => handleMouseLeave(setCategoryOpen)}
-              style={{ cursor: "pointer" }}
-            >
-              <FaTags />
-              <div className="small-text">Danh mục</div>
-              {categoryOpen && (
-                <div className="category-dropdown">
-                  <div className="category-column">
-                    <h6>Danh sách danh mục</h6>
-                    <ul>
-                      {categories.map((cat) => (
-                        <li key={cat.CategoryId}>
-                          <Link to={`/category/${cat.CategoryId}`}>{cat.CategoryName}</Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* === Đổi điểm === */}
             <div className="icon-text text-center" onClick={toggleExchangeModal} style={{ cursor: "pointer" }}>
               <FaCoins style={{ color: "white" }} />
@@ -110,28 +76,43 @@ const Header = () => {
               <div className="small-text">Tài khoản</div>
               {accountDropdownOpen && (
                 <ul className="dropdown-menu dropdown-menu-custom show p-0">
-                  <li><Link className="dropdown-item" to="/register">Đăng ký</Link></li>
-                  <li><Link className="dropdown-item" to="/login">Đăng nhập</Link></li>
-                  <li><Link className="dropdown-item" to="/user-profile">Thông tin cá nhân</Link></li>
-                  <li className="position-relative">
-                    <div className="dropdown-item d-flex justify-content-between align-items-center"
-                      onClick={() => setOrderDropdownOpen(!orderDropdownOpen)}>
-                      Đơn hàng của bạn <span>{orderDropdownOpen ? "▲" : "▼"}</span>
-                    </div>
-                    {orderDropdownOpen && (
-                      <ul className="dropdown-submenu list-unstyled m-0">
-                        <li><Link className="dropdown-item" to="/orders-all">Đơn hàng mua</Link></li>
-                        <li><Link className="dropdown-item" to="/orders-rent">Đơn hàng thuê</Link></li>
-                      </ul>
-                    )}
-                  </li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li>
-                    <button className="dropdown-item" onClick={() => {
-                      alert("Đăng xuất thành công!");
-                      setAccountDropdownOpen(false);
-                    }}>Đăng xuất</button>
-                  </li>
+                  {!isLoggedIn ? (
+                    <>
+                      <li><Link className="dropdown-item" to="/register">Đăng ký</Link></li>
+                      <li><Link className="dropdown-item" to="/login">Đăng nhập</Link></li>
+                    </>
+                  ) : (
+                    <>
+                      <li><Link className="dropdown-item" to="/user-profile">Thông tin cá nhân</Link></li>
+                      <li className="position-relative">
+                        <div className="dropdown-item d-flex justify-content-between align-items-center"
+                          onClick={() => setOrderDropdownOpen(!orderDropdownOpen)}>
+                          Đơn hàng của bạn <span>{orderDropdownOpen ? "▲" : "▼"}</span>
+                        </div>
+                        {orderDropdownOpen && (
+                          <ul className="dropdown-submenu list-unstyled m-0">
+                            <li><Link className="dropdown-item" to="/orders-all">Đơn hàng mua</Link></li>
+                            <li><Link className="dropdown-item" to="/orders-rent">Đơn hàng thuê</Link></li>
+                          </ul>
+                        )}
+                      </li>
+                      <li><hr className="dropdown-divider" /></li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => {
+                            tokenUtils.removeAccessToken();
+                            document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                            alert("Đăng xuất thành công!");
+                            setAccountDropdownOpen(false);
+                            window.location.href = "/";
+                          }}
+                        >
+                          Đăng xuất
+                        </button>
+                      </li>
+                    </>
+                  )}
                 </ul>
               )}
             </div>
