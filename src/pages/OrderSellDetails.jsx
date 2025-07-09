@@ -18,7 +18,7 @@ const OrderSellDetails = () => {
         if (!resDetails.ok) throw new Error("Không thể lấy chi tiết đơn hàng");
         const detailData = await resDetails.json();
         setDetails(detailData);
-
+console.log("ádsaaaaaaaaaaaa",resDetails)
         // Gọi thông tin đơn hàng chính
         const resOrder = await fetch(`https://localhost:7003/api/admin/saleorders/${id}`, {
           headers: { Authorization: `Bearer ${token}` },

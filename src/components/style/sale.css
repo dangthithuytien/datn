@@ -96,7 +96,6 @@
   width: 100%;
   height: 150px;
   object-fit: contain;
-
 }
 
 .book-title {
@@ -140,14 +139,19 @@
 /* ------------------ 🔥 Ngọn lửa và hiệu ứng ------------------ */
 .flame-badge {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  font-size: 20px;
-  z-index: 2;
+  top: 8px;
+  left: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 10;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   animation: pulseFlame 1.2s infinite;
+  background-color: rgba(255, 239, 213, 0.8); /* ánh sáng */
+  padding: 4px 8px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255, 94, 0, 0.4);
 }
 
 .discount-text {
@@ -174,23 +178,6 @@
     transform: translateX(0);
   }
 }
-.flame-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font-size: 14px;
-  font-weight: bold;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  animation: pulseFlame 1.2s infinite;
-  background-color: rgba(255, 239, 213, 0.8); /* ánh sáng */
-  padding: 4px 8px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(255, 94, 0, 0.4);
-}
-
 
 .button-group {
   display: flex;
@@ -200,7 +187,7 @@
   box-shadow: 0 0 5px rgba(58, 128, 58, 0.3);
 }
 
- .button-group button {
+.button-group button {
   flex: 1;
   font-size: 0.85rem;
   padding: 6px 10px;
@@ -213,7 +200,7 @@
 .button-group button:last-child {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
-  margin-left: -1px; /* loại bỏ khoảng hở */
+  margin-left: -1px;
 }
 
 /* ==================== BỘ LỌC ==================== */
@@ -267,6 +254,7 @@ h4.d-flex.align-items-center {
   border-left: 5px solid #43a047;
   padding-left: 12px;
 }
+
 .heart-icon {
   position: absolute;
   top: 8px;
@@ -277,9 +265,11 @@ h4.d-flex.align-items-center {
   z-index: 10;
   transition: color 0.3s ease;
 }
+
 .heart-icon:hover {
   color: red;
 }
+
 .discount-badge {
   position: absolute;
   top: 6px;
@@ -292,12 +282,100 @@ h4.d-flex.align-items-center {
   border-radius: 4px;
   z-index: 2;
 }
+
+/* ✅ Đã sửa phần này */
 .sale-grid-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 32px 16px; /* hàng - cột */
+  gap: 20px;
+  justify-items: center;
 }
 
 .sale-grid-item {
   min-width: 180px;
+}
+/* ==================== RESPONSIVE ==================== */
+
+/* Laptop nhỏ, tablet ngang: 3 cột */
+@media (max-width: 992px) {
+  .sale-grid-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .book-image {
+    height: 140px;
+  }
+
+  .book-title {
+    font-size: 15px;
+  }
+
+  .final-price {
+    font-size: 16px;
+  }
+
+  .button-group button {
+    font-size: 13px;
+    padding: 5px 8px;
+  }
+}
+
+/* Tablet dọc: 2 cột */
+@media (max-width: 768px) {
+  .sale-grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .book-card {
+    padding: 8px;
+  }
+
+  .book-title {
+    font-size: 14px;
+  }
+
+  .final-price {
+    font-size: 15px;
+  }
+
+  .book-size {
+    font-size: 12px;
+  }
+}
+
+/* Mobile: 1 cột */
+@media (max-width: 576px) {
+  .sale-grid-container {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .book-image {
+    height: 130px;
+  }
+
+  .sale-grid-item {
+    width: 100%;
+  }
+
+  .book-title {
+    font-size: 13px;
+  }
+
+  .final-price {
+    font-size: 14px;
+  }
+
+  .button-group button {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  h4.d-flex.align-items-center {
+    font-size: 18px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaChevronDown } from "react-icons/fa";
 import { getPromotedBooks } from "../components/Service/saleBookService";
 import "../components/style/sale.css";
+import { addToCartSale } from "../components/Service/cartService";
 
 const Sale = () => {
   const [books, setBooks] = useState([]);
@@ -36,7 +37,7 @@ const Sale = () => {
           };
         });
 
-        setBooks(mapped.slice(0, 10));
+        setBooks(mapped.slice(0, 5)); // chỉ lấy 5 quyển
       } catch (err) {
         console.error("Lỗi lấy sách khuyến mãi:", err);
       }
@@ -48,16 +49,14 @@ const Sale = () => {
     fetchPromotedBooks();
   }, []);
 
-  const handleAddToCart = (book) => {
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const index = cart.findIndex((item) => item.id === book.id);
-    if (index !== -1) {
-      cart[index].quantity += 1;
-    } else {
-      cart.push({ ...book, quantity: 1 });
+  const handleAddToCart = async (book) => {
+    try {
+      await addToCartSale(book.id, 1);
+      alert("Đã thêm vào giỏ hàng!");
+    } catch (error) {
+      console.error("Lỗi thêm vào giỏ hàng:", error);
+      alert("Không thể thêm vào giỏ hàng.");
     }
-    localStorage.setItem("cartBuy", JSON.stringify(cart));
-    alert("Đã thêm vào giỏ hàng!");
   };
 
   const handleAddToFavorites = (book) => {
@@ -73,16 +72,19 @@ const Sale = () => {
     }
   };
 
+  const placeholderCount = 5 - books.length;
+
   return (
     <div className="container mt-4">
       <h4 className="d-flex align-items-center mb-4">
         <span>Sách khuyến mãi</span>
         <Link
           to="/sale-all"
-          className="ms-auto text-success"
-          style={{ fontSize: "1rem", fontWeight: 600 }}
+          className="ms-2"
+          title="Xem tất cả sách khuyến mãi"
+          style={{ color: "#2e7d32" }}
         >
-          Xem tất cả
+          <FaChevronDown size={18} />
         </Link>
       </h4>
 
@@ -91,15 +93,12 @@ const Sale = () => {
           <div key={book.id} className="sale-grid-item">
             <div className="book-card position-relative">
               <FaHeart
-                className={`heart-icon ${
-                  favoriteIds.includes(book.id) ? "active" : ""
-                }`}
+                className={`heart-icon ${favoriteIds.includes(book.id) ? "active" : ""}`}
                 onClick={() => handleAddToFavorites(book)}
               />
               {book.discountPercent !== null && (
                 <div className="flame-badge">
-                  🔥
-                  <span className="discount-text">-{book.discountPercent}%</span>
+                  🔥 <span className="discount-text">-{book.discountPercent}%</span>
                 </div>
               )}
               <Link to={`/sale-book/${book.id}`} state={{ book }}>
@@ -108,18 +107,12 @@ const Sale = () => {
               </Link>
 
               <p className="book-price">
-              <span className="final-price">
-                  {(book.finalPrice * 1000).toLocaleString("vi-VN")}đ
+                <span className="final-price">
+                  {(book.finalPrice * 1000).toLocaleString("vi-VN")}₫
                 </span>
-                {/* <span className="original-price">
-                  {(book.price * 1000).toLocaleString("vi-VN")}đ
-                </span> */}
-                
               </p>
 
-              <p className="book-size">
-                Kích thước: {book.packagingSize}
-              </p>
+              <p className="book-size">Kích thước: {book.packagingSize}</p>
 
               <div className="button-group">
                 <button
@@ -131,6 +124,17 @@ const Sale = () => {
                 <button className="btn btn-primary btn-sm">Mua ngay</button>
               </div>
             </div>
+          </div>
+        ))}
+
+        {/* Khung trống giữ layout nếu thiếu */}
+        {Array.from({ length: placeholderCount }).map((_, index) => (
+          <div
+            key={`placeholder-${index}`}
+            className="sale-grid-item"
+            style={{ visibility: "hidden" }}
+          >
+            <div className="book-card"></div>
           </div>
         ))}
       </div>

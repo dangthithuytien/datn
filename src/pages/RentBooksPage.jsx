@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaFilter, FaAngleDown, FaHeart } from "react-icons/fa";
+import { FaAngleDown, FaHeart } from "react-icons/fa";
 import {
   getAllRentBooks,
   getAllRentBookItems,
@@ -12,8 +12,8 @@ const baseURL = "https://localhost:7003";
 
 const RentBooksPage = () => {
   const [displayItems, setDisplayItems] = useState([]);
-  const [showFilter, setShowFilter] = useState(false);
   const [sortBy, setSortBy] = useState("");
+  const [conditionRange, setConditionRange] = useState({ min: 0, max: 100 });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,7 +32,7 @@ const RentBooksPage = () => {
           const parentBook = booksMap[item.RentBookId];
           const price = parentBook ? parentBook.Price * 1000 : 0;
 
-          const result = {
+          return {
             ...item,
             Title: parentBook?.Title || "Unknown Title",
             ImageUrl: parentBook?.ImageUrl || "",
@@ -40,9 +40,6 @@ const RentBooksPage = () => {
             id: item.RentBookItemId,
             PackagingSize: parentBook?.PackagingSize || "Không rõ",
           };
-
-          console.log("✅ Rent item:", result); // Debug log
-          return result;
         });
 
         setDisplayItems(flattenedItems);
@@ -54,26 +51,21 @@ const RentBooksPage = () => {
     fetchData();
   }, []);
 
-  const sortedItems = [...displayItems].sort((a, b) => {
-    if (sortBy === "name") return a.Title.localeCompare(b.Title);
-    if (sortBy === "price") return (a.Price || 0) - (b.Price || 0);
-    return 0;
-  });
-
   const formatPrice = (price) => {
     if (typeof price !== "number" || isNaN(price)) return "N/A đ";
     return `${price.toLocaleString("vi-VN")} đ`;
   };
-const handleAddToRentCart = async (item) => {
-    console.log("Sách thêm giỏ thuê:", item.id);
+
+  const handleAddToRentCart = async (item) => {
     try {
-      await addToRentCart(item.id); // <-- item.id chính là RentBookItemId
+      await addToRentCart(item.id);
       alert("✅ Đã thêm sách thuê vào giỏ!");
     } catch (error) {
       console.error("Lỗi thêm vào giỏ thuê:", error);
-     alert("❌ Không thể thêm sách vào giỏ thuê.");
+      alert("❌ Không thể thêm sách vào giỏ thuê.");
     }
   };
+
   const handleAddToFavorites = (item) => {
     const favorites = JSON.parse(localStorage.getItem("favoriteRentBooks")) || [];
     const isExist = favorites.some((favItem) => favItem.id === item.id);
@@ -93,53 +85,79 @@ const handleAddToRentCart = async (item) => {
     }
   };
 
+  // ==== Lọc theo tình trạng ====
+  const filteredByCondition = displayItems.filter(
+    (item) =>
+      item.IsHidden === true &&
+      item.Condition >= conditionRange.min &&
+      item.Condition <= conditionRange.max
+  );
+
+  // ==== Sắp xếp ====
+  const sortedItems = [...filteredByCondition].sort((a, b) => {
+    if (sortBy === "name") return a.Title.localeCompare(b.Title);
+    if (sortBy === "price") return (a.Price || 0) - (b.Price || 0);
+    if (sortBy === "priceDesc") return (b.Price || 0) - (a.Price || 0); // ✅ Thêm dòng này
+    return 0;
+  });
+
   return (
     <div className="container mt-4">
-      <h4 className="d-flex align-items-center mb-4">
-        <span>Danh mục Sách thuê</span>
-        <Link
-          to="/rent-books/all"
-          className="btn btn-link ms-2"
-          style={{ textDecoration: "none", fontSize: "18px", color: "#007bff" }}
-        >
-          <FaAngleDown />
-        </Link>
-        <div className="ms-auto position-relative">
-          <button
-            className="btn btn-light filter-icon-btn"
-            onClick={() => setShowFilter(!showFilter)}
-            title="Lọc sách"
+      <h4 className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div className="d-flex align-items-center">
+          <span>Danh mục Sách thuê</span>
+          <Link
+            to="/rent-books/all"
+            className="btn btn-link ms-2"
+            style={{ textDecoration: "none", fontSize: "18px", color: "#007bff" }}
           >
-            <FaFilter />
-          </button>
-          {showFilter && (
-            <div className="filter-dropdown shadow-sm">
-              <div
-                className={`filter-option ${sortBy === "name" ? "active" : ""}`}
-                onClick={() => {
-                  setSortBy("name");
-                  setShowFilter(false);
-                }}
-              >
-                Lọc theo Tên
-              </div>
-              <div
-                className={`filter-option ${sortBy === "price" ? "active" : ""}`}
-                onClick={() => {
-                  setSortBy("price");
-                  setShowFilter(false);
-                }}
-              >
-                Lọc theo Giá
-              </div>
-            </div>
-          )}
+            <FaAngleDown />
+          </Link>
+        </div>
+
+        {/* Dropdown lọc */}
+        <div className="d-flex gap-2">
+          <select
+            className="form-select"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="">-- Sắp xếp --</option>
+            <option value="name">Tên A-Z</option>
+            <option value="price">Giá thuê tăng dần</option>
+             <option value="priceDesc">Giá thuê giảm dần</option> {/* ✅ Thêm dòng này */}
+          </select>
+
+          <select
+            className="form-select"
+            onChange={(e) => {
+              const value = e.target.value;
+              switch (value) {
+                case "80-90":
+                  setConditionRange({ min: 80, max: 90 });
+                  break;
+                case "91-95":
+                  setConditionRange({ min: 91, max: 95 });
+                  break;
+                case "96-100":
+                  setConditionRange({ min: 96, max: 100 });
+                  break;
+                default:
+                  setConditionRange({ min: 0, max: 100 });
+              }
+            }}
+          >
+            <option value="">-- Tình trạng sách --</option>
+            <option value="80-90">80% - 90%</option>
+            <option value="91-95">91% - 95%</option>
+            <option value="96-100">96% - 100%</option>
+          </select>
         </div>
       </h4>
 
       <div className="d-flex flex-wrap justify-content-between">
         {sortedItems.slice(0, 10).map((item) => (
-          <div key={item.id} style={{ width: "19%", position: "relative" }} className="mb-4">
+          <div key={item.id} style={{ width: "19%" }} className="mb-4">
             <div className="book-card position-relative">
               <FaHeart
                 className="heart-icon"
@@ -160,10 +178,7 @@ const handleAddToRentCart = async (item) => {
                 <h5 className="book-title">{item.Title}</h5>
               </Link>
               <p className="book-price">{formatPrice(item.Price)}</p>
-            <p style={{ fontSize: "13px", color: "#555", marginBottom: "8px" }}>
-
-                Kích thước: {item.PackagingSize}
-              </p>
+              <p className="book-size">Kích thước: {item.PackagingSize}</p>
               <div className="button-group">
                 <button
                   className="btn btn-outline-primary btn-sm"
@@ -176,6 +191,17 @@ const handleAddToRentCart = async (item) => {
                 </Link>
               </div>
             </div>
+          </div>
+        ))}
+
+        {/* Placeholder giữ chỗ nếu < 10 quyển */}
+        {Array.from({ length: 10 - sortedItems.slice(0, 10).length }).map((_, idx) => (
+          <div
+            key={`placeholder-${idx}`}
+            style={{ width: "19%", visibility: "hidden" }}
+            className="mb-4"
+          >
+            <div className="book-card"></div>
           </div>
         ))}
       </div>

@@ -103,7 +103,7 @@ const CartSale = () => {
                 <th>Thao tác</th>
               </tr>
 </thead>
-            <tbody>
+<tbody>
               {cartItems.map((item) => (
                 <tr key={item.ProductId}>
                   <td>

@@ -21,21 +21,19 @@ import OrderRentDetail from "../pages/OrderRentDetail";
 import OrderSellDetail from "../pages/OrderSellDetail";
 import FavoriteBooks from "../pages/FavoriteBooks";
 import AllRentBooks from "../pages/AllRentBooks";
-import RentBookDetails from "../pages/RentBookDetails"; 
+import RentBookDetails from "../pages/RentBookDetails";
 import ConfirmEmail from "../pages/ConfirmEmailPage";
-import ResetPass from '../pages/ResetPass';
+import ResetPass from "../pages/ResetPass";
 import DetailsSale from "../pages/DetailsSale";
-import OrderSellDetails from '../pages/OrderSellDetails';
-
-
+import OrderSellDetails from "../pages/OrderSellDetails";
 
 export const appRoutes = [
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/user-profile", element: <UserProfile /> },
-  { path:"/reset-password", element: <ResetPass /> },
-{ path: "/confirm-email", element: <ConfirmEmail /> },
+  { path: "/reset-password", element: <ResetPass /> },
+  { path: "/confirm-email", element: <ConfirmEmail /> },
   // Chi tiết sách (bán) - BookId
   { path: "/book/:id", element: <DetailsBook /> },
 
@@ -50,18 +48,18 @@ export const appRoutes = [
   { path: "/orders-rent/:id", element: <OrderRentDetail /> },
   { path: "/orders-sell/:id", element: <OrderSellDetail /> },
   // moi
-  {path:"/orders-sell/:id", element : <OrderSellDetails /> },
+  { path: "/orders-sells/:id", element: <OrderSellDetails /> },
 
   // Danh mục sách bán
   { path: "/books", element: <AllBook /> },
   { path: "/books-page", element: <BooksPage /> },
-  { path: "/favorite", element:<FavoriteBooks /> },
+  { path: "/favorite", element: <FavoriteBooks /> },
 
   // Khác
   { path: "/sale", element: <Sale /> },
   { path: "/rent-books", element: <RentBooksPage /> }, // Trang danh sách các RentBookItem
   { path: "/rent-cart", element: <RentCart /> },
-{ path: "/sale-book/:id", element: <DetailsSale /> },
+  { path: "/sale-book/:id", element: <DetailsSale /> },
 
   // Trang giới thiệu
   { path: "/about", element: <About /> },
@@ -79,5 +77,4 @@ export const appRoutes = [
   // để tránh nhầm lẫn hoặc trùng lặp chức năng.
   // Ví dụ: `{ path: "/rent-book-general/:id", element: <RentBookDetails /> }`
   { path: "/rent/:id", element: <RentBookDetails /> }, // Route này có thể gây nhầm lẫn nếu bạn đã chuyển hoàn toàn sang /rent-item-details/:id
-  
 ];

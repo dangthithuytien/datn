@@ -93,7 +93,7 @@ const Checkout = () => {
       fetch(`https://esgoo.net/api-tinhthanh/3/${selectedDistrict}.htm`)
         .then(res => res.json())
 .then(data => {
-          if (data.error === 0) setWards(data.data);
+if (data.error === 0) setWards(data.data);
         });
     } else {
       setWards([]);
@@ -186,6 +186,7 @@ const Checkout = () => {
       }
 
       await createCashOrder(orderData);
+console.log("sadsadsadaaaaa",orderData)
 alert("✅ Đặt hàng thành công!");
       localStorage.removeItem("cartBuy");
       localStorage.removeItem("checkoutTotal");
@@ -247,7 +248,7 @@ alert("✅ Đặt hàng thành công!");
         <label>
           <input type="radio" name="payment" value="momo" disabled />
           MoMo
-        </label>
+</label>
         <label>
 <input type="radio" name="payment" value="bank" disabled />
           Internet Banking

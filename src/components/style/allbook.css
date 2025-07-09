@@ -219,3 +219,127 @@ h4.d-flex.align-items-center {
 .heart-icon.active {
   color: red;
 }
+.filter-dropdown {
+  background: white;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 999;
+  width: 240px;
+}
+.filter-section-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.filter-option {
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.filter-option:hover,
+.filter-option.active {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+.book-size {
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: #555;
+}
+.form-select {
+  min-width: 150px;
+  font-size: 14px;
+}
+/* ==================== RESPONSIVE ==================== */
+
+/* Laptop nhỏ và tablet (≤ 992px) */
+@media (max-width: 992px) {
+  .col-md-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .col-md-9 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .book-card {
+    padding: 12px;
+  }
+
+  .book-image {
+    height: 140px;
+  }
+
+  .form-select {
+    min-width: 130px;
+    font-size: 13px;
+  }
+
+  .category-list-wrapper {
+    max-height: 400px;
+  }
+}
+
+/* Mobile (≤ 576px) */
+@media (max-width: 576px) {
+  .book-card {
+    padding: 10px;
+  }
+
+  .book-title {
+    font-size: 14px;
+  }
+
+  .book-price {
+    font-size: 18px;
+  }
+
+  .book-size {
+    font-size: 12px;
+  }
+
+  .button-group button {
+    font-size: 12px;
+    padding: 5px 6px;
+  }
+
+  .category-title {
+    font-size: 1rem;
+  }
+
+  .category-item {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .form-select {
+    min-width: 100px;
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  h4.d-flex.align-items-center {
+    font-size: 18px;
+  }
+
+  .filter-dropdown {
+    width: 100%;
+    right: auto;
+    left: 0;
+  }
+
+  .row > .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .book-image {
+    height: 130px;
+  }
+}

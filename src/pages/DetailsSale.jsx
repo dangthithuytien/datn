@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getSaleBookById } from "../components/Service/saleBookService";
 import "../components/style/detailsSale.css";
 import CommentSection from "./CommentSection";
+import { addToCartSale } from "../components/Service/cartService";
 
 const DetailsSale = () => {
   const { id } = useParams();
@@ -51,20 +52,16 @@ const DetailsSale = () => {
     setQuantity(quantity + 1);
   };
 
-  const handleAddToCart = () => {
-    if (!book) return;
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const existingItem = cart.find((item) => item.SaleBookId === book.SaleBookId);
-
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      cart.push({ ...book, quantity });
-    }
-
-    localStorage.setItem("cartBuy", JSON.stringify(cart));
+  const handleAddToCart = async () => {
+  if (!book) return;
+  try {
+    await addToCartSale(book.SaleBookId, quantity); // ✅ Gọi API
     alert("✅ Đã thêm vào giỏ hàng!");
-  };
+  } catch (err) {
+    console.error("Lỗi thêm vào giỏ hàng:", err);
+    alert("❌ Không thể thêm vào giỏ hàng. Bạn đã đăng nhập chưa?");
+  }
+};
 
   if (!book) {
     return (
@@ -87,7 +84,6 @@ const DetailsSale = () => {
           onMouseLeave={handleMouseLeave}
         >
           <div className="book-sale-box position-relative">
-           
             <img
               src={`${baseURL}${book.ImageUrl}`}
               alt={book.Title}
@@ -103,15 +99,14 @@ const DetailsSale = () => {
 
         {/* Thông tin sách */}
         <div className="col-md-7 details-info">
-         <h2 className="details-title d-flex align-items-center gap-2">
-  {book.Title}
-  {book.discountPercent > 0 && (
-    <span className="flame-badge-inline">
-      🔥 <span className="discount">-{book.discountPercent}%</span>
-    </span>
-  )}
-</h2>
-
+          <h2 className="details-title d-flex align-items-center gap-2">
+            {book.Title}
+            {book.discountPercent > 0 && (
+              <span className="flame-badge-inline">
+                🔥 <span className="discount">-{book.discountPercent}%</span>
+              </span>
+            )}
+          </h2>
 
           <div className="price-section mb-3">
             <span
@@ -129,10 +124,18 @@ const DetailsSale = () => {
           </div>
 
           <div className="mb-3">
-            <p><strong>Nhà xuất bản:</strong> {book.Publisher || "Không có"}</p>
-            <p><strong>Dịch giả:</strong> {book.Translator || "Không có"}</p>
-            <p><strong>Số trang:</strong> {book.PageCount || "Không rõ"}</p>
-            <p><strong>Kích thước:</strong> {book.PackagingSize || "Không rõ"}</p>
+            <p>
+              <strong>Nhà xuất bản:</strong> {book.Publisher || "Không có"}
+            </p>
+            <p>
+              <strong>Dịch giả:</strong> {book.Translator || "Không có"}
+            </p>
+            <p>
+              <strong>Số trang:</strong> {book.PageCount || "Không rõ"}
+            </p>
+            <p>
+              <strong>Kích thước:</strong> {book.PackagingSize || "Không rõ"}
+            </p>
           </div>
 
           {/* Số lượng */}
@@ -162,9 +165,7 @@ const DetailsSale = () => {
             <button className="btn-add-to-cart" onClick={handleAddToCart}>
               🛒 Thêm vào giỏ
             </button>
-            <button className="btn-buy-now">
-              ⚡ Mua ngay
-            </button>
+            <button className="btn-buy-now">⚡ Mua ngay</button>
           </div>
         </div>
       </div>
@@ -201,7 +202,10 @@ const DetailsSale = () => {
       </div>
 
       {/* ==== BÌNH LUẬN ==== */}
-      <CommentSection bookId={book.SaleBookId} storageKeyPrefix="comments-sale" />
+      <CommentSection
+        bookId={book.SaleBookId}
+        storageKeyPrefix="comments-sale"
+      />
     </div>
   );
 };

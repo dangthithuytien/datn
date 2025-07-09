@@ -24,11 +24,13 @@ export const getSaleBookById = async (id) => {
   }
 };
 
-// Lấy sách có khuyến mãi (PromotionId khác null)
+// Lấy sách có khuyến mãi (nếu PromotionIds có phần tử)
 export const getPromotedBooks = async () => {
   try {
     const response = await apiClient.get(SALE_BOOK_ENDPOINT);
-    return response.data.filter((book) => book.PromotionId); // chỉ sách có khuyến mãi
+    return response.data.filter(
+      (book) => Array.isArray(book.PromotionIds) && book.PromotionIds.length > 0
+    );
   } catch (error) {
     console.error("Lỗi lấy sách khuyến mãi:", error);
     throw error;
