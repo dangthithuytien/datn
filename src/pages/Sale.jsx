@@ -1,74 +1,102 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaHeart, FaChevronDown } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaChevronDown } from "react-icons/fa";
 import { getPromotedBooks } from "../components/Service/saleBookService";
-import "../components/style/sale.css";
+import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService";
+import { tokenUtils } from "../components/Cookie/cookieUtils";
 import { addToCartSale } from "../components/Service/cartService";
+import "../components/style/sale.css";
 
 const Sale = () => {
   const [books, setBooks] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
+  const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
   const baseURL = "https://localhost:7003";
 
   useEffect(() => {
-    const fetchPromotedBooks = async () => {
-      try {
-        const response = await getPromotedBooks();
-        const mapped = response.map((book) => {
-          const originalPrice = book.Price;
-          const finalPrice = book.FinalPrice;
-          const discountPercent =
-            book.DiscountPercentage !== undefined
-              ? book.DiscountPercentage
-              : originalPrice && finalPrice
-              ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
-              : null;
-
-          return {
-            id: book.SaleBookId,
-            title: book.Title,
-            image: book.ImageUrl?.startsWith("/")
-              ? `${baseURL}${book.ImageUrl}`
-              : book.ImageUrl,
-            price: originalPrice,
-            finalPrice: finalPrice,
-            discountPercent: discountPercent,
-            packagingSize: book.PackagingSize,
-          };
-        });
-
-        setBooks(mapped.slice(0, 5)); // chỉ lấy 5 quyển
-      } catch (err) {
-        console.error("Lỗi lấy sách khuyến mãi:", err);
+    const interval = setInterval(() => {
+      const newToken = tokenUtils.getAccessToken();
+      if (newToken !== accessToken) {
+        setAccessToken(newToken);
       }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [accessToken]);
 
-      const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-      setFavoriteIds(favorites.map((b) => b.SaleBookId));
-    };
-
+  useEffect(() => {
     fetchPromotedBooks();
-  }, []);
+    if (accessToken) loadFavorites();
+  }, [accessToken]);
+
+  const fetchPromotedBooks = async () => {
+    try {
+      const response = await getPromotedBooks();
+      const mapped = response.map((book) => {
+        const discountPercent =
+          book.DiscountPercentage !== undefined
+            ? book.DiscountPercentage
+            : book.Price && book.FinalPrice
+            ? Math.round(((book.Price - book.FinalPrice) / book.Price) * 100)
+            : null;
+
+        return {
+          id: book.SaleBookId,
+          title: book.Title,
+          image: book.ImageUrl?.startsWith("/")
+            ? `${baseURL}${book.ImageUrl}`
+            : book.ImageUrl,
+          price: book.Price,
+          finalPrice: book.FinalPrice,
+          discountPercent: discountPercent,
+          packagingSize: book.PackagingSize,
+        };
+      });
+
+      setBooks(mapped.slice(0, 5)); // chỉ hiển thị 5 sách
+    } catch (err) {
+      console.error("❌ Lỗi lấy sách khuyến mãi:", err);
+    }
+  };
+
+  const loadFavorites = async () => {
+    try {
+      const favorites = await FavoriteSaleBookService.getFavorites();
+      const ids = favorites.map((f) => String(f.SaleBookId));
+      setFavoriteIds(ids);
+    } catch (error) {
+      console.error("❌ Lỗi khi lấy danh sách yêu thích:", error);
+    }
+  };
+
+  const isFavorite = (id) => favoriteIds.includes(String(id));
+
+  const toggleFavorite = async (book) => {
+    if (!accessToken) {
+      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      return;
+    }
+
+    try {
+      const bookId = String(book.id);
+      if (isFavorite(bookId)) {
+        await FavoriteSaleBookService.removeFavorite(bookId);
+      } else {
+        await FavoriteSaleBookService.addFavorite(bookId);
+      }
+      await loadFavorites();
+    } catch (error) {
+      console.error("❌ Lỗi xử lý yêu thích:", error);
+      alert("Không thể xử lý yêu thích!");
+    }
+  };
 
   const handleAddToCart = async (book) => {
     try {
       await addToCartSale(book.id, 1);
-      alert("Đã thêm vào giỏ hàng!");
+      alert("✅ Đã thêm vào giỏ hàng!");
     } catch (error) {
-      console.error("Lỗi thêm vào giỏ hàng:", error);
+      console.error("❌ Lỗi thêm vào giỏ hàng:", error);
       alert("Không thể thêm vào giỏ hàng.");
-    }
-  };
-
-  const handleAddToFavorites = (book) => {
-    const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-    const isExist = favorites.some((item) => item.SaleBookId === book.id);
-    if (!isExist) {
-      favorites.push(book);
-      localStorage.setItem("favoriteBooks", JSON.stringify(favorites));
-      setFavoriteIds([...favoriteIds, book.id]);
-      alert("Đã thêm vào yêu thích!");
-    } else {
-      alert("Sách đã có trong danh sách yêu thích.");
     }
   };
 
@@ -92,15 +120,28 @@ const Sale = () => {
         {books.map((book) => (
           <div key={book.id} className="sale-grid-item">
             <div className="book-card position-relative">
-              <FaHeart
-                className={`heart-icon ${favoriteIds.includes(book.id) ? "active" : ""}`}
-                onClick={() => handleAddToFavorites(book)}
-              />
+              {isFavorite(book.id) ? (
+                <FaHeart
+                  className="heart-icon"
+                  style={{ color: "red" }}
+                  onClick={() => toggleFavorite(book)}
+                  title="Bỏ khỏi yêu thích"
+                />
+              ) : (
+                <FaRegHeart
+                  className="heart-icon"
+                  style={{ color: "#ccc" }}
+                  onClick={() => toggleFavorite(book)}
+                  title="Thêm vào yêu thích"
+                />
+              )}
+
               {book.discountPercent !== null && (
                 <div className="flame-badge">
                   🔥 <span className="discount-text">-{book.discountPercent}%</span>
                 </div>
               )}
+
               <Link to={`/sale-book/${book.id}`} state={{ book }}>
                 <img src={book.image} alt={book.title} className="book-image" />
                 <h5 className="book-title">{book.title}</h5>
@@ -110,6 +151,11 @@ const Sale = () => {
                 <span className="final-price">
                   {(book.finalPrice * 1000).toLocaleString("vi-VN")}₫
                 </span>
+                {book.price !== book.finalPrice && (
+                  <span className="original-price ms-2 text-muted text-decoration-line-through">
+                    {(book.price * 1000).toLocaleString("vi-VN")}₫
+                  </span>
+                )}
               </p>
 
               <p className="book-size">Kích thước: {book.packagingSize}</p>
@@ -127,7 +173,7 @@ const Sale = () => {
           </div>
         ))}
 
-        {/* Khung trống giữ layout nếu thiếu */}
+        {/* Placeholder giữ layout nếu < 5 quyển */}
         {Array.from({ length: placeholderCount }).map((_, index) => (
           <div
             key={`placeholder-${index}`}
