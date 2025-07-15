@@ -1,210 +1,233 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../components/style/Orders.css";
+import { FaHeart } from "react-icons/fa";
+import {
+  getAllRentBooks,
+  getAllRentBookItems,
+} from "../components/Service/rentBookService";
+import { addToRentCart } from "../components/Service/CartRentService";
+import FavoriteRentBookService from "../components/Service/FavoriteRentBookService";
+import { tokenUtils } from "../components/Cookie/cookieUtils";
+import "../components/style/rentbook.css";
 
-// Icons
-import { HiOutlineSearch } from "react-icons/hi";
-import { MdCancel, MdArrowBack, MdShoppingCartCheckout } from "react-icons/md";
-import { BsBoxSeam, BsCheck2 } from "react-icons/bs";
+const baseURL = "https://localhost:7003";
 
-const OrderStatusTabs = ["Tất cả", "Đã đặt", "Đang giao", "Đã giao", "Đã hủy"];
-const cancelReasons = [
-  "Thay đổi ý định",
-  "Đặt nhầm",
-  "Tìm được chỗ khác rẻ hơn",
-  "Khác",
-];
+const AllRentBooks = () => {
+  const [items, setItems] = useState([]);
+  const [sortBy, setSortBy] = useState("");
+  const [conditionRange, setConditionRange] = useState({ min: 0, max: 100 });
+  const [favoriteIds, setFavoriteIds] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
-const AllOrders = () => {
-  const [orders, setOrders] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("Tất cả");
-  const [showReasonInput, setShowReasonInput] = useState(null);
+  const booksPerPage = 15;
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchData = async () => {
       try {
-        const token = localStorage.getItem("accessToken");
-        const currentUser = JSON.parse(localStorage.getItem("user")); // 👈 user hiện tại
+        const [booksData, itemsData] = await Promise.all([
+          getAllRentBooks(),
+          getAllRentBookItems(),
+        ]);
 
-        const res = await fetch("https://localhost:7003/api/admin/saleorders", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const booksMap = booksData.reduce((acc, book) => {
+          acc[book.RentBookId] = book;
+          return acc;
+        }, {});
+
+        const flattenedItems = itemsData.map((item) => {
+          const parent = booksMap[item.RentBookId];
+          const price = parent ? parent.Price * 1000 : 0;
+          return {
+            ...item,
+            Title: parent?.Title || "Unknown",
+            ImageUrl: parent?.ImageUrl || "",
+            Price: price,
+            PackagingSize: parent?.PackagingSize || "Không rõ",
+          };
         });
 
-        const allOrders = await res.json();
-        console.log("Dữ liệu người dùng:", currentUser);
-        console.log("Dữ liệu đơn hàng:", allOrders);
-        // ⚠️ Kiểm tra key chính xác: 'userId' hay 'UserId' hay 'UserID'
-        const userOrders = allOrders.filter(
-          (order) => order.UserId == currentUser?.UserId // hoặc currentUser?.UserId nếu tên khác
-        );
-
-        setOrders(userOrders);
+        setItems(flattenedItems);
+        await fetchFavorites();
       } catch (error) {
-        console.error("Lỗi khi lấy đơn hàng người dùng:", error);
+        console.error("❌ Lỗi tải dữ liệu:", error);
       }
     };
 
-    fetchOrders();
+    fetchData();
   }, []);
 
-  const handleCancelOrder = (orderId, reason) => {
-    const updated = orders.map((o) =>
-      o.orderId === orderId
-        ? { ...o, status: "Đã hủy", cancelReason: reason }
-        : o
-    );
-    setOrders(updated);
-    setShowReasonInput(null);
+  const fetchFavorites = async () => {
+    try {
+      const token = tokenUtils.getAccessToken();
+      if (!token || tokenUtils.isTokenExpired(token)) {
+        setFavoriteIds([]);
+        return;
+      }
+      const res = await FavoriteRentBookService.getAll();
+      setFavoriteIds(res.map((f) => String(f.RentBookId)));
+    } catch (err) {
+      console.error("❌ Lỗi yêu thích:", err);
+    }
   };
 
-  const handleConfirmReceived = (orderId) => {
-    const updated = orders.map((o) =>
-      o.orderId === orderId ? { ...o, status: "Đã giao" } : o
-    );
-    setOrders(updated);
+  const handleAddToFavorites = async (item) => {
+    const token = tokenUtils.getAccessToken();
+    if (!token || tokenUtils.isTokenExpired(token)) {
+      alert("Vui lòng đăng nhập để yêu thích!");
+      return;
+    }
+
+    try {
+      await FavoriteRentBookService.toggleFavorite(item.RentBookId);
+      await fetchFavorites();
+    } catch (err) {
+      console.error("Lỗi yêu thích:", err);
+    }
   };
 
-  const handleBuyAgain = (products) => {
-    localStorage.setItem("cartBuy", JSON.stringify(products));
-    window.location.href = "/cart";
+  const handleAddToCart = async (item) => {
+    try {
+      await addToRentCart(item.RentBookItemId);
+      alert("Đã thêm vào giỏ thuê!");
+    } catch (err) {
+      console.error("❌ Thêm giỏ thuê:", err);
+    }
   };
 
-  const filteredOrders =
-    statusFilter === "Tất cả"
-      ? orders
-      : orders.filter((order) => order.status === statusFilter);
+  // ==== Lọc và sắp xếp ====
+  const filtered = items.filter(
+    (i) =>
+      i.IsHidden === true &&
+      i.Condition >= conditionRange.min &&
+      i.Condition <= conditionRange.max
+  );
+
+  const sorted = [...filtered];
+  if (sortBy === "name") sorted.sort((a, b) => a.Title.localeCompare(b.Title));
+  else if (sortBy === "priceAsc") sorted.sort((a, b) => a.Price - b.Price);
+  else if (sortBy === "priceDesc") sorted.sort((a, b) => b.Price - a.Price);
+
+  const indexOfLast = currentPage * booksPerPage;
+  const indexOfFirst = indexOfLast - booksPerPage;
+  const currentItems = sorted.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(sorted.length / booksPerPage);
+  const placeholders = (5 - (currentItems.length % 5)) % 5;
 
   return (
     <div className="container mt-4">
-      <h2>Danh sách đơn hàng</h2>
-
-      <div className="d-flex mb-3" style={{ width: "100%" }}>
-        {OrderStatusTabs.map((tab, index) => (
-          <button
-            key={tab}
-            className={`btn ${
-              statusFilter === tab ? "btn-success" : "btn-outline-success"
-            }`}
-            style={{
-              borderRadius: "0",
-              borderRight:
-                index !== OrderStatusTabs.length - 1 ? "1px solid #dee2e6" : "",
-              flex: 1,
-              margin: 0,
+      <h4 className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <span>Tất cả sách thuê</span>
+        <div className="d-flex gap-2">
+          <select
+            className="form-select"
+            value={sortBy}
+            onChange={(e) => {
+              setSortBy(e.target.value);
+              setCurrentPage(1);
             }}
-            onClick={() => setStatusFilter(tab)}
           >
-            {tab}
-          </button>
+            <option value="">-- Sắp xếp --</option>
+            <option value="name">Tên A-Z</option>
+            <option value="priceAsc">Giá thuê tăng dần</option>
+            <option value="priceDesc">Giá thuê giảm dần</option>
+          </select>
+
+          <select
+            className="form-select"
+            onChange={(e) => {
+              const value = e.target.value;
+              switch (value) {
+                case "80-90":
+                  setConditionRange({ min: 80, max: 90 });
+                  break;
+                case "91-95":
+                  setConditionRange({ min: 91, max: 95 });
+                  break;
+                case "96-100":
+                  setConditionRange({ min: 96, max: 100 });
+                  break;
+                default:
+                  setConditionRange({ min: 0, max: 100 });
+              }
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">-- Tình trạng sách --</option>
+            <option value="80-90">80% - 90%</option>
+            <option value="91-95">91% - 95%</option>
+            <option value="96-100">96% - 100%</option>
+          </select>
+        </div>
+      </h4>
+
+      <div className="d-flex flex-wrap justify-content-between">
+        {currentItems.map((item) => (
+          <div key={item.RentBookItemId} style={{ width: "19%" }} className="mb-4">
+            <div className="book-card position-relative">
+              <FaHeart
+                className={`heart-icon ${favoriteIds.includes(String(item.RentBookId)) ? "active" : ""}`}
+                onClick={() => handleAddToFavorites(item)}
+                title="Yêu thích"
+              />
+              <div onClick={() => navigate(`/rent-item-details/${item.RentBookItemId}`)} style={{ cursor: "pointer" }}>
+                <img
+                  src={`${baseURL}${item.ImageUrl}`}
+                  alt={item.Title}
+                  className="book-image"
+                />
+                <div className="book-title">{item.Title}</div>
+                <div className="book-price">{item.Price.toLocaleString("vi-VN")}₫</div>
+                <div className="book-size">Kích thước: {item.PackagingSize}</div>
+              </div>
+              <div className="button-group">
+                <button
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => handleAddToCart(item)}
+                >
+                  Giỏ thuê
+                </button>
+                <button className="btn btn-success btn-sm">Thuê ngay</button>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {Array.from({ length: placeholders }).map((_, idx) => (
+          <div key={`placeholder-${idx}`} style={{ width: "19%" }} className="mb-4 invisible">
+            <div className="book-card" />
+          </div>
         ))}
       </div>
 
-      {filteredOrders.length === 0 ? (
-        <p>Không có đơn hàng nào.</p>
-      ) : (
-        <table className="table table-bordered">
-          <thead className="table-success">
-            <tr>
-              <th>Mã đơn</th>
-              <th>Ngày tạo</th>
-              <th>Phương thức thanh toán</th>
-              <th>Tiền giảm</th>
-              <th>Tổng tiền</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOrders.map((order) => (
-              <tr key={order.OrderId}>
-                <td>#{order.OrderId}</td>
-
-                <td>{order.OrderDate}</td>
-                <td>{order.PaymentMethod}</td>
-                <td>{order.DiscountAmount}đ</td>
-                <td>{order.TotalAmount}đ</td>
-
-                <td>
-                  <div className="action-icons d-flex flex-wrap gap-1 justify-content-center">
-                    <button
-                      className="btn btn-info btn-sm"
-                      title="Xem chi tiết"
-                      onClick={() => navigate(`/orders-sells/${order.OrderId}`)}
-                    >
-                      <HiOutlineSearch />
-                    </button>
-
-                    {order.status === "Đã đặt" && (
-                      <>
-                        {showReasonInput === order.orderId ? (
-                          <div style={{ width: "100%" }}>
-                            <select
-                              className="form-select mb-1"
-                              onChange={(e) =>
-                                handleCancelOrder(order.orderId, e.target.value)
-                              }
-                              defaultValue=""
-                            >
-                              <option value="" disabled>
-                                Chọn lý do hủy
-                              </option>
-                              {cancelReasons.map((r, i) => (
-                                <option key={i} value={r}>
-                                  {r}
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              className="btn btn-secondary btn-sm"
-                              title="Hủy bỏ"
-                              onClick={() => setShowReasonInput(null)}
-                            >
-                              <MdArrowBack />
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            className="btn btn-danger btn-sm"
-                            title="Hủy đơn"
-                            onClick={() => setShowReasonInput(order.orderId)}
-                          >
-                            <MdCancel />
-                          </button>
-                        )}
-                      </>
-                    )}
-
-                    {order.status === "Đang giao" && (
-                      <button
-                        className="btn btn-primary btn-sm"
-                        title="Đã nhận hàng"
-                        onClick={() => handleConfirmReceived(order.orderId)}
-                      >
-                        <BsBoxSeam className="me-1" />
-                        <BsCheck2 />
-                      </button>
-                    )}
-
-                    {order.status === "Đã hủy" && (
-                      <button
-                        className="btn btn-outline-secondary btn-sm"
-                        title="Mua lại"
-                        onClick={() => handleBuyAgain(order.products)}
-                      >
-                        <MdShoppingCartCheckout />
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
+      <div className="d-flex justify-content-center mt-4">
+        <nav>
+          <ul className="pagination">
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+              <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                &laquo;
+              </button>
+            </li>
+            {[...Array(totalPages)].map((_, index) => (
+              <li
+                key={index}
+                className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+              >
+                <button className="page-link" onClick={() => setCurrentPage(index + 1)}>
+                  {index + 1}
+                </button>
+              </li>
             ))}
-          </tbody>
-        </table>
-      )}
+            <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+              <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                &raquo;
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   );
 };
 
-export default AllOrders;
+export default AllRentBooks;

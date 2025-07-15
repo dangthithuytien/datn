@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaTimes } from "react-icons/fa";
+import FavoriteRentBookService from "../components/Service/FavoriteRentBookService";
 import "../components/style/rentbook.css";
+
+const baseURL = "https://localhost:7003";
 
 const FavoriteRentBooks = () => {
   const [favoriteBooks, setFavoriteBooks] = useState([]);
@@ -12,20 +15,33 @@ const FavoriteRentBooks = () => {
   const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("favoriteRentBooks")) || [];
-    setFavoriteBooks(data);
+    fetchFavorites();
   }, []);
 
-  const removeFromFavorites = (id) => {
-    const updated = favoriteBooks.filter((b) => b.id !== id);
-    setFavoriteBooks(updated);
-    localStorage.setItem("favoriteRentBooks", JSON.stringify(updated));
+  const fetchFavorites = async () => {
+    try {
+      const data = await FavoriteRentBookService.getAll();
+      setFavoriteBooks(data);
+    } catch (error) {
+      console.error("❌ Lỗi khi lấy sách yêu thích:", error);
+    }
+  };
+
+  const handleRemoveFavorite = async (RentBookId) => {
+    try {
+      await FavoriteRentBookService.deleteFavorite(RentBookId);
+      await fetchFavorites(); // Refresh sau khi xóa
+    } catch (error) {
+      console.error("❌ Lỗi khi xóa khỏi yêu thích:", error);
+      alert("Lỗi khi xóa khỏi yêu thích.");
+    }
   };
 
   const handleAddToRentCart = (book) => {
     const existingCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-    if (existingCart.some((item) => item.id === book.id)) {
-      alert("Sách đã có trong giỏ thuê.");
+    const exists = existingCart.some((item) => item.id === book.RentBookId);
+    if (exists) {
+      alert("⚠️ Sách đã có trong giỏ thuê.");
       return;
     }
 
@@ -34,7 +50,10 @@ const FavoriteRentBooks = () => {
     returnDate.setDate(today.getDate() + 3);
 
     const rentItem = {
-      ...book,
+      id: book.RentBookId,
+      Title: book.Title,
+      rentPrice: book.Price,
+      image: `${baseURL}${book.ImageUrl}`,
       rentDate: today.toISOString().split("T")[0],
       returnDate: returnDate.toISOString().split("T")[0],
       quantity: 1,
@@ -42,15 +61,15 @@ const FavoriteRentBooks = () => {
     };
 
     localStorage.setItem("rentCart", JSON.stringify([...existingCart, rentItem]));
-    alert("Đã thêm sách vào giỏ thuê!");
+    alert("✅ Đã thêm sách vào giỏ thuê!");
   };
 
   // ==== SẮP XẾP ====
   const sortedBooks = [...favoriteBooks];
   if (sortBy === "name") {
-    sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
+    sortedBooks.sort((a, b) => a.Title.localeCompare(b.Title));
   } else if (sortBy === "price") {
-    sortedBooks.sort((a, b) => a.rentPrice - b.rentPrice);
+    sortedBooks.sort((a, b) => (a.Price || 0) - (b.Price || 0));
   }
 
   // ==== PHÂN TRANG ====
@@ -62,11 +81,7 @@ const FavoriteRentBooks = () => {
   return (
     <div className="container my-4 p-3 border rounded bg-light">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4
-          style={{ fontSize: "1.4rem", color: "#1b5e20", fontWeight: "bold" }}
-        >
-          📗 Sách thuê yêu thích
-        </h4>
+        <h4 className="fw-bold text-success">📗 Sách thuê yêu thích</h4>
         <div className="position-relative">
           <button
             className="btn btn-light btn-sm"
@@ -101,44 +116,37 @@ const FavoriteRentBooks = () => {
       </div>
 
       {favoriteBooks.length === 0 ? (
-        <p>Bạn chưa có sách thuê yêu thích nào.</p>
+        <p className="text-muted">Bạn chưa có sách thuê yêu thích nào.</p>
       ) : (
         <>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "16px",
-              justifyContent: "flex-start",
-            }}
-          >
+          <div className="d-flex flex-wrap gap-3">
             {currentBooks.map((book) => (
               <div
-                key={book.id}
-                style={{
-                  flex: "0 0 calc(20% - 13px)",
-                  boxSizing: "border-box",
-                }}
+                key={book.RentBookId}
+                style={{ flex: "0 0 calc(20% - 12px)" }}
               >
                 <div className="book-card position-relative">
-                  <button
-                    onClick={() => removeFromFavorites(book.id)}
-                    className="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
+                  {/* Nút Xóa yêu thích */}
+                  <div
+                    className="heart-icon"
+                    onClick={() => handleRemoveFavorite(book.RentBookId)}
+                    style={{ cursor: "pointer" }}
+                    title="Xóa khỏi yêu thích"
                   >
-                    &times;
-                  </button>
+                    <FaTimes style={{ color: "red", fontWeight: "bold" }} />
+                  </div>
 
                   <div className="image-container">
                     <img
-                      src={book.image}
-                      alt={book.title}
+                      src={`${baseURL}${book.ImageUrl}`}
+                      alt={book.Title}
                       className="book-image"
                     />
                   </div>
 
-                  <h6 className="book-title">{book.title}</h6>
+                  <h6 className="book-title mt-2">{book.Title}</h6>
                   <p className="book-price">
-                    Thuê: {book.rentPrice?.toLocaleString()} đ
+                    Thuê: {book.Price?.toLocaleString()} đ
                   </p>
 
                   <div className="button-group">

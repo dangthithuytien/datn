@@ -1,103 +1,116 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import "../components/style/OrderRentDetail.css"; // <-- Tạo file này
+import { useParams, Link } from "react-router-dom";
 
 const OrderRentDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [order, setOrder] = useState(null);
+  const [details, setDetails] = useState([]);
+  const [orderInfo, setOrderInfo] = useState(null);
 
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("rentOrders")) || [];
-    const found = stored.find((o) => o.id.toString() === id);
-    if (found) setOrder(found);
-  }, [id]);
-
-  const calculateDays = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    return Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
+  // Hàm format tiền tệ an toàn
+  const formatCurrency = (value) => {
+    if (typeof value !== "number") return "0";
+    return value.toLocaleString() + "đ";
   };
 
-  if (!order) return <div className="container mt-4">Đơn hàng không tồn tại.</div>;
+  useEffect(() => {
+    const fetchOrderData = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+
+        // Gọi API chi tiết đơn thuê
+        const resDetails = await fetch(
+          `https://localhost:7003/api/admin/rentorders/${id}/details`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!resDetails.ok) throw new Error("Không thể lấy chi tiết đơn thuê");
+        const detailData = await resDetails.json();
+        setDetails(detailData);
+        console.log("Chi tiết đơn thuê:", detailData);
+
+        // Gọi API thông tin đơn thuê
+        const resOrder = await fetch(
+          `https://localhost:7003/api/admin/rentorders/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!resOrder.ok) throw new Error("Không thể lấy thông tin đơn thuê");
+        const orderData = await resOrder.json();
+        setOrderInfo(orderData);
+        console.log("Thông tin đơn thuê:", orderData);
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    fetchOrderData();
+  }, [id]);
+
+  const totalAmount = orderInfo?.TotalFee || 0;
+
+  // Hàm hiển thị trạng thái
+  const getStatusText = (status) => {
+    switch (status) {
+      case 0:
+        return "Đã đặt";
+      case 1:
+        return "Đang giao";
+      case 2:
+        return "Đã giao";
+      case 3:
+        return "Đã hủy";
+      default:
+        return "Không rõ";
+    }
+  };
 
   return (
-    <div className="container order-detail-container mt-4">
-      <h2>Chi tiết đơn thuê #{order.id}</h2>
+    <div className="container mt-4 mb-5">
+      <h3>📘 Chi tiết đơn thuê</h3>
+      <p>Mã đơn thuê: <strong>#{id}</strong></p>
+      <Link to="/orders-rent" className="btn btn-secondary mb-3">← Quay lại danh sách</Link>
 
-      {/* Thông tin khách hàng */}
-      <div className="order-section">
-        <h5>👤 Thông tin khách hàng</h5>
-        <div className="info-box">
-          <p><strong>Họ tên:</strong> {order.customer.name}</p>
-          <p><strong>Điện thoại:</strong> {order.customer.phone}</p>
-          <p><strong>Email:</strong> {order.customer.email}</p>
-          <p><strong>Địa chỉ:</strong> {order.customer.addressDetail}, {order.customer.ward}, {order.customer.district}, {order.customer.province}</p>
+      {orderInfo && (
+        <div className="mb-3">
+          <p><strong>📍 Địa chỉ nhận sách:</strong> {orderInfo.Address}</p>
+          <p><strong>📞 Số điện thoại:</strong> {orderInfo.Phone}</p>
+          <p><strong>📅 Ngày thuê:</strong> {new Date(orderInfo.StartDate).toLocaleDateString()}</p>
+          <p><strong>📅 Ngày trả:</strong> {new Date(orderInfo.EndDate).toLocaleDateString()}</p>
+          <p><strong>💰 Tiền cọc:</strong> {formatCurrency(orderInfo.TotalDeposit)}</p>
+          <p><strong>🚚 Trạng thái:</strong> {getStatusText(orderInfo.Status)}</p>
         </div>
-      </div>
+      )}
 
-      {/* Thông tin giao hàng & thanh toán */}
-      <div className="order-section">
-        <h5>🚚 Giao hàng & Thanh toán</h5>
-        <div className="info-box">
-          <p><strong>Phương thức giao hàng:</strong> {order.shipping === "store_pickup" ? "Nhận tại cửa hàng" : "Giao tận nơi"}</p>
-          <p><strong>Phương thức thanh toán:</strong> {order.payment.toUpperCase()}</p>
-          <p><strong>Trạng thái:</strong> {order.status}</p>
-          <p><strong>Ngày đặt:</strong> {order.date}</p>
-        </div>
-      </div>
-
-      {/* Danh sách sách thuê */}
-      <div className="order-section">
-        <h5>📚 Sách đã thuê</h5>
-        <div className="table-responsive">
-          <table className="table table-bordered align-middle text-center">
-            <thead className="table-success">
-              <tr>
-                <th>Ảnh</th>
-                <th>Tên sách</th>
-                <th>Ngày thuê</th>
-                <th>Ngày trả</th>
-                <th>Số lượng</th>
-                <th>Giá thuê/ngày</th>
-                <th>Tiền cọc</th>
-                <th>Tạm tính</th>
+      {details.length === 0 ? (
+        <p>Không có dữ liệu chi tiết.</p>
+      ) : (
+        <table className="table table-bordered">
+          <thead className="table-light">
+            <tr>
+              <th>Tên sách</th>
+              <th>Số lượng</th>
+              <th>Tiền thuê/ngày</th>
+              <th>Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            {details.map((item) => (
+              <tr key={item.Id}>
+                <td>{item.BookTitle}</td>
+                <td>{item.Quantity}</td>
+                <td>{formatCurrency(item.UnitPrice)}</td>
+                <td>{formatCurrency(item.SubTotal)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {order.products.map((item, index) => {
-                const days = calculateDays(item.rentDate, item.returnDate);
-                const subtotal = item.rentPrice * days * item.quantity + item.deposit;
-                return (
-                  <tr key={index}>
-                    <td>
-                      <img src={item.image} alt={item.title} width="60" height="80" />
-                    </td>
-                    <td>{item.title}</td>
-                    <td>{item.rentDate}</td>
-                    <td>{item.returnDate}</td>
-                    <td>{item.quantity}</td>
-                    <td>{item.rentPrice.toLocaleString()}đ</td>
-                    <td>{item.deposit.toLocaleString()}đ</td>
-                    <td>{subtotal.toLocaleString()}đ</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Tổng thanh toán */}
-      <div className="order-section text-end">
-        <h5>
-          Tổng thanh toán:{" "}
-          <span style={{ color: "#28a745" }}>{order.total.toLocaleString()}đ</span>
-        </h5>
-        <button className="btn btn-outline-secondary mt-3" onClick={() => navigate(-1)}>
-          ← Quay lại
-        </button>
-      </div>
+            ))}
+            <tr>
+              <td colSpan="3"><strong>Tổng cộng</strong></td>
+              <td><strong>{formatCurrency(totalAmount)}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

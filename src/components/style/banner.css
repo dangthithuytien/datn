@@ -1,52 +1,84 @@
 .banner-container {
-  position: relative;
-  width: 100%;
-  height: 350px;
-  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  padding: 0 30px; /* hoặc padding theo ý bạn */
-  box-sizing: border-box;
-  overflow: visible;
+  gap: 24px;
+  padding: 20px 40px;
+  overflow: hidden;
 }
 
-
-.banner-image,
-.side-image {
-  border-radius: 8px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  object-fit: contain;
-  transition: all 0.8s ease;
+.banner-container a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Ảnh chính giữa */
 .banner-image {
-  width: auto;
-  max-width: 60%;
-  max-height: 320px;
-  opacity: 1;
-  z-index: 3;
-  transform: scale(1);
+   width: 480px;     /* tăng từ 400px */
+  height: 230px;    
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+  transform: scale(1.05);
+  transition: all 0.5s ease;
+  z-index: 2;
 }
 
+/* Ảnh hai bên */
 .side-image {
-  width: auto;
-  max-width: 30%;
-  max-height: 280px;
-  opacity: 0.5;
-  filter: brightness(0.7);
-  box-shadow: none;
+  width: 400px;
+  height: 200px;
+  object-fit: cover;
+  opacity: 0.6;
+  filter: brightness(0.8);
+  transform: scale(0.9);
+  border-radius: 10px;
+  transition: all 0.5s ease;
   z-index: 1;
-  transform: scale(0.8);
-  transition: all 0.8s ease;
 }
 
-.side-image.left {
-  /* ảnh bên trái */
+/* Responsive: chỉ hiển thị ảnh chính */
+@media (max-width: 768px) {
+  .side-image {
+    display: none;
+  }
+
+  .banner-image {
+    width: 100%;
+    height: auto;
+  }
+}
+.banner-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.side-image.right {
-  /* ảnh bên phải */
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 50%;
+  z-index: 5;
+  transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.nav-button.left {
+  left: 10px;
+}
+
+.nav-button.right {
+  right: 10px;
 }

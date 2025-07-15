@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaAngleDown, FaHeart } from "react-icons/fa";
+import { FaAngleDown, FaHeart, FaRegHeart } from "react-icons/fa";
 import {
   getAllRentBooks,
   getAllRentBookItems,
 } from "../components/Service/rentBookService";
-import "../components/style/rentbook.css";
 import { addToRentCart } from "../components/Service/CartRentService";
+import FavoriteRentBookService from "../components/Service/FavoriteRentBookService";
+import { tokenUtils } from "../components/Cookie/cookieUtils";
+import "../components/style/rentbook.css";
 
 const baseURL = "https://localhost:7003";
 
@@ -14,6 +16,7 @@ const RentBooksPage = () => {
   const [displayItems, setDisplayItems] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [conditionRange, setConditionRange] = useState({ min: 0, max: 100 });
+  const [favoriteIds, setFavoriteIds] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,10 +35,13 @@ const RentBooksPage = () => {
           const parentBook = booksMap[item.RentBookId];
           const price = parentBook ? parentBook.Price * 1000 : 0;
 
+          let imgUrl = parentBook?.ImageUrl || "";
+          if (imgUrl && !imgUrl.startsWith("/")) imgUrl = "/" + imgUrl;
+
           return {
             ...item,
             Title: parentBook?.Title || "Unknown Title",
-            ImageUrl: parentBook?.ImageUrl || "",
+            ImageUrl: imgUrl,
             Price: price,
             id: item.RentBookItemId,
             PackagingSize: parentBook?.PackagingSize || "Không rõ",
@@ -43,13 +49,47 @@ const RentBooksPage = () => {
         });
 
         setDisplayItems(flattenedItems);
+        await fetchFavorites();
       } catch (error) {
-        console.error("Lỗi khi tải dữ liệu:", error);
+        console.error("❌ Lỗi khi tải dữ liệu:", error);
       }
     };
 
     fetchData();
   }, []);
+
+  const fetchFavorites = async () => {
+    try {
+      const token = tokenUtils.getAccessToken();
+      if (!token || tokenUtils.isTokenExpired(token)) {
+        setFavoriteIds([]);
+        return;
+      }
+
+      const res = await FavoriteRentBookService.getAll();
+      setFavoriteIds(res.map((item) => String(item.RentBookId)));
+    } catch (err) {
+      console.error("❌ Lỗi khi tải yêu thích:", err);
+    }
+  };
+
+  const isFavorite = (rentBookId) => favoriteIds.includes(String(rentBookId));
+
+  const toggleFavorite = async (item) => {
+    const token = tokenUtils.getAccessToken();
+    if (!token || tokenUtils.isTokenExpired(token)) {
+      alert("❗ Bạn cần đăng nhập để yêu thích sách.");
+      return;
+    }
+
+    try {
+      await FavoriteRentBookService.toggleFavorite(item.RentBookId);
+      await fetchFavorites();
+    } catch (error) {
+      console.error("Lỗi toggle yêu thích:", error);
+      alert("❌ Không thể cập nhật yêu thích.");
+    }
+  };
 
   const formatPrice = (price) => {
     if (typeof price !== "number" || isNaN(price)) return "N/A đ";
@@ -66,25 +106,6 @@ const RentBooksPage = () => {
     }
   };
 
-  const handleAddToFavorites = (item) => {
-    const favorites = JSON.parse(localStorage.getItem("favoriteRentBooks")) || [];
-    const isExist = favorites.some((favItem) => favItem.id === item.id);
-    if (!isExist) {
-      favorites.push({
-        id: item.id,
-        title: item.Title,
-        rentPrice: item.Price,
-        image: `${baseURL}${item.ImageUrl}`,
-        status: item.status,
-        condition: item.Condition,
-      });
-      localStorage.setItem("favoriteRentBooks", JSON.stringify(favorites));
-      alert("❤️ Đã thêm vào yêu thích!");
-    } else {
-      alert("Mục sách này đã có trong danh sách yêu thích.");
-    }
-  };
-
   // ==== Lọc theo tình trạng ====
   const filteredByCondition = displayItems.filter(
     (item) =>
@@ -97,7 +118,7 @@ const RentBooksPage = () => {
   const sortedItems = [...filteredByCondition].sort((a, b) => {
     if (sortBy === "name") return a.Title.localeCompare(b.Title);
     if (sortBy === "price") return (a.Price || 0) - (b.Price || 0);
-    if (sortBy === "priceDesc") return (b.Price || 0) - (a.Price || 0); // ✅ Thêm dòng này
+    if (sortBy === "priceDesc") return (b.Price || 0) - (a.Price || 0);
     return 0;
   });
 
@@ -125,7 +146,7 @@ const RentBooksPage = () => {
             <option value="">-- Sắp xếp --</option>
             <option value="name">Tên A-Z</option>
             <option value="price">Giá thuê tăng dần</option>
-             <option value="priceDesc">Giá thuê giảm dần</option> {/* ✅ Thêm dòng này */}
+            <option value="priceDesc">Giá thuê giảm dần</option>
           </select>
 
           <select
@@ -159,11 +180,21 @@ const RentBooksPage = () => {
         {sortedItems.slice(0, 10).map((item) => (
           <div key={item.id} style={{ width: "19%" }} className="mb-4">
             <div className="book-card position-relative">
-              <FaHeart
-                className="heart-icon"
-                onClick={() => handleAddToFavorites(item)}
-                title="Thêm vào yêu thích"
-              />
+              {/* ❤️ Toggle yêu thích */}
+              {isFavorite(item.RentBookId) ? (
+                <FaHeart
+                  className="heart-icon active"
+                  onClick={() => toggleFavorite(item)}
+                  title="Bỏ khỏi yêu thích"
+                />
+              ) : (
+                <FaRegHeart
+                  className="heart-icon"
+                  onClick={() => toggleFavorite(item)}
+                  title="Thêm vào yêu thích"
+                />
+              )}
+
               <Link
                 to={`/rent-item-details/${item.id}`}
                 style={{ textDecoration: "none", color: "inherit" }}
@@ -177,6 +208,7 @@ const RentBooksPage = () => {
                 </div>
                 <h5 className="book-title">{item.Title}</h5>
               </Link>
+
               <p className="book-price">{formatPrice(item.Price)}</p>
               <p className="book-size">Kích thước: {item.PackagingSize}</p>
               <div className="button-group">

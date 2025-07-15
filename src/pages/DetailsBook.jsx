@@ -1,4 +1,3 @@
-// File: DetailsBook.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getSaleBookById } from "../components/Service/saleBookService";
@@ -42,19 +41,34 @@ const DetailsBook = () => {
     setQuantity(quantity + 1);
   };
 
+  // ✅ FIX nút thêm giỏ hàng cho SÁCH BÁN
   const handleAddToCart = () => {
-    if (!book) return;
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const existingItem = cart.find((item) => item.SaleBookId === book.SaleBookId);
+    if (!book || !book.SaleBookId) return;
 
-    if (existingItem) {
-      existingItem.quantity += quantity;
+    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
+    const index = cart.findIndex((item) => item.ProductId === book.SaleBookId);
+
+    if (index !== -1) {
+      cart[index].Quantity += quantity;
     } else {
-      cart.push({ ...book, quantity });
+      const newItem = {
+        ProductId: book.SaleBookId,            // ✅ Dùng đúng key để API nhận
+        Title: book.Title,
+        ImageUrl: book.ImageUrl,
+        Price: book.Price,
+        PackagingSize: book.PackagingSize,
+        Quantity: quantity                     // ✅ Đúng key Quantity
+      };
+      cart.push(newItem);
     }
 
     localStorage.setItem("cartBuy", JSON.stringify(cart));
     alert("✅ Đã thêm vào giỏ hàng!");
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    navigate("/checkout");
   };
 
   if (!book) {
@@ -115,7 +129,7 @@ const DetailsBook = () => {
 
           <div className="details-buttons d-flex gap-3 mt-3">
             <button className="btn-add-to-cart" onClick={handleAddToCart}>🛒 Thêm vào giỏ</button>
-            <button className="btn-buy-now">⚡ Mua ngay</button>
+            <button className="btn-buy-now" onClick={handleBuyNow}>⚡ Mua ngay</button>
           </div>
         </div>
       </div>

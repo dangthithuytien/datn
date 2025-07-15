@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaFilter } from "react-icons/fa";
+import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService";
+import { tokenUtils } from "../components/Cookie/cookieUtils";
 import "../components/style/favorite.css";
 
 const FavoriteSaleBooks = () => {
@@ -10,39 +12,68 @@ const FavoriteSaleBooks = () => {
 
   const [sortBy, setSortBy] = useState("");
   const [showFilter, setShowFilter] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-    setFavoriteBooks(data);
-  }, []);
+    const loadFavoriteBooks = async () => {
+      const token = tokenUtils.getAccessToken();
+      if (!token) {
+        alert("❌ Vui lòng đăng nhập để xem sách yêu thích.");
+        navigate("/login");
+        return;
+      }
 
-  const removeFromFavorites = (id) => {
-    const updated = favoriteBooks.filter((b) => b.id !== id);
-    setFavoriteBooks(updated);
-    localStorage.setItem("favoriteBooks", JSON.stringify(updated));
+      try {
+        const data = await FavoriteSaleBookService.getFavorites();
+        setFavoriteBooks(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("❌ Lỗi khi tải sách yêu thích:", error);
+        setFavoriteBooks([]);
+      }
+    };
+
+    loadFavoriteBooks();
+  }, [navigate]);
+
+  const removeFromFavorites = async (saleBookId) => {
+    const confirmRemove = window.confirm(
+      "Bạn chắc chắn muốn xoá khỏi yêu thích?"
+    );
+    if (!confirmRemove) return;
+
+    try {
+      await FavoriteSaleBookService.removeFavorite(saleBookId);
+      setFavoriteBooks((prev) =>
+        prev.filter((b) => String(b.SaleBookId) !== String(saleBookId))
+      );
+    } catch (err) {
+      console.error("❌ Lỗi xoá yêu thích:", err);
+    }
   };
 
   const handleAddToCart = (book) => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    if (cart.some((item) => item.id === book.id)) {
-      alert("Sách đã có trong giỏ hàng.");
+    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
+    if (cart.some((item) => item.saleBookId === book.SaleBookId)) {
+      alert("⚠️ Sách đã có trong giỏ hàng.");
       return;
     }
 
-    const newItem = { ...book, quantity: 1 };
-    localStorage.setItem("cart", JSON.stringify([...cart, newItem]));
-    alert("Đã thêm sách vào giỏ!");
+    cart.push({ ...book, saleBookId: book.SaleBookId, quantity: 1 });
+    localStorage.setItem("cartBuy", JSON.stringify(cart));
+    alert("✅ Đã thêm sách vào giỏ!");
   };
 
-  // ===== SẮP XẾP =====
+  // ===== SORTING =====
   const sortedBooks = [...favoriteBooks];
   if (sortBy === "name") {
-    sortedBooks.sort((a, b) => a.title.localeCompare(b.title));
+    sortedBooks.sort((a, b) => a.Title.localeCompare(b.Title));
   } else if (sortBy === "price") {
-    sortedBooks.sort((a, b) => a.price - b.price);
+    sortedBooks.sort(
+      (a, b) => (a.FinalPrice || a.Price) - (b.FinalPrice || b.Price)
+    );
   }
 
-  // ===== PHÂN TRANG =====
+  // ===== PAGINATION =====
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
   const currentBooks = sortedBooks.slice(indexOfFirstBook, indexOfLastBook);
@@ -68,7 +99,9 @@ const FavoriteSaleBooks = () => {
           {showFilter && (
             <div className="filter-dropdown shadow-sm p-2 bg-white rounded">
               <div
-                className={`filter-option ${sortBy === "name" ? "fw-bold" : ""}`}
+                className={`filter-option ${
+                  sortBy === "name" ? "fw-bold" : ""
+                }`}
                 onClick={() => {
                   setSortBy("name");
                   setShowFilter(false);
@@ -77,7 +110,9 @@ const FavoriteSaleBooks = () => {
                 Lọc theo Tên
               </div>
               <div
-                className={`filter-option ${sortBy === "price" ? "fw-bold" : ""}`}
+                className={`filter-option ${
+                  sortBy === "price" ? "fw-bold" : ""
+                }`}
                 onClick={() => {
                   setSortBy("price");
                   setShowFilter(false);
@@ -104,7 +139,7 @@ const FavoriteSaleBooks = () => {
           >
             {currentBooks.map((book) => (
               <div
-                key={book.id}
+                key={book.SaleBookId}
                 style={{
                   flex: "0 0 calc(20% - 13px)",
                   boxSizing: "border-box",
@@ -112,21 +147,30 @@ const FavoriteSaleBooks = () => {
               >
                 <div className="book-card position-relative">
                   <button
-                    onClick={() => removeFromFavorites(book.id)}
+                    onClick={() => removeFromFavorites(book.SaleBookId)}
                     className="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
                   >
                     &times;
                   </button>
                   <div className="image-container">
                     <img
-                      src={book.image}
-                      alt={book.title}
+                      src={
+                        book.ImageUrl?.startsWith("/")
+                          ? `https://localhost:7003${book.ImageUrl}`
+                          : book.ImageUrl || "/no-image.jpg"
+                      }
+                      alt={book.Title}
                       className="book-image"
                     />
                   </div>
-                  <h6 className="book-title">{book.title}</h6>
-                  <p className="book-price">
-                    {book.price?.toLocaleString()} đ
+                  <h6 className="book-title">{book.Title}</h6>
+                  <p className="book-price text-danger fw-bold">
+                    {(book.FinalPrice * 1000).toLocaleString("vi-VN")} đ
+                    {book.PromotionName && (
+                      <span className="text-muted text-decoration-line-through ms-2">
+                        {(book.Price * 1000).toLocaleString("vi-VN")} đ
+                      </span>
+                    )}
                   </p>
                   <div className="button-group">
                     <button

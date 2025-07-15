@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import {
-  FaBookOpen, FaSearch, FaShoppingCart, FaUser, FaBlog, FaTags,
-  FaNewspaper, FaHeart, FaCoins
+  FaBookOpen, FaSearch, FaShoppingCart, FaUser, FaBlog,
+  FaNewspaper, FaHeart, FaCoins, FaTags
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style/css.css";
 import ExchangePointsModal from "../../pages/ExchangePointsModal";
 import { tokenUtils } from "../Cookie/cookieUtils";
+import { cookieUtils } from "../Cookie/cookieUtils";
 
 const Header = () => {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
@@ -23,6 +24,13 @@ const Header = () => {
   const handleMouseEnter = (setOpen) => setOpen(true);
   const handleMouseLeave = (setOpen) => setOpen(false);
   const toggleExchangeModal = () => setIsExchangeModalOpen(!isExchangeModalOpen);
+  const handleLogout = () => {
+    tokenUtils.removeAccessToken();
+    cookieUtils.deleteCookie("refreshToken");
+    alert("Đăng xuất thành công!");
+    setAccountDropdownOpen(false);
+    window.location.href = "/";
+  };
 
   return (
     <header className="bg-light shadow-md">
@@ -42,13 +50,13 @@ const Header = () => {
           </div>
 
           <div className="col-4 d-flex justify-content-end align-items-center gap-3">
-            {/* === Đổi điểm === */}
+            {/* Đổi điểm */}
             <div className="icon-text text-center" onClick={toggleExchangeModal} style={{ cursor: "pointer" }}>
               <FaCoins style={{ color: "white" }} />
               <div className="small-text">Đổi điểm</div>
             </div>
 
-            {/* === Giỏ hàng === */}
+            {/* Giỏ hàng */}
             <div
               className="icon-text text-center position-relative"
               onMouseEnter={() => handleMouseEnter(setCartDropdownOpen)}
@@ -65,7 +73,7 @@ const Header = () => {
               )}
             </div>
 
-            {/* === Tài khoản === */}
+            {/* Tài khoản */}
             <div
               className="icon-text text-center position-relative"
               onMouseEnter={() => handleMouseEnter(setAccountDropdownOpen)}
@@ -75,49 +83,37 @@ const Header = () => {
               <FaUser />
               <div className="small-text">Tài khoản</div>
               {accountDropdownOpen && (
-                <ul className="dropdown-menu dropdown-menu-custom show p-0">
+                <div className="dropdown-menu dropdown-menu-custom show text-start">
                   {!isLoggedIn ? (
                     <>
-                      <li><Link className="dropdown-item" to="/register">Đăng ký</Link></li>
-                      <li><Link className="dropdown-item" to="/login">Đăng nhập</Link></li>
+                      <Link className="dropdown-item" to="/register">Đăng ký</Link>
+                      <Link className="dropdown-item" to="/login">Đăng nhập</Link>
                     </>
                   ) : (
                     <>
-                      <li><Link className="dropdown-item" to="/user-profile">Thông tin cá nhân</Link></li>
-                      <li className="position-relative">
-                        <div className="dropdown-item d-flex justify-content-between align-items-center"
-                          onClick={() => setOrderDropdownOpen(!orderDropdownOpen)}>
-                          Đơn hàng của bạn <span>{orderDropdownOpen ? "▲" : "▼"}</span>
+                      <Link className="dropdown-item" to="/user-profile">👤 Thông tin cá nhân</Link>
+                      <div
+                        className="dropdown-item d-flex justify-content-between align-items-center"
+                        onClick={() => setOrderDropdownOpen(!orderDropdownOpen)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        🧾 Đơn hàng <span>{orderDropdownOpen ? "▲" : "▼"}</span>
+                      </div>
+                      {orderDropdownOpen && (
+                        <div className="ps-3 pe-2">
+                          <Link className="dropdown-item" to="/orders-all">🛍 Đơn hàng mua</Link>
+                          <Link className="dropdown-item" to="/orders-rent">📚 Đơn hàng thuê</Link>
                         </div>
-                        {orderDropdownOpen && (
-                          <ul className="dropdown-submenu list-unstyled m-0">
-                            <li><Link className="dropdown-item" to="/orders-all">Đơn hàng mua</Link></li>
-                            <li><Link className="dropdown-item" to="/orders-rent">Đơn hàng thuê</Link></li>
-                          </ul>
-                        )}
-                      </li>
-                      <li><hr className="dropdown-divider" /></li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => {
-                            tokenUtils.removeAccessToken();
-                            document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                            alert("Đăng xuất thành công!");
-                            setAccountDropdownOpen(false);
-                            window.location.href = "/";
-                          }}
-                        >
-                          Đăng xuất
-                        </button>
-                      </li>
+                      )}
+                      <hr className="dropdown-divider" />
+                      <button className="dropdown-item" onClick={handleLogout}>🚪 Đăng xuất</button>
                     </>
                   )}
-                </ul>
+                </div>
               )}
             </div>
 
-            {/* === Yêu thích === */}
+            {/* Yêu thích */}
             <Link to="/favorite" className="icon-text text-center" style={{ textDecoration: "none", color: "inherit" }}>
               <FaHeart style={{ color: "white" }} />
               <div className="small-text">Yêu thích</div>
@@ -126,7 +122,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* === NAV BOTTOM === */}
+      {/* NAV BOTTOM */}
       <div className="bg-secondary bg-opacity-10 py-1 border-top">
         <div className="container-xxl">
           <nav className="bottom-nav-grid">
@@ -138,7 +134,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* === Modal đổi điểm === */}
       <ExchangePointsModal isOpen={isExchangeModalOpen} onClose={toggleExchangeModal} />
     </header>
   );
