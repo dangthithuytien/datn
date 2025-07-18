@@ -6,13 +6,13 @@ import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookServi
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import { addToCartSale } from "../components/Service/cartService";
 import "../components/style/sale.css";
-
+import { useNavigate } from "react-router-dom";
 const Sale = () => {
   const [books, setBooks] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
   const baseURL = "https://localhost:7003";
-
+  const navigate = useNavigate(); 
   useEffect(() => {
     const interval = setInterval(() => {
       const newToken = tokenUtils.getAccessToken();
@@ -99,7 +99,28 @@ const Sale = () => {
       alert("Không thể thêm vào giỏ hàng.");
     }
   };
-
+  const handleBuyNow = (book) => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
+  
+    if (!token || !user) {
+      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      navigate("/login"); // Hoặc mở modal đăng nhập
+      return;
+    }
+    const selectedProduct = {
+      ProductId: book.id,
+      ProductName: book.title, // sửa từ book.Title
+      Quantity: 1,
+      UnitPrice: book.finalPrice , // sửa từ book.FinalPrice
+      ImageUrl: book.image, // sửa từ book.ImageUrl
+    };
+    
+    localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
+    localStorage.setItem("checkoutTotal", JSON.stringify(book.finalPrice));
+    localStorage.setItem("isBuyNow", "true"); 
+    navigate("/checkout");
+  };
   const placeholderCount = 5 - books.length;
 
   return (
@@ -149,16 +170,16 @@ const Sale = () => {
 
               <p className="book-price">
                 <span className="final-price">
-                  {(book.finalPrice * 1000).toLocaleString("vi-VN")}₫
+                  {(book.finalPrice ).toLocaleString("vi-VN")}₫
                 </span>
                 {book.price !== book.finalPrice && (
                   <span className="original-price ms-2 text-muted text-decoration-line-through">
-                    {(book.price * 1000).toLocaleString("vi-VN")}₫
+                    {(book.price ).toLocaleString("vi-VN")}₫
                   </span>
                 )}
               </p>
 
-              <p className="book-size">Kích thước: {book.packagingSize}</p>
+
 
               <div className="button-group">
                 <button
@@ -167,7 +188,10 @@ const Sale = () => {
                 >
                   Giỏ hàng
                 </button>
-                <button className="btn btn-primary btn-sm">Mua ngay</button>
+                <button className="btn btn-primary btn-sm"  
+                        onClick={() => handleBuyNow(book)}>
+                        Mua ngay
+                      </button>
               </div>
             </div>
           </div>

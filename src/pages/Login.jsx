@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../components/Service/AxiosConfig"; // <-- Đường dẫn đúng tới Axios config
 import { tokenUtils } from "../components/Cookie/tokenUtils"; // <-- Đường dẫn đúng tới tokenUtils
 import "../components/style/Login.css";
-
+import authService from "../components/Service/authService"; 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,21 +15,21 @@ export default function Login() {
         Email: email,
         Password: password,
       });
-  
+
       if (res.data?.IsSuccess && res.data?.Token) {
         const accessToken = res.data.Token;
         tokenUtils.setAccessToken(accessToken);
         document.cookie = `refreshToken=${res.data.RefreshToken}; path=/; secure; samesite=strict`;
-  
+
         // 🟢 Gọi API lấy thông tin người dùng sau khi đăng nhập thành công
         const userRes = await apiClient.get("/user/profile", {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-  
+
         if (userRes.data) {
           localStorage.setItem("user", JSON.stringify(userRes.data)); // ✅ Lưu thông tin người dùng
         }
-  
+
         alert("✅ Đăng nhập thành công!");
         navigate("/");
       } else {
@@ -40,8 +40,20 @@ export default function Login() {
       alert("❌ Lỗi hệ thống hoặc mạng!");
     }
   };
-  
-
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await apiClient.get('/Auth/external-login');
+      const loginUrl = response.data?.loginUrl;
+      if (loginUrl) {
+        window.location.href = loginUrl; // Chuyển hướng tới Google
+      } else {
+        alert('❌ Không lấy được link đăng nhập Google');
+      }
+    } catch (error) {
+      console.error("Google login failed:", error);
+      alert("❌ Lỗi khi đăng nhập bằng Google!");
+    }
+  };
   return (
     <div className="login-container container-md bg-white rounded-3 shadow-sm p-4 p-md-5">
       <h1 className="text-center mb-3">ĐĂNG NHẬP</h1>
@@ -78,19 +90,22 @@ export default function Login() {
           <label htmlFor="passwordInput"><i className="bi bi-lock me-2"></i>Mật khẩu</label>
         </div>
         <div className="forgot-password-link">
-  <Link to="/reset-password">Quên mật khẩu?</Link></div>
-<button type="submit" className="btn btn-success w-100 py-2">
+          <Link to="/reset-password">Quên mật khẩu?</Link></div>
+        <button type="submit" className="btn btn-success w-100 py-2">
           <i className="bi bi-box-arrow-in-right me-2"></i>
           ĐĂNG NHẬP
         </button>
       </form>
       <div className="social-login my-4">
         <div className="divider d-flex align-items-center my-3">
-<hr className="w-100" />
-<span className="px-3 text-muted">HOẶC</span>
+          <hr className="w-100" />
+          <span className="px-3 text-muted">HOẶC</span>
           <hr className="w-100" />
         </div>
-        <button className="social-button google-button btn btn-outline-danger w-100 mb-2">
+        <button
+          className="social-button google-button btn btn-outline-danger w-100 mb-2"
+          onClick={handleGoogleLogin}
+        >
           <i className="bi bi-google me-2"></i>ĐĂNG NHẬP GOOGLE
         </button>
         <button className="social-button facebook-button btn btn-outline-primary w-100">

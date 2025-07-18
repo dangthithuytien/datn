@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/style/Orders.css";
-
+import apiClient from "../components/Service/AxiosConfig";
 // Icons
 import { HiOutlineSearch } from "react-icons/hi";
 import { MdCancel, MdArrowBack, MdShoppingCartCheckout } from "react-icons/md";
@@ -15,6 +15,27 @@ const cancelReasons = [
   "Khác",
 ];
 
+const getStatusString = (status) => {
+  switch (status) {
+    case 0:
+    case 1:
+      return "Đã đặt";
+    case 2:
+      return "Đang giao";
+    case 3:
+      return "Đã giao";
+    case 4:
+      return "Đã hủy";
+    case 5:
+      return "Thất bại";
+    case 6:
+      return "Quá hạn";
+    default:
+      return "Không xác định";
+  }
+  
+};
+
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState("Tất cả");
@@ -24,49 +45,80 @@ const AllOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem("accessToken");
-        const currentUser = JSON.parse(localStorage.getItem("user")); // 👈 user hiện tại
-
-        const res = await fetch("https://localhost:7003/api/admin/saleorders", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const allOrders = await res.json();
-        console.log("Dữ liệu người dùng:", currentUser);
-        console.log("Dữ liệu đơn hàng:", allOrders);
-        // ⚠️ Kiểm tra key chính xác: 'userId' hay 'UserId' hay 'UserID'
-        const userOrders = allOrders.filter(
-          (order) => order.UserId == currentUser?.UserId // hoặc currentUser?.UserId nếu tên khác
-        );
-
+        const currentUser = JSON.parse(localStorage.getItem("user"));
+  
+        const res = await apiClient.get("/admin/saleorders");
+  
+        const allOrders = res.data; // ✅ Đây là cách đúng với axios
+  
+        const userOrders = allOrders
+          .filter((order) => order.UserId === currentUser?.UserId)
+          .map((order) => ({
+            ...order,
+            statusText: getStatusString(order.Status),
+          }));
+  
         setOrders(userOrders);
       } catch (error) {
         console.error("Lỗi khi lấy đơn hàng người dùng:", error);
       }
     };
-
+  
     fetchOrders();
   }, []);
+  
 
-  const handleCancelOrder = (orderId, reason) => {
-    const updated = orders.map((o) =>
-      o.orderId === orderId
-        ? { ...o, status: "Đã hủy", cancelReason: reason }
-        : o
-    );
-    setOrders(updated);
-    setShowReasonInput(null);
+  const handleCancelOrder = async (orderId, reason) => {
+    try {
+      const res = await apiClient.put(`/admin/saleorders/${orderId}/status`, 4); // Gửi status = 4
+  
+      if (res.status === 200) {
+        const updated = orders.map((o) =>
+          o.OrderId === orderId
+            ? {
+                ...o,
+                Status: 4,
+                statusText: "Đã hủy",
+                cancelReason: reason,
+              }
+            : o
+        );
+        setOrders(updated);
+        setShowReasonInput(null);
+      } else {
+        alert("Không thể hủy đơn hàng. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi hủy đơn hàng:", error);
+      alert("Lỗi mạng khi hủy đơn hàng.");
+    }
   };
-
-  const handleConfirmReceived = (orderId) => {
-    const updated = orders.map((o) =>
-      o.orderId === orderId ? { ...o, status: "Đã giao" } : o
-    );
-    setOrders(updated);
+  
+  const handleConfirmReceived = async (orderId) => {
+    try {
+      const res = await apiClient.put(`/admin/saleorders/${orderId}/status`, 3); // Gửi status = 3
+  
+      if (res.status === 200) {
+        const updated = orders.map((o) =>
+          o.OrderId === orderId
+            ? {
+                ...o,
+                Status: 3,
+                statusText: "Đã giao",
+              }
+            : o
+        );
+        setOrders(updated);
+      } else {
+        alert("Không thể cập nhật trạng thái. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái:", error);
+      alert("Lỗi mạng khi cập nhật trạng thái.");
+    }
   };
-
+  
+  
   const handleBuyAgain = (products) => {
     localStorage.setItem("cartBuy", JSON.stringify(products));
     window.location.href = "/cart";
@@ -75,7 +127,7 @@ const AllOrders = () => {
   const filteredOrders =
     statusFilter === "Tất cả"
       ? orders
-      : orders.filter((order) => order.status === statusFilter);
+      : orders.filter((order) => order.statusText === statusFilter);
 
   return (
     <div className="container mt-4">
@@ -113,6 +165,7 @@ const AllOrders = () => {
               <th>Phương thức thanh toán</th>
               <th>Tiền giảm</th>
               <th>Tổng tiền</th>
+              <th>Trạng thái</th> 
               <th>Thao tác</th>
             </tr>
           </thead>
@@ -120,12 +173,11 @@ const AllOrders = () => {
             {filteredOrders.map((order) => (
               <tr key={order.OrderId}>
                 <td>#{order.OrderId}</td>
-
                 <td>{order.OrderDate}</td>
                 <td>{order.PaymentMethod}</td>
                 <td>{order.DiscountAmount}đ</td>
                 <td>{order.TotalAmount}đ</td>
-
+                <td>{order.statusText}</td>
                 <td>
                   <div className="action-icons d-flex flex-wrap gap-1 justify-content-center">
                     <button
@@ -136,14 +188,14 @@ const AllOrders = () => {
                       <HiOutlineSearch />
                     </button>
 
-                    {order.status === "Đã đặt" && (
+                    {order.statusText === "Đã đặt" && (
                       <>
-                        {showReasonInput === order.orderId ? (
+                        {showReasonInput === order.OrderId ? (
                           <div style={{ width: "100%" }}>
                             <select
                               className="form-select mb-1"
                               onChange={(e) =>
-                                handleCancelOrder(order.orderId, e.target.value)
+                                handleCancelOrder(order.OrderId, e.target.value)
                               }
                               defaultValue=""
                             >
@@ -168,7 +220,7 @@ const AllOrders = () => {
                           <button
                             className="btn btn-danger btn-sm"
                             title="Hủy đơn"
-                            onClick={() => setShowReasonInput(order.orderId)}
+                            onClick={() => setShowReasonInput(order.OrderId)}
                           >
                             <MdCancel />
                           </button>
@@ -176,26 +228,18 @@ const AllOrders = () => {
                       </>
                     )}
 
-                    {order.status === "Đang giao" && (
+                    {order.statusText === "Đang giao" && (
                       <button
                         className="btn btn-primary btn-sm"
                         title="Đã nhận hàng"
-                        onClick={() => handleConfirmReceived(order.orderId)}
+                        onClick={() => handleConfirmReceived(order.OrderId)}
                       >
                         <BsBoxSeam className="me-1" />
                         <BsCheck2 />
                       </button>
                     )}
 
-                    {order.status === "Đã hủy" && (
-                      <button
-                        className="btn btn-outline-secondary btn-sm"
-                        title="Mua lại"
-                        onClick={() => handleBuyAgain(order.products)}
-                      >
-                        <MdShoppingCartCheckout />
-                      </button>
-                    )}
+                
                   </div>
                 </td>
               </tr>

@@ -165,10 +165,10 @@ const FavoriteSaleBooks = () => {
                   </div>
                   <h6 className="book-title">{book.Title}</h6>
                   <p className="book-price text-danger fw-bold">
-                    {(book.FinalPrice * 1000).toLocaleString("vi-VN")} đ
+                    {(book.FinalPrice ).toLocaleString("vi-VN")} đ
                     {book.PromotionName && (
                       <span className="text-muted text-decoration-line-through ms-2">
-                        {(book.Price * 1000).toLocaleString("vi-VN")} đ
+                        {(book.Price ).toLocaleString("vi-VN")} đ
                       </span>
                     )}
                   </p>

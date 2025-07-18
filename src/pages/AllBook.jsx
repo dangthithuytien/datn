@@ -7,6 +7,8 @@ import { addToCartSale } from "../components/Service/cartService";
 import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService";
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import "../components/style/allbook.css";
+import { useNavigate } from "react-router-dom"; // thêm ở đầu file
+
 
 const AllBook = () => {
   const [allBooks, setAllBooks] = useState([]);
@@ -18,7 +20,7 @@ const AllBook = () => {
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
   const baseURL = "https://localhost:7003";
-
+  const navigate = useNavigate(); 
   // Theo dõi token thay đổi
   useEffect(() => {
     const interval = setInterval(() => {
@@ -109,7 +111,7 @@ const AllBook = () => {
       selectedCategory ? book.CategoryIds?.includes(selectedCategory) : true
     )
     .filter((book) => {
-      const price = (book.FinalPrice || book.Price) * 1000;
+      const price = (book.FinalPrice || book.Price) ;
       return price >= priceRange.min && price <= priceRange.max;
     });
 
@@ -125,7 +127,31 @@ const AllBook = () => {
       (a, b) => (b.FinalPrice || b.Price) - (a.FinalPrice || a.Price)
     );
   }
-
+  const handleBuyNow = (book) => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
+  
+    if (!token || !user) {
+      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      navigate("/login"); // Hoặc mở modal đăng nhập
+      return;
+    }
+  
+    const selectedProduct = {
+      ProductId: book.SaleBookId,
+      ProductName: book.Title,
+      Quantity: 1,
+      UnitPrice: book.FinalPrice || book.Price,
+      ImageUrl: book.ImageUrl,
+    };
+  
+    localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
+    localStorage.setItem("checkoutTotal", JSON.stringify(book.FinalPrice || book.Price));
+    localStorage.setItem("isBuyNow", "true"); 
+    navigate("/checkout");
+  };
+  
+  
   const displayedBooks = sortedBooks.slice(0, 8);
 
   return (
@@ -249,10 +275,10 @@ const AllBook = () => {
                     </Link>
 
                     <p className="book-price">
-                      {(book.Price * 1000).toLocaleString("vi-VN")}đ
+                      {(book.Price ).toLocaleString("vi-VN")}đ
                     </p>
                     <p className="text-muted" style={{ fontSize: "13px" }}>
-                      Kích thước: {book.PackagingSize}
+                      Số lượng: {book.Quantity}
                     </p>
 
                     <div className="button-group">
@@ -262,7 +288,8 @@ const AllBook = () => {
                       >
                         Giỏ hàng
                       </button>
-                      <button className="btn btn-primary btn-sm">
+                      <button className="btn btn-primary btn-sm"  
+                        onClick={() => handleBuyNow(book)}>
                         Mua ngay
                       </button>
                     </div>

@@ -80,11 +80,28 @@ const SaleAll = () => {
       alert("Sách đã có trong danh sách yêu thích.");
     }
   };
-
-  const handleBookClick = (book) => {
-    navigate(`/book/${book.id}`, { state: { book } });
+  const handleBuyNow = (book) => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
+  
+    if (!token || !user) {
+      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      navigate("/login"); // Hoặc mở modal đăng nhập
+      return;
+    }
+    const selectedProduct = {
+      ProductId: book.id,
+      ProductName: book.title, // sửa từ book.Title
+      Quantity: 1,
+      UnitPrice: book.finalPrice , // sửa từ book.FinalPrice
+      ImageUrl: book.image, // sửa từ book.ImageUrl
+    };
+    
+    localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
+    localStorage.setItem("checkoutTotal", JSON.stringify(book.finalPrice));
+    localStorage.setItem("isBuyNow", "true"); 
+    navigate("/checkout");
   };
-
   // ==== Phân trang ====
   const indexOfLast = currentPage * booksPerPage;
   const indexOfFirst = indexOfLast - booksPerPage;
@@ -118,15 +135,15 @@ const SaleAll = () => {
               <p className="book-price">
                 {book.price !== book.finalPrice && (
                   <span className="original-price">
-                    {(book.price * 1000).toLocaleString("vi-VN")}₫
+                    {(book.price ).toLocaleString("vi-VN")}₫
                   </span>
                 )}
                 <span className="final-price">
-                  {(book.finalPrice * 1000).toLocaleString("vi-VN")}₫
+                  {(book.finalPrice ).toLocaleString("vi-VN")}₫
                 </span>
               </p>
 
-              <p className="book-size">Kích thước: {book.packagingSize || "Không rõ"}</p>
+              <p className="book-size">   Số lượng: {book.Quantity}</p>
 
               <div className="button-group">
                 <button
@@ -135,7 +152,10 @@ const SaleAll = () => {
                 >
                   Giỏ hàng
                 </button>
-                <button className="btn btn-success btn-sm">Mua ngay</button>
+                <button className="btn btn-primary btn-sm"  
+                        onClick={() => handleBuyNow(book)}>
+                        Mua ngay
+                      </button>
               </div>
             </div>
           </div>

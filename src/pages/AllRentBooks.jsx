@@ -37,7 +37,7 @@ const AllRentBooks = () => {
 
         const flattenedItems = itemsData.map((item) => {
           const parent = booksMap[item.RentBookId];
-          const price = parent ? parent.Price * 1000 : 0;
+          const price = parent ? parent.Price  : 0;
           return {
             ...item,
             Title: parent?.Title || "Unknown",
@@ -91,7 +91,7 @@ const AllRentBooks = () => {
       await addToRentCart(item.RentBookItemId);
       alert("Đã thêm vào giỏ thuê!");
     } catch (err) {
-      console.error("❌ Thêm giỏ thuê:", err);
+      alert("Sách đã được thuê");
     }
   };
 
@@ -178,7 +178,9 @@ const AllRentBooks = () => {
                 />
                 <div className="book-title">{item.Title}</div>
                 <div className="book-price">{item.Price.toLocaleString("vi-VN")}₫</div>
-                <div className="book-size">Kích thước: {item.PackagingSize}</div>
+                <p className="book-size">
+                Trạng thái thuê: {item.status === "Rented" ? "Đã thuê" : "Còn sách"}
+              </p>
               </div>
               <div className="button-group">
                 <button

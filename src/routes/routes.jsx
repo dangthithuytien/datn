@@ -26,6 +26,7 @@ import ConfirmEmail from "../pages/ConfirmEmailPage";
 import ResetPass from "../pages/ResetPass";
 import DetailsSale from "../pages/DetailsSale";
 import OrderSellDetails from "../pages/OrderSellDetails";
+import OauthCallback from "../pages/oauthcallback";
 
 export const appRoutes = [
   { path: "/", element: <Home /> },
@@ -34,6 +35,7 @@ export const appRoutes = [
   { path: "/user-profile", element: <UserProfile /> },
   { path: "/reset-password", element: <ResetPass /> },
   { path: "/confirm-email", element: <ConfirmEmail /> },
+  { path: "/oauth-callback", element: <OauthCallback /> },
   // Chi tiết sách (bán) - BookId
   { path: "/book/:id", element: <DetailsBook /> },
 

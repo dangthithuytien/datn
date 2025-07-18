@@ -1,39 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-
+import apiClient from "../components/Service/AxiosConfig";
 const OrderSellDetails = () => {
   const { id } = useParams();
   const [details, setDetails] = useState([]);
   const [orderInfo, setOrderInfo] = useState(null); // Thêm để chứa Address, Phone
 
-  useEffect(() => {
-    const fetchOrderData = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
+  
+useEffect(() => {
+  const fetchOrderData = async () => {
+    try {
+      // Gọi chi tiết sản phẩm
+      const resDetails = await apiClient.get(`/admin/saleorders/${id}/details`);
+      setDetails(resDetails.data);
 
-        // Gọi chi tiết sản phẩm
-        const resDetails = await fetch(`https://localhost:7003/api/admin/saleorders/${id}/details`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!resDetails.ok) throw new Error("Không thể lấy chi tiết đơn hàng");
-        const detailData = await resDetails.json();
-        setDetails(detailData);
-console.log("ádsaaaaaaaaaaaa",resDetails)
-        // Gọi thông tin đơn hàng chính
-        const resOrder = await fetch(`https://localhost:7003/api/admin/saleorders/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!resOrder.ok) throw new Error("Không thể lấy thông tin đơn hàng");
-        const orderData = await resOrder.json();
-        setOrderInfo(orderData);
+      // Gọi thông tin đơn hàng chính
+      const resOrder = await apiClient.get(`/admin/saleorders/${id}`);
+      setOrderInfo(resOrder.data);
 
-      } catch (err) {
-        alert(err.message);
-      }
-    };
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+    
+    }
+  };
 
-    fetchOrderData();
-  }, [id]);
+  fetchOrderData();
+}, [id]);
 
   const totalAmount = details.reduce((sum, item) => sum + item.SubTotal, 0);
 

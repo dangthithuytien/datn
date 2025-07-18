@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { getAllSaleBooks } from "../components/Service/saleBookService";
 import "../components/style/booksPage.css";
+import { addToCartSale } from "../components/Service/cartService";
 
 const BooksPage = () => {
   const [books, setBooks] = useState([]);
@@ -44,28 +45,23 @@ const BooksPage = () => {
     setFavoriteIds([...favoriteIds, book.SaleBookId]);
     alert("Đã thêm vào yêu thích!");
   };
-
-  const handleAddToCart = (book) => {
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const index = cart.findIndex((item) => item.SaleBookId === book.SaleBookId);
-
-    if (index !== -1) {
-      cart[index].quantity += 1;
-    } else {
-      cart.push({ ...book, quantity: 1 });
+  const handleAddToCart = async (book) => {
+    try {
+      await addToCartSale(book.SaleBookId, 1);
+      alert("✅ Đã thêm vào giỏ hàng!");
+    } catch (error) {
+      console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
+      alert("Không thể thêm vào giỏ hàng. Vui lòng đăng nhập hoặc thử lại sau.");
     }
-
-    localStorage.setItem("cartBuy", JSON.stringify(cart));
-    alert("Đã thêm vào giỏ hàng!");
   };
-
+  
   const handleBookClick = (book) => {
     navigate(`/book/${book.SaleBookId}`, { state: { book } });
   };
 
   // ==== Lọc và sắp xếp ====
   const priceFiltered = books.filter((book) => {
-    const price = (book.FinalPrice || book.Price) * 1000;
+    const price = (book.FinalPrice || book.Price) ;
     return price >= priceRange.min && price <= priceRange.max;
   });
 
@@ -84,7 +80,30 @@ const BooksPage = () => {
   const currentBooks = sortedBooks.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(sortedBooks.length / booksPerPage);
   const placeholders = (5 - (currentBooks.length % 5)) % 5;
-
+  const handleBuyNow = (book) => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
+  
+    if (!token || !user) {
+      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      navigate("/login"); // Hoặc mở modal đăng nhập
+      return;
+    }
+  
+    const selectedProduct = {
+      ProductId: book.SaleBookId,
+      ProductName: book.Title,
+      Quantity: 1,
+      UnitPrice: book.FinalPrice || book.Price,
+      ImageUrl: book.ImageUrl,
+    };
+  
+    localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
+    localStorage.setItem("checkoutTotal", JSON.stringify(book.FinalPrice || book.Price));
+  
+    navigate("/checkout");
+  };
+  
   return (
     <div className="container mt-4">
       <h4 className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
@@ -154,9 +173,9 @@ const BooksPage = () => {
                 />
                 <div className="book-title">{book.Title}</div>
                 <div className="book-price">
-                  {(book.FinalPrice * 1000).toLocaleString("vi-VN")}₫
+                  {(book.FinalPrice ).toLocaleString("vi-VN")}₫
                 </div>
-                <div className="book-size">Kích thước: {book.PackagingSize}</div>
+                <div className="book-size">   Số lượng: {book.Quantity}</div>
               </div>
               <div className="button-group">
                 <button
@@ -165,7 +184,7 @@ const BooksPage = () => {
                 >
                   Giỏ hàng
                 </button>
-                <button className="btn btn-success btn-sm">Mua ngay</button>
+                <button className="btn btn-success btn-sm" onClick={() => handleBuyNow(book)}>Mua ngay</button>
               </div>
             </div>
           </div>

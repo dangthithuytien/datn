@@ -74,6 +74,7 @@ const CartSale = () => {
 
     localStorage.setItem("cartBuy", JSON.stringify(selectedProducts));
     localStorage.setItem("checkoutTotal", JSON.stringify(calculateSelectedTotal()));
+    localStorage.removeItem("isBuyNow");
     navigate("/checkout");
   };
 

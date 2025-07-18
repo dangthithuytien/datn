@@ -62,6 +62,31 @@ const DetailsSale = () => {
     alert("❌ Không thể thêm vào giỏ hàng. Bạn đã đăng nhập chưa?");
   }
 };
+const handleBuyNow = (book) => {
+  const token = localStorage.getItem("accessToken");
+  const user = localStorage.getItem("user");
+
+  if (!token || !user) {
+    alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+    navigate("/login"); // Hoặc mở modal đăng nhập
+    return;
+  }
+
+  const selectedProduct = {
+    ProductId: book.SaleBookId,
+    ProductName: book.Title,
+    Quantity: 1,
+    UnitPrice: book.FinalPrice || book.Price,
+    ImageUrl: book.ImageUrl,
+  };
+
+  localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
+  
+  localStorage.setItem("checkoutTotal", JSON.stringify(book.FinalPrice || book.Price));
+  localStorage.setItem("isBuyNow", "true"); 
+
+  navigate("/checkout");
+};
 
   if (!book) {
     return (
@@ -113,13 +138,13 @@ const DetailsSale = () => {
               className="sale-price text-danger fw-bold"
               style={{ fontSize: "28px" }}
             >
-              {(book.finalPrice * 1000).toLocaleString("vi-VN")}đ
+              {(book.finalPrice ).toLocaleString("vi-VN")}đ
             </span>
             <span
               style={{ fontSize: "20px" }}
               className="original-price text-muted text-decoration-line-through ms-3"
             >
-              {(book.Price * 1000).toLocaleString("vi-VN")}đ
+              {(book.Price ).toLocaleString("vi-VN")}đ
             </span>
           </div>
 
@@ -165,7 +190,8 @@ const DetailsSale = () => {
             <button className="btn-add-to-cart" onClick={handleAddToCart}>
               🛒 Thêm vào giỏ
             </button>
-            <button className="btn-buy-now">⚡ Mua ngay</button>
+            <button className="btn-buy-now"   onClick={() => handleBuyNow(book)}>⚡ Mua ngay</button>
+            
           </div>
         </div>
       </div>

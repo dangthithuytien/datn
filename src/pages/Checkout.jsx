@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import "../components/style/Checkout.css";
 import { getCartSale } from "../components/Service/cartService";
+import apiClient from "../components/Service/AxiosConfig";
+import { useLocation } from "react-router-dom";
 
 const Checkout = () => {
   const [discountValue, setDiscountValue] = useState(0);
@@ -18,6 +20,9 @@ const Checkout = () => {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
+
+  const location = useLocation();
+const prevPath = useRef(location.pathname);
 
   const [userInfo, setUserInfo] = useState({
     name: "",
@@ -54,25 +59,24 @@ const Checkout = () => {
         if (data.error === 0) setProvinces(data.data);
       });
 
-    const fetchVouchers = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        const res = await fetch("https://localhost:7003/api/Voucher/history", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        const unused = data.filter((v) => !v.IsUsed);
-        setAvailableVouchers(unused);
-      } catch (err) {
-        console.error("Lỗi khi lấy voucher:", err);
-      }
-    };
+      const fetchVouchers = async () => {
+        try {
+          const res = await apiClient.get("/Voucher/history");
+          const data = res.data;
+      
+          const unused = data.filter((v) => !v.IsUsed);
+          setAvailableVouchers(unused);
+        } catch (err) {
+          console.error("❌ Lỗi khi lấy voucher:", err);
+        }
+      };
 
     fetchVouchers();
   }, []);
+ 
+  
 
+ 
   useEffect(() => {
     if (selectedProvince) {
       fetch(`https://esgoo.net/api-tinhthanh/2/${selectedProvince}.htm`)
@@ -101,53 +105,35 @@ const Checkout = () => {
     setSelectedWard("");
   }, [selectedDistrict]);
 
-  const addToCartSession = async (product) => {
-    const token = localStorage.getItem("accessToken");
-    const response = await fetch("https://localhost:7003/api/CartSale/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        ProductId: product.ProductId,
-        Quantity: product.Quantity,
-      }),
+ 
+const addToCartSession = async (product) => {
+  try {
+    await apiClient.post("/CartSale/add", {
+      ProductId: product.ProductId,
+      Quantity: product.Quantity,
     });
+  } catch (error) {
+    const errorText =
+      error.response?.data?.message || error.message || "Không rõ lỗi";
+    throw new Error("❌ Lỗi khi thêm sản phẩm vào session: " + errorText);
+  }
+};
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error("❌ Lỗi khi thêm sản phẩm vào session: " + errorText);
-    }
-  };
-
-  const createCashOrder = async (orderData) => {
-    const token = localStorage.getItem("accessToken");
-
-    const response = await fetch(
-      "https://localhost:7003/api/SaleOrders/create-cash",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-        body: JSON.stringify(orderData),
-      }
-    );
-
-    if (!response.ok) {
-      const errorDetail = await response.text();
-      throw new Error("Lỗi khi tạo đơn hàng: " + errorDetail);
-    }
-
-    return response.json();
-  };
+  
+const createCashOrder = async (orderData) => {
+  try {
+    const response = await apiClient.post("/SaleOrders/create-cash", orderData);
+    return response.data;
+  } catch (error) {
+    const errorDetail = error.response?.data || error.message;
+    throw new Error("❌ Lỗi khi tạo đơn hàng: " + errorDetail);
+  }
+};
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const handlePlaceOrder = async () => {
+    const isBuyNow = localStorage.getItem("isBuyNow") === "true";
     const addressDetail = document.querySelector(
       'input[placeholder="Địa chỉ cụ thể"]'
     ).value;
@@ -189,10 +175,14 @@ const Checkout = () => {
     };
 
     try {
-      for (const product of products) {
-        await addToCartSession(product);
+      if (isBuyNow) {
+        for (const product of products) {
+          console.log("Đang thêm vào session:", product);
+          await addToCartSession(product);
+        }
+        await delay(500);
       }
-
+    
       await delay(300);
 
       const sessionCart = await getCartSale();
@@ -206,6 +196,7 @@ const Checkout = () => {
       alert("✅ Đặt hàng thành công!");
       localStorage.removeItem("cartBuy");
       localStorage.removeItem("checkoutTotal");
+      localStorage.removeItem("isBuyNow");
       window.location.href = "/";
     } catch (error) {
       console.error(error);

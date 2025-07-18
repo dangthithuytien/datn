@@ -33,7 +33,7 @@ const RentBooksPage = () => {
 
         const flattenedItems = itemsData.map((item) => {
           const parentBook = booksMap[item.RentBookId];
-          const price = parentBook ? parentBook.Price * 1000 : 0;
+          const price = parentBook ? parentBook.Price : 0;
 
           let imgUrl = parentBook?.ImageUrl || "";
           if (imgUrl && !imgUrl.startsWith("/")) imgUrl = "/" + imgUrl;
@@ -102,7 +102,7 @@ const RentBooksPage = () => {
       alert("✅ Đã thêm sách thuê vào giỏ!");
     } catch (error) {
       console.error("Lỗi thêm vào giỏ thuê:", error);
-      alert("❌ Không thể thêm sách vào giỏ thuê.");
+      alert("Sách đã được thuê");
     }
   };
 
@@ -210,7 +210,9 @@ const RentBooksPage = () => {
               </Link>
 
               <p className="book-price">{formatPrice(item.Price)}</p>
-              <p className="book-size">Kích thước: {item.PackagingSize}</p>
+              <p className="book-size">
+                Trạng thái thuê: {item.status === "Rented" ? "Đã thuê" : "Còn sách"}
+              </p>
               <div className="button-group">
                 <button
                   className="btn btn-outline-primary btn-sm"

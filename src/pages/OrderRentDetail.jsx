@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-
+import apiClient from "../components/Service/AxiosConfig";
 const OrderRentDetail = () => {
   const { id } = useParams();
   const [details, setDetails] = useState([]);
@@ -12,41 +12,27 @@ const OrderRentDetail = () => {
     return value.toLocaleString() + "đ";
   };
 
-  useEffect(() => {
-    const fetchOrderData = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
+ 
+useEffect(() => {
+  const fetchOrderData = async () => {
+    try {
+      // Gọi API chi tiết đơn thuê
+      const resDetails = await apiClient.get(`/admin/rentorders/${id}/details`);
+      setDetails(resDetails.data);
+      console.log("Chi tiết đơn thuê:", resDetails.data);
 
-        // Gọi API chi tiết đơn thuê
-        const resDetails = await fetch(
-          `https://localhost:7003/api/admin/rentorders/${id}/details`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (!resDetails.ok) throw new Error("Không thể lấy chi tiết đơn thuê");
-        const detailData = await resDetails.json();
-        setDetails(detailData);
-        console.log("Chi tiết đơn thuê:", detailData);
+      // Gọi API thông tin đơn thuê
+      const resOrder = await apiClient.get(`/admin/rentorders/${id}`);
+      setOrderInfo(resOrder.data);
+      console.log("Thông tin đơn thuê:", resOrder.data);
+    } catch (err) {
+      alert("Lỗi khi lấy dữ liệu đơn thuê");
+      console.error(err);
+    }
+  };
 
-        // Gọi API thông tin đơn thuê
-        const resOrder = await fetch(
-          `https://localhost:7003/api/admin/rentorders/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (!resOrder.ok) throw new Error("Không thể lấy thông tin đơn thuê");
-        const orderData = await resOrder.json();
-        setOrderInfo(orderData);
-        console.log("Thông tin đơn thuê:", orderData);
-      } catch (err) {
-        alert(err.message);
-      }
-    };
-
-    fetchOrderData();
-  }, [id]);
+  fetchOrderData();
+}, [id]);
 
   const totalAmount = orderInfo?.TotalFee || 0;
 
@@ -54,13 +40,19 @@ const OrderRentDetail = () => {
   const getStatusText = (status) => {
     switch (status) {
       case 0:
-        return "Đã đặt";
+        return "Quá hạn";
       case 1:
-        return "Đang giao";
+        return "Đã xác nhận";
       case 2:
         return "Đã giao";
       case 3:
+        return "Đã trả";
+      case 4:
+        return "Thất bại";
+      case 5:
         return "Đã hủy";
+      case 6:
+        return "Chờ xác nhận";
       default:
         return "Không rõ";
     }

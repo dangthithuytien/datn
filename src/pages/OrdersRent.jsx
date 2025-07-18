@@ -1,8 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/style/Orders.css";
+import apiClient from "../components/Service/AxiosConfig";
 
-const OrderStatusTabs = ["Tất cả", "Đã đặt", "Đang giao", "Đã giao", "Đã hủy"];
+const RENTAL_STATUSES = {
+  0: "Chờ xác nhận",
+  1: "Đã xác nhận",
+  2: "Đã giao",
+  3: "Đã trả",
+  4: "Thất bại",
+  5: "Đã hủy",
+  6: "Quá hạn",
+};
+const OrderStatusTabs = [
+  "Tất cả",
+  "Chờ xác nhận", 
+  "Đã xác nhận",
+  "Đã giao",
+  "Đã trả",
+  "Đã hủy",
+  "Quá hạn",
+  "Thất bại",
+];
 
 const OrdersRent = () => {
   const [orders, setOrders] = useState([]);
@@ -12,16 +31,9 @@ const OrdersRent = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem("accessToken");
         const currentUser = JSON.parse(localStorage.getItem("user"));
-
-        const res = await fetch("https://localhost:7003/api/admin/rentorders", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) throw new Error("Không thể lấy danh sách đơn thuê");
-
-        const allOrders = await res.json();
+        const res = await apiClient.get("/admin/rentorders");
+        const allOrders = res.data;
 
         const userOrders = allOrders.filter(
           (o) => o.UserId == currentUser?.UserId
@@ -29,7 +41,8 @@ const OrdersRent = () => {
 
         setOrders(userOrders);
       } catch (err) {
-        alert(err.message);
+        console.error("Lỗi lấy danh sách đơn thuê:", err);
+        alert("Không thể lấy danh sách đơn thuê");
       }
     };
 
@@ -43,16 +56,7 @@ const OrdersRent = () => {
     setOrders(updated);
   };
 
-  // Ánh xạ mã trạng thái về tên trạng thái
-  const getStatusText = (status) => {
-    switch (status) {
-      case 0: return "Đã đặt";
-      case 1: return "Đang giao";
-      case 2: return "Đã giao";
-      case 3: return "Đã hủy";
-      default: return "Khác";
-    }
-  };
+  const getStatusText = (status) => RENTAL_STATUSES[status] || "Không xác định";
 
   const filteredOrders =
     statusFilter === "Tất cả"
@@ -98,25 +102,25 @@ const OrdersRent = () => {
                 <tr key={order.OrderId}>
                   <td>#{order.OrderId}</td>
                   <td>{new Date(order.StartDate).toLocaleDateString()}</td>
-<td>{new Date(order.EndDate).toLocaleDateString()}</td>
+                  <td>{new Date(order.EndDate).toLocaleDateString()}</td>
                   <td>{order.TotalFee.toLocaleString()}đ</td>
                   <td>{order.TotalDeposit.toLocaleString()}đ</td>
                   <td>{getStatusText(order.Status)}</td>
                   <td>
-                    {order.Status === 0 && (
+                    {order.Status === 1 && (
                       <button
                         className="btn btn-sm btn-danger mb-1"
-                        onClick={() => updateOrderStatus(order.OrderId, 3)}
+                        onClick={() => updateOrderStatus(order.OrderId, 5)} // Hủy
                       >
                         Hủy đơn
                       </button>
                     )}
-                    {order.Status === 1 && (
+                    {order.Status === 2 && (
                       <button
                         className="btn btn-sm btn-primary mb-1"
-                        onClick={() => updateOrderStatus(order.OrderId, 2)}
+                        onClick={() => updateOrderStatus(order.OrderId, 3)} // Trả
                       >
-                        Đã nhận hàng
+                        Đã trả sách
                       </button>
                     )}
                     <br />

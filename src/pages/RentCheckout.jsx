@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../components/style/rentcheckout.css";
-
+import apiClient from "../components/Service/AxiosConfig";
 const CheckoutRent = () => {
   const [userInfo, setUserInfo] = useState({ name: "", phone: "", email: "" });
   const [provinces, setProvinces] = useState([]);
@@ -79,27 +79,21 @@ const CheckoutRent = () => {
     return diffDays <= 60 ? 30000 : 30000 + (diffDays - 60) * 1000;
   };
 
-  const totalBookFee = rentCart.reduce((sum, item) => sum + item.BookPrice, 0);
+  const totalBookFee = rentCart.reduce((sum, item) => sum + Number(item.price || 0), 0);
+
   const rentalPeriodFee = calculateRentalFee();
   const totalAmount = totalBookFee + shippingFee + rentalPeriodFee;
 
-  const createCashOrder = async (order) => {
-    const token = localStorage.getItem("accessToken");
-    const res = await fetch("https://localhost:7003/api/CashOrder/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(order),
-    });
-    if (!res.ok) {
-      const errorDetail = await res.text();
-      throw new Error("Lỗi khi tạo đơn hàng: " + errorDetail);
-    }
-    return res.json();
-  };
+  
+const createCashOrder = async (order) => {
+  try {
+    const res = await apiClient.post("/CashOrder/create", order); // Không cần stringify
+    return res.data; // Axios tự động parse JSON
+  } catch (error) {
+    const errorDetail = error.response?.data?.message || error.message || "Không xác định";
+    throw new Error("Lỗi khi tạo đơn hàng: " + errorDetail);
+  }
+};
 
   const handleCheckout = async () => {
     if (

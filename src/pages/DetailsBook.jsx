@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getSaleBookById } from "../components/Service/saleBookService";
 import CommentSection from "./CommentSection";
 import "../components/style/detailsbook.css";
+import { addToCartSale } from "../components/Service/cartService";
 
 const DetailsBook = () => {
   const { id } = useParams();
@@ -42,34 +43,43 @@ const DetailsBook = () => {
   };
 
   // ✅ FIX nút thêm giỏ hàng cho SÁCH BÁN
-  const handleAddToCart = () => {
-    if (!book || !book.SaleBookId) return;
-
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const index = cart.findIndex((item) => item.ProductId === book.SaleBookId);
-
-    if (index !== -1) {
-      cart[index].Quantity += quantity;
-    } else {
-      const newItem = {
-        ProductId: book.SaleBookId,            // ✅ Dùng đúng key để API nhận
-        Title: book.Title,
-        ImageUrl: book.ImageUrl,
-        Price: book.Price,
-        PackagingSize: book.PackagingSize,
-        Quantity: quantity                     // ✅ Đúng key Quantity
-      };
-      cart.push(newItem);
+  const handleAddToCart = async () => {
+    try {
+      if (!book || !book.SaleBookId) return;
+      await addToCartSale(book.SaleBookId, quantity);
+      alert("✅ Đã thêm vào giỏ hàng!");
+    } catch (error) {
+      console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
+      alert("Không thể thêm vào giỏ hàng.");
     }
-
-    localStorage.setItem("cartBuy", JSON.stringify(cart));
-    alert("✅ Đã thêm vào giỏ hàng!");
   };
-
-  const handleBuyNow = () => {
-    handleAddToCart();
+  
+  const handleBuyNow = (book) => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
+  
+    if (!token || !user) {
+      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      navigate("/login"); // Hoặc mở modal đăng nhập
+      return;
+    }
+  
+    const selectedProduct = {
+      ProductId: book.SaleBookId,
+      ProductName: book.Title,
+      Quantity: 1,
+      UnitPrice: book.FinalPrice || book.Price,
+      ImageUrl: book.ImageUrl,
+    };
+  
+    localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
+    
+    localStorage.setItem("checkoutTotal", JSON.stringify(book.FinalPrice || book.Price));
+    localStorage.setItem("isBuyNow", "true"); 
+  
     navigate("/checkout");
   };
+  
 
   if (!book) {
     return (
@@ -105,7 +115,7 @@ const DetailsBook = () => {
         <div className="col-md-7 details-info">
           <h2 className="details-title">{book.Title}</h2>
           <p className="book-price-lg text-danger fw-bold" style={{ fontSize: "28px" }}>
-            {(book.Price * 1000).toLocaleString("vi-VN")}đ
+            {(book.Price ).toLocaleString("vi-VN")}đ
           </p>
 
           <div className="mb-3">
@@ -129,7 +139,7 @@ const DetailsBook = () => {
 
           <div className="details-buttons d-flex gap-3 mt-3">
             <button className="btn-add-to-cart" onClick={handleAddToCart}>🛒 Thêm vào giỏ</button>
-            <button className="btn-buy-now" onClick={handleBuyNow}>⚡ Mua ngay</button>
+            <button className="btn-buy-now" onClick={() => handleBuyNow(book)}>⚡ Mua ngay</button>
           </div>
         </div>
       </div>
@@ -145,7 +155,7 @@ const DetailsBook = () => {
           <table className="table table-bordered">
             <tbody>
               <tr><th>Tiêu đề</th><td>{book.Title}</td></tr>
-              <tr><th>Giá</th><td>{(book.Price * 1000).toLocaleString("vi-VN")}đ</td></tr>
+              <tr><th>Giá</th><td>{(book.Price ).toLocaleString("vi-VN")}đ</td></tr>
               <tr><th>NXB</th><td>{book.Publisher || "Không có"}</td></tr>
               <tr><th>Số lượng</th><td>{book.Quantity}</td></tr>
             </tbody>
