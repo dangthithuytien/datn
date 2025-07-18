@@ -105,7 +105,65 @@ const prevPath = useRef(location.pathname);
     setSelectedWard("");
   }, [selectedDistrict]);
 
- 
+  useEffect(() => {
+    const parseAndRestoreAddress = async () => {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      if (!storedUser || !storedUser.Address || provinces.length === 0) return;
+  
+      const parts = storedUser.Address.split(",").map(p => p.trim());
+  
+      const wardPart = parts.find(p =>
+        p.startsWith("Xã") || p.startsWith("Phường") || p.startsWith("Thị trấn")
+      );
+      const districtPart = parts.find(p =>
+        p.startsWith("Huyện") || p.startsWith("Quận") || p.startsWith("Thành phố")
+      );
+      const provincePart = parts.find(p =>
+        p.startsWith("Tỉnh") || p.startsWith("Thành phố")
+      );
+  
+      const matchedProvince = provinces.find(p =>
+        provincePart && p.full_name.includes(provincePart)
+      );
+  
+      if (matchedProvince) {
+        setSelectedProvince(matchedProvince.id.toString());
+  
+        const districtRes = await fetch(
+          `https://esgoo.net/api-tinhthanh/2/${matchedProvince.id}.htm`
+        );
+        const districtData = await districtRes.json();
+        if (districtData.error === 0) {
+          setDistricts(districtData.data);
+  
+          const matchedDistrict = districtData.data.find(d =>
+            districtPart && d.full_name.includes(districtPart)
+          );
+          if (matchedDistrict) {
+            setSelectedDistrict(matchedDistrict.id.toString());
+  
+            const wardRes = await fetch(
+              `https://esgoo.net/api-tinhthanh/3/${matchedDistrict.id}.htm`
+            );
+            const wardData = await wardRes.json();
+            if (wardData.error === 0) {
+              setWards(wardData.data);
+  
+              const matchedWard = wardData.data.find(w =>
+                wardPart && w.full_name.includes(wardPart)
+              );
+              if (matchedWard) {
+                setSelectedWard(matchedWard.id.toString());
+              }
+            }
+          }
+        }
+      }
+    };
+  
+    parseAndRestoreAddress();
+  }, [provinces]);
+  
 const addToCartSession = async (product) => {
   try {
     await apiClient.post("/CartSale/add", {

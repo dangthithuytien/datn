@@ -22,6 +22,13 @@ const UserProfile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -51,6 +58,84 @@ const UserProfile = () => {
     };
     fetchUser();
   }, []);
+  useEffect(() => {
+    const parseAddressAndSetSelections = async () => {
+      if (!user.address) return;
+  
+      const parts = user.address.split(",").map(p => p.trim());
+  
+      const wardPart = parts.find(p => p.startsWith("Phường") || p.startsWith("Xã") || p.startsWith("Thị trấn"));
+      const districtPart = parts.find(p => p.startsWith("Quận") || p.startsWith("Huyện") || p.startsWith("Thành phố"));
+      const provincePart = parts.find(p => p.startsWith("Tỉnh") || p.startsWith("Thành phố"));
+  
+      // Tìm tỉnh
+      const matchedProvince = provinces.find(p => provincePart && p.full_name.includes(provincePart));
+      if (matchedProvince) {
+        setSelectedProvince(matchedProvince.id.toString());
+  
+        // Lấy danh sách huyện theo tỉnh
+        const districtRes = await fetch(`https://esgoo.net/api-tinhthanh/2/${matchedProvince.id}.htm`);
+        const districtData = await districtRes.json();
+        if (districtData.error === 0) {
+          setDistricts(districtData.data);
+          const matchedDistrict = districtData.data.find(d => districtPart && d.full_name.includes(districtPart));
+          if (matchedDistrict) {
+            setSelectedDistrict(matchedDistrict.id.toString());
+  
+            // Lấy danh sách xã theo huyện
+            const wardRes = await fetch(`https://esgoo.net/api-tinhthanh/3/${matchedDistrict.id}.htm`);
+            const wardData = await wardRes.json();
+            if (wardData.error === 0) {
+              setWards(wardData.data);
+              const matchedWard = wardData.data.find(w => wardPart && w.full_name.includes(wardPart));
+              if (matchedWard) {
+                setSelectedWard(matchedWard.id.toString());
+              }
+            }
+          }
+        }
+      }
+    };
+  
+    if (provinces.length > 0 && user.address) {
+      parseAddressAndSetSelections();
+    }
+  }, [provinces, user.address]);
+  
+  useEffect(() => {
+    fetch("https://esgoo.net/api-tinhthanh/1/0.htm")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error === 0) setProvinces(data.data);
+      });
+  }, []);
+  useEffect(() => {
+    if (selectedProvince) {
+      fetch(`https://esgoo.net/api-tinhthanh/2/${selectedProvince}.htm`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error === 0) setDistricts(data.data);
+        });
+    } else {
+      setDistricts([]);
+    }
+    setSelectedDistrict("");
+    setSelectedWard("");
+    setWards([]);
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      fetch(`https://esgoo.net/api-tinhthanh/3/${selectedDistrict}.htm`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error === 0) setWards(data.data);
+        });
+    } else {
+      setWards([]);
+    }
+    setSelectedWard("");
+  }, [selectedDistrict]);
 
   const handleChange = (field, value) => {
     setUser((prev) => ({ ...prev, [field]: value }));
@@ -70,10 +155,17 @@ const UserProfile = () => {
 
   const handleSubmit = async () => {
     try {
+      const provinceName =
+  provinces.find((p) => p.id.toString() === selectedProvince)?.full_name || "";
+const districtName =
+  districts.find((d) => d.id.toString() === selectedDistrict)?.full_name || "";
+const wardName =
+  wards.find((w) => w.id.toString() === selectedWard)?.full_name || "";
+const fullAddress = `${user.address}, ${wardName}, ${districtName}, ${provinceName}`;
       const formData = new FormData();
       formData.append("UserName", user.userName);
       formData.append("PhoneNumber", user.phoneNumber);
-      formData.append("Address", user.address);
+      formData.append("Address", fullAddress);
       formData.append("DateOfBirth", new Date(user.dateOfBirth).toISOString());
       if (imageFile) formData.append("ImageUser", imageFile);
 
@@ -92,7 +184,7 @@ const UserProfile = () => {
         <div className="quick-access">
           <div className="quick-links">
             <h3>Truy cập nhanh</h3>
-<button className="quick-link-button" onClick={() => setActiveTab("profile")}>👤 Thông tin cá nhân</button>
+            <button className="quick-link-button" onClick={() => setActiveTab("profile")}>👤 Thông tin cá nhân</button>
             <button className="quick-link-button" onClick={() => setActiveTab("password")}>🔑 Đổi mật khẩu</button>
             <a href="/favorite" className="quick-link-button">📚 Sách yêu thích</a>
             <a href="/orders-all" className="quick-link-button">🛒 Lịch sử đơn mua</a>
@@ -146,12 +238,60 @@ const UserProfile = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Địa chỉ</label>
-                    <input value={user.address} onChange={(e) => handleChange("address", e.target.value)} />
+                    <label>Tỉnh/Thành phố</label>
+                    <select
+                      className="checkout-input"
+                      value={selectedProvince}
+                      onChange={(e) => setSelectedProvince(e.target.value)}
+                    >
+                      <option value="">Chọn Tỉnh/Thành phố</option>
+                      {provinces.map((p) => (
+                        <option key={p.id} value={p.id.toString()}>{p.full_name}</option>
+                      ))}
+                    </select>
                   </div>
+
+                  <div className="form-group">
+                    <label>Quận/Huyện</label>
+                    <select
+                      className="checkout-input"
+                      value={selectedDistrict}
+                      onChange={(e) => setSelectedDistrict(e.target.value)}
+                      disabled={!selectedProvince}
+                    >
+                      <option value="">Chọn Quận/Huyện</option>
+                      {districts.map((d) => (
+                        <option key={d.id} value={d.id.toString()}>{d.full_name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Phường/Xã</label>
+                    <select
+                      className="checkout-input"
+                      value={selectedWard}
+                      onChange={(e) => setSelectedWard(e.target.value)}
+                      disabled={!selectedDistrict}
+                    >
+                      <option value="">Chọn Phường/Xã</option>
+                      {wards.map((w) => (
+                        <option key={w.id} value={w.id.toString()}>{w.full_name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Địa chỉ cụ thể</label>
+                    <input
+                      value={user.address}
+                      onChange={(e) => handleChange("address", e.target.value)}
+                      placeholder="Số nhà, tên đường..."
+                    />
+                  </div>
+
                 </div>
               </div>
-<button className="save-button" onClick={handleSubmit}>Lưu thay đổi</button>
+              <button className="save-button" onClick={handleSubmit}>Lưu thay đổi</button>
             </div>
           )}
 

@@ -35,9 +35,16 @@ const CheckoutRent = () => {
         if (data.error === 0) setProvinces(data.data);
       });
   }, []);
-
   useEffect(() => {
-    setShippingFee(shipping === "home_delivery" ? 30000 : 0);
+    const hcmProvince = {
+      id: 79,
+      full_name: "Thành phố Hồ Chí Minh"
+    };
+    setProvinces([hcmProvince]);
+    setSelectedProvince("79"); // id TP.HCM
+  }, []);
+  useEffect(() => {
+    setShippingFee(shipping === "home_delivery" ? 20000 : 0);
   }, [shipping]);
 
   useEffect(() => {
@@ -76,10 +83,10 @@ const CheckoutRent = () => {
       1,
       Math.ceil((end - start) / (1000 * 60 * 60 * 24))
     );
-    return diffDays <= 60 ? 30000 : 30000 + (diffDays - 60) * 1000;
+    return diffDays <= 60 ? 10000 : 10000 + (diffDays - 60) * 1000;
   };
 
-  const totalBookFee = rentCart.reduce((sum, item) => sum + Number(item.price || 0), 0);
+  const totalBookFee = rentCart.reduce((sum, item) => sum + Number(item.BookPrice  || 0), 0);
 
   const rentalPeriodFee = calculateRentalFee();
   const totalAmount = totalBookFee + shippingFee + rentalPeriodFee;
@@ -88,9 +95,12 @@ const CheckoutRent = () => {
 const createCashOrder = async (order) => {
   try {
     const res = await apiClient.post("/CashOrder/create", order); // Không cần stringify
+    console.log("Order to submit:", order);
+
     return res.data; // Axios tự động parse JSON
   } catch (error) {
     const errorDetail = error.response?.data?.message || error.message || "Không xác định";
+
     throw new Error("Lỗi khi tạo đơn hàng: " + errorDetail);
   }
 };
@@ -130,15 +140,17 @@ const createCashOrder = async (order) => {
       HasShippingFee: shipping === "home_delivery",
       Address: fullAddress,
       Phone: userInfo.phone,
-      PaymentMethod: payment,
+      PaymentMethod: "string",
       CartItems: rentCart,
     };
     try {
       await createCashOrder(order);
+      console.log("Order to submit:", order);
       alert("✅ Đặt thuê sách thành công!");
       localStorage.removeItem("rentCartBuy");
       window.location.href = "/";
     } catch (err) {
+      console.log("Order to submitsssss:", order);
       alert(err.message);
     }
   };
@@ -171,6 +183,7 @@ const createCashOrder = async (order) => {
     />
     <select
       value={selectedProvince}
+      disabled
       onChange={(e) => setSelectedProvince(e.target.value)}
       className="checkout-input"
     >
@@ -248,7 +261,7 @@ const createCashOrder = async (order) => {
             checked={shipping === "home_delivery"}
             onChange={() => setShipping("home_delivery")}
           />
-          Giao tận nơi (+30.000đ)
+          Giao tận nơi (+20.000đ)
         </label>
       </div>
 
