@@ -5,6 +5,15 @@ import "../components/style/detailsSale.css";
 import CommentSection from "./CommentSection";
 import { addToCartSale } from "../components/Service/cartService";
 
+
+import { FaHeart, FaRegHeart, FaShare, FaBookmark, FaRegBookmark } from "react-icons/fa";
+import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService"; // ✅ THÊM: Service yêu thích
+import { tokenUtils } from "../components/Cookie/cookieUtils"; // ✅ THÊM: Quản lý token
+
+
+
+
+
 const DetailsSale = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -12,6 +21,20 @@ const DetailsSale = () => {
   const [quantity, setQuantity] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const baseURL = "https://localhost:7003";
+
+  const [isFavorite, setIsFavorite] = useState(false); // Trạng thái yêu thích (đồng bộ server)
+ 
+  const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken()); // Token đồng bộ
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newToken = tokenUtils.getAccessToken();
+      if (newToken !== accessToken) {
+        setAccessToken(newToken);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [accessToken]);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -33,8 +56,44 @@ const DetailsSale = () => {
     };
 
     fetchBook();
-  }, [id]);
+    // ✅ THÊM MỚI: Kiểm tra trạng thái yêu thích và bookmark khi load
+    if (accessToken) {
+      checkFavoriteStatus();
+    }
+   
+  }, [id, accessToken]);
+  
+  const checkFavoriteStatus = async () => {
+    try {
+      const favorites = await FavoriteSaleBookService.getFavorites();
+      const isBookFavorited = favorites.some(f => String(f.SaleBookId) === String(id));
+      setIsFavorite(isBookFavorited);
+    } catch (error) {
+      console.error("❌ Lỗi khi kiểm tra trạng thái yêu thích:", error);
+    }
+  };
+  const toggleFavorite = async () => {
+    if (!accessToken) {
+      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      return;
+    }
 
+    try {
+      if (isFavorite) {
+        await FavoriteSaleBookService.removeFavorite(String(id));
+        setIsFavorite(false);
+        alert("💔 Đã bỏ khỏi danh sách yêu thích!");
+      } else {
+        await FavoriteSaleBookService.addFavorite(String(id));
+        setIsFavorite(true);
+        alert("❤️ Đã thêm vào danh sách yêu thích!");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi xử lý yêu thích:", error);
+      alert("Không thể xử lý yêu thích!");
+    }
+  };
+  // ✅ SỬA: Thêm accessToken dependency
   const handleMouseMove = (e) => {
     const { clientX, clientY } = e;
     setMousePosition({ x: clientX, y: clientY });
@@ -191,7 +250,24 @@ const handleBuyNow = (book) => {
               🛒 Thêm vào giỏ
             </button>
             <button className="btn-buy-now"   onClick={() => handleBuyNow(book)}>⚡ Mua ngay</button>
-            
+            <button
+                className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
+                onClick={toggleFavorite}
+                title={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
+              >
+                {isFavorite ? (
+                  <>
+                    <FaHeart style={{ color: "red" }} />
+                    <span className="d-none d-md-inline">Đã thích</span>
+                  </>
+                ) : (
+                  <>
+                    <FaRegHeart />
+                    <span className="d-none d-md-inline">Yêu thích</span>
+                  </>
+                )}
+              </button>
+
           </div>
         </div>
       </div>

@@ -6,8 +6,9 @@ import {
 } from "../components/Service/rentBookService";
 import "../components/style/detailsRent.css";
 import CommentSection from "./CommentSection";
-
-
+import { FaHeart, FaRegHeart, FaShare, FaBookmark, FaRegBookmark } from "react-icons/fa";
+import { tokenUtils } from "../components/Cookie/cookieUtils";
+import FavoriteRentBookService from "../components/Service/FavoriteRentBookService"; //
 const baseURL = "https://localhost:7003";
 
 const RentBookDetails = () => {
@@ -18,6 +19,12 @@ const RentBookDetails = () => {
   const [isLoading, setIsLoading] = useState(true); // Trạng thái tải
   const [error, setError] = useState(null); // Trạng thái lỗi
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 }); // Vị trí zoom mặc định ở giữa
+
+  
+  
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -49,6 +56,62 @@ const RentBookDetails = () => {
 
     fetchItemDetails();
   }, [id]);
+  const checkFavoriteStatus = async () => {
+    if (!rentBookItem) return;
+    
+    try {
+      // Sử dụng FavoriteRentBookService và kiểm tra bằng RentBookId (như trong FavoriteRentBooks)
+      const favorites = await FavoriteRentBookService.getAll();
+      const isBookFavorited = favorites.some(f => String(f.RentBookId) === String(rentBookItem.RentBookId));
+      setIsFavorite(isBookFavorited);
+    } catch (error) {
+      console.error("❌ Lỗi khi kiểm tra trạng thái yêu thích:", error);
+    }
+  };
+  const toggleFavorite = async () => {
+    if (!accessToken) {
+      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      return;
+    }
+  
+    if (!rentBookItem) {
+      alert("❌ Thông tin sách chưa được tải!");
+      return;
+    }
+  
+    try {
+      if (isFavorite) {
+        await FavoriteRentBookService.deleteFavorite(rentBookItem.RentBookId);
+        setIsFavorite(false);
+        alert("💔 Đã bỏ khỏi danh sách yêu thích!");
+      } else {
+        await FavoriteRentBookService.toggleFavorite(rentBookItem.RentBookId);
+   // ✅ SỬA Ở ĐÂY
+        setIsFavorite(true);
+        alert("❤️ Đã thêm vào danh sách yêu thích!");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi xử lý yêu thích:", error);
+  
+      if (error.message.includes("404") || error.message.includes("not found")) {
+        alert("❌ API endpoint không tồn tại. Vui lòng kiểm tra backend!");
+      } else if (error.message.includes("Token hết hạn")) {
+        alert("❌ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!");
+      } else {
+        alert("❌ Không thể xử lý yêu thích. Vui lòng thử lại!");
+      }
+    }
+  };
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newToken = tokenUtils.getAccessToken();
+      if (newToken !== accessToken) {
+        setAccessToken(newToken);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [accessToken]);
 
   const handleMouseMove = (e) => {
     const { clientX, clientY, currentTarget } = e;
@@ -233,6 +296,23 @@ const RentBookDetails = () => {
             >
               Thuê ngay
             </button>
+            <button
+                className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
+                onClick={toggleFavorite}
+                title={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
+              >
+                {isFavorite ? (
+                  <>
+                    <FaHeart style={{ color: "red" }} />
+                    <span className="d-none d-md-inline">Đã thích</span>
+                  </>
+                ) : (
+                  <>
+                    <FaRegHeart />
+                    <span className="d-none d-md-inline">Yêu thích</span>
+                  </>
+                )}
+              </button>
           </div>
 
           {/* Nút "Quay lại" đã được bỏ theo yêu cầu */}

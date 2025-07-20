@@ -27,7 +27,20 @@ const Sale = () => {
     fetchPromotedBooks();
     if (accessToken) loadFavorites();
   }, [accessToken]);
-
+  
+  useEffect(() => {
+    const syncFavorites = () => {
+      FavoriteSaleBookService.getFavorites()
+        .then((favorites) => {
+          const ids = favorites.map((f) => String(f.SaleBookId));
+          setFavoriteIds(ids);
+        })
+        .catch(() => setFavoriteIds([]));
+    };
+  
+    window.addEventListener("favorite-updated", syncFavorites);
+    return () => window.removeEventListener("favorite-updated", syncFavorites);
+  }, []);
   const fetchPromotedBooks = async () => {
     try {
       const response = await getPromotedBooks();
