@@ -171,8 +171,9 @@ const AllOrders = () => {
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
+              
               <tr key={order.OrderId}>
-                <td>#{order.OrderId}</td>
+                    <td>#{order.OrderId?.substring(0, 6).toUpperCase() || 'N/A'}</td>
                 <td>{order.OrderDate}</td>
                 <td>{order.PaymentMethod}</td>
                 <td>{order.DiscountAmount}đ</td>

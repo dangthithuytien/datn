@@ -94,7 +94,7 @@ const RentCart = () => {
                 </th>
                 <th>Ảnh</th>
                 <th>Tên sách</th>
-                <th>Tình trạng</th>
+                <th>Mức độ thiệt hại(%)</th>
                 <th>Số lượng thuê</th>
               
                 <th>Tiền cọc</th>

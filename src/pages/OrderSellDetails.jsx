@@ -6,33 +6,33 @@ const OrderSellDetails = () => {
   const [details, setDetails] = useState([]);
   const [orderInfo, setOrderInfo] = useState(null); // Thêm để chứa Address, Phone
 
-  
-useEffect(() => {
-  const fetchOrderData = async () => {
-    try {
-      // Gọi chi tiết sản phẩm
-      const resDetails = await apiClient.get(`/admin/saleorders/${id}/details`);
-      setDetails(resDetails.data);
 
-      // Gọi thông tin đơn hàng chính
-      const resOrder = await apiClient.get(`/admin/saleorders/${id}`);
-      setOrderInfo(resOrder.data);
+  useEffect(() => {
+    const fetchOrderData = async () => {
+      try {
+        // Gọi chi tiết sản phẩm
+        const resDetails = await apiClient.get(`/admin/saleorders/${id}/details`);
+        setDetails(resDetails.data);
 
-    } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
-    
-    }
-  };
+        // Gọi thông tin đơn hàng chính
+        const resOrder = await apiClient.get(`/admin/saleorders/${id}`);
+        setOrderInfo(resOrder.data);
 
-  fetchOrderData();
-}, [id]);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+
+      }
+    };
+
+    fetchOrderData();
+  }, [id]);
 
   const totalAmount = details.reduce((sum, item) => sum + item.SubTotal, 0);
 
   return (
     <div className="container mt-4">
       <h3>📦 Chi tiết đơn hàng</h3>
-      <p>Mã đơn hàng: <strong>{id}</strong></p>
+      <p>Mã đơn hàng: <strong>     <td>#{id.substring(0, 6).toUpperCase() || 'N/A'}</td></strong></p>
       <Link to="/orders-all" className="btn btn-secondary mb-3">← Quay lại danh sách</Link>
 
       {orderInfo && (

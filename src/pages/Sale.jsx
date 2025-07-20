@@ -12,7 +12,7 @@ const Sale = () => {
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
   const baseURL = "https://localhost:7003";
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   useEffect(() => {
     const interval = setInterval(() => {
       const newToken = tokenUtils.getAccessToken();
@@ -27,7 +27,7 @@ const Sale = () => {
     fetchPromotedBooks();
     if (accessToken) loadFavorites();
   }, [accessToken]);
-  
+
   useEffect(() => {
     const syncFavorites = () => {
       FavoriteSaleBookService.getFavorites()
@@ -37,7 +37,7 @@ const Sale = () => {
         })
         .catch(() => setFavoriteIds([]));
     };
-  
+
     window.addEventListener("favorite-updated", syncFavorites);
     return () => window.removeEventListener("favorite-updated", syncFavorites);
   }, []);
@@ -49,8 +49,8 @@ const Sale = () => {
           book.DiscountPercentage !== undefined
             ? book.DiscountPercentage
             : book.Price && book.FinalPrice
-            ? Math.round(((book.Price - book.FinalPrice) / book.Price) * 100)
-            : null;
+              ? Math.round(((book.Price - book.FinalPrice) / book.Price) * 100)
+              : null;
 
         return {
           id: book.SaleBookId,
@@ -115,7 +115,7 @@ const Sale = () => {
   const handleBuyNow = (book) => {
     const token = localStorage.getItem("accessToken");
     const user = localStorage.getItem("user");
-  
+
     if (!token || !user) {
       alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
       navigate("/login"); // Hoặc mở modal đăng nhập
@@ -125,13 +125,13 @@ const Sale = () => {
       ProductId: book.id,
       ProductName: book.title, // sửa từ book.Title
       Quantity: 1,
-      UnitPrice: book.finalPrice , // sửa từ book.FinalPrice
+      UnitPrice: book.finalPrice, // sửa từ book.FinalPrice
       ImageUrl: book.image, // sửa từ book.ImageUrl
     };
-    
+
     localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
     localStorage.setItem("checkoutTotal", JSON.stringify(book.finalPrice));
-    localStorage.setItem("isBuyNow", "true"); 
+    localStorage.setItem("isBuyNow", "true");
     navigate("/checkout");
   };
   const placeholderCount = 5 - books.length;
@@ -151,64 +151,66 @@ const Sale = () => {
       </h4>
 
       <div className="sale-grid-container">
-        {books.map((book) => (
-          <div key={book.id} className="sale-grid-item">
-            <div className="book-card position-relative">
-              {isFavorite(book.id) ? (
-                <FaHeart
-                  className="heart-icon"
-                  style={{ color: "red" }}
-                  onClick={() => toggleFavorite(book)}
-                  title="Bỏ khỏi yêu thích"
-                />
-              ) : (
-                <FaRegHeart
-                  className="heart-icon"
-                  style={{ color: "#ccc" }}
-                  onClick={() => toggleFavorite(book)}
-                  title="Thêm vào yêu thích"
-                />
-              )}
-
-              {book.discountPercent !== null && (
-                <div className="flame-badge">
-                  🔥 <span className="discount-text">-{book.discountPercent}%</span>
-                </div>
-              )}
-
-              <Link to={`/sale-book/${book.id}`} state={{ book }}>
-                <img src={book.image} alt={book.title} className="book-image" />
-                <h5 className="book-title">{book.title}</h5>
-              </Link>
-
-              <p className="book-price">
-                <span className="final-price">
-                  {(book.finalPrice ).toLocaleString("vi-VN")}₫
-                </span>
-                {book.price !== book.finalPrice && (
-                  <span className="original-price ms-2 text-muted text-decoration-line-through">
-                    {(book.price ).toLocaleString("vi-VN")}₫
-                  </span>
+        {books
+          .filter((book) => book.IsHidden === true)
+          .map((book) => (
+            <div key={book.id} className="sale-grid-item">
+              <div className="book-card position-relative">
+                {isFavorite(book.id) ? (
+                  <FaHeart
+                    className="heart-icon"
+                    style={{ color: "red" }}
+                    onClick={() => toggleFavorite(book)}
+                    title="Bỏ khỏi yêu thích"
+                  />
+                ) : (
+                  <FaRegHeart
+                    className="heart-icon"
+                    style={{ color: "#ccc" }}
+                    onClick={() => toggleFavorite(book)}
+                    title="Thêm vào yêu thích"
+                  />
                 )}
-              </p>
+
+                {book.discountPercent !== null && (
+                  <div className="flame-badge">
+                    🔥 <span className="discount-text">-{book.discountPercent}%</span>
+                  </div>
+                )}
+
+                <Link to={`/sale-book/${book.id}`} state={{ book }}>
+                  <img src={book.image} alt={book.title} className="book-image" />
+                  <h5 className="book-title">{book.title}</h5>
+                </Link>
+
+                <p className="book-price">
+                  <span className="final-price">
+                    {(book.finalPrice).toLocaleString("vi-VN")}₫
+                  </span>
+                  {book.price !== book.finalPrice && (
+                    <span className="original-price ms-2 text-muted text-decoration-line-through">
+                      {(book.price).toLocaleString("vi-VN")}₫
+                    </span>
+                  )}
+                </p>
 
 
 
-              <div className="button-group">
-                <button
-                  className="btn btn-outline-primary btn-sm"
-                  onClick={() => handleAddToCart(book)}
-                >
-                  Giỏ hàng
-                </button>
-                <button className="btn btn-primary btn-sm"  
-                        onClick={() => handleBuyNow(book)}>
-                        Mua ngay
-                      </button>
+                <div className="button-group">
+                  <button
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={() => handleAddToCart(book)}
+                  >
+                    Giỏ hàng
+                  </button>
+                  <button className="btn btn-primary btn-sm"
+                    onClick={() => handleBuyNow(book)}>
+                    Mua ngay
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
 
         {/* Placeholder giữ layout nếu < 5 quyển */}
         {Array.from({ length: placeholderCount }).map((_, index) => (

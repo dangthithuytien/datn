@@ -98,9 +98,10 @@ const OrdersRent = () => {
               </tr>
             </thead>
             <tbody>
+         
               {filteredOrders.map((order) => (
                 <tr key={order.OrderId}>
-                  <td>#{order.OrderId}</td>
+                  <td>#{order.OrderId?.substring(0, 6).toUpperCase() || 'N/A'}</td>
                   <td>{new Date(order.StartDate).toLocaleDateString()}</td>
                   <td>{new Date(order.EndDate).toLocaleDateString()}</td>
                   <td>{order.TotalFee.toLocaleString()}đ</td>

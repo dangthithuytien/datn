@@ -61,9 +61,12 @@ const BooksPage = () => {
 
   // ==== Lọc và sắp xếp ====
   const priceFiltered = books.filter((book) => {
-    const price = (book.FinalPrice || book.Price) ;
+    if (!book.IsHidden) return false;
+  
+    const price = book.FinalPrice || book.Price;
     return price >= priceRange.min && price <= priceRange.max;
   });
+  
 
   const sortedBooks = [...priceFiltered];
   if (sortBy === "name") {

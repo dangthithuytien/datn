@@ -61,47 +61,65 @@ useEffect(() => {
   return (
     <div className="container mt-4 mb-5">
       <h3>📘 Chi tiết đơn thuê</h3>
-      <p>Mã đơn thuê: <strong>#{id}</strong></p>
+      <p>Mã đơn thuê: <strong>#{id?.substring(0, 6).toUpperCase() || 'N/A'}</strong></p>
       <Link to="/orders-rent" className="btn btn-secondary mb-3">← Quay lại danh sách</Link>
-
+     
       {orderInfo && (
         <div className="mb-3">
-          <p><strong>📍 Địa chỉ nhận sách:</strong> {orderInfo.Address}</p>
-          <p><strong>📞 Số điện thoại:</strong> {orderInfo.Phone}</p>
-          <p><strong>📅 Ngày thuê:</strong> {new Date(orderInfo.StartDate).toLocaleDateString()}</p>
-          <p><strong>📅 Ngày trả:</strong> {new Date(orderInfo.EndDate).toLocaleDateString()}</p>
-          <p><strong>💰 Tiền cọc:</strong> {formatCurrency(orderInfo.TotalDeposit)}</p>
-          <p><strong>🚚 Trạng thái:</strong> {getStatusText(orderInfo.Status)}</p>
-        </div>
+        <p><strong>📅 Ngày thuê:</strong> {new Date(orderInfo.StartDate).toLocaleDateString()}</p>
+        <p><strong>📅 Ngày trả:</strong> {new Date(orderInfo.EndDate).toLocaleDateString()}</p>
+        <p><strong>🕒 Số ngày thuê:</strong> {orderInfo.RentalDays} ngày</p>
+        <p><strong>🚚 Phí vận chuyển:</strong> {orderInfo.HasShippingFee ? formatCurrency(orderInfo.ShippingFee) : "0đ"}</p>
+        <p><strong>💰 Tiền cọc:</strong> {formatCurrency(orderInfo.TotalDeposit)}</p>
+        <p><strong>💵 Tổng phí:</strong> {formatCurrency(orderInfo.TotalFee)}</p>
+        <p><strong>🚚 Trạng thái:</strong> {getStatusText(orderInfo.Status)}</p>
+      </div>
       )}
 
       {details.length === 0 ? (
         <p>Không có dữ liệu chi tiết.</p>
       ) : (
         <table className="table table-bordered">
-          <thead className="table-light">
-            <tr>
-              <th>Tên sách</th>
-              <th>Số lượng</th>
-              <th>Tiền thuê/ngày</th>
-              <th>Thành tiền</th>
+        <thead className="table-light">
+          <tr>
+            <th>Tên sách</th>
+            <th>Giá sách</th>
+            <th>Tình trạng khi giao (%)</th>
+            <th>Tình trạng khi trả (%)</th>
+            <th>Phí thuê</th>
+            <th>Tổng phí</th>
+            <th>Hoàn tiền thực tế</th>
+            <th>Ngày trả thực tế</th>
+          </tr>
+        </thead>
+        <tbody>
+          {details.map((item) => (
+            <tr key={item.Id}>
+              <td>{item.BookTitle}</td>
+              <td>{formatCurrency(item.BookPrice)}</td>
+              <td>{item.Condition}%</td>
+              <td>{item.ReturnCondition !== null ? `${item.ReturnCondition}%` : "Chưa trả"}</td>
+              <td>{formatCurrency(item.RentalFee)}</td>
+              <td>{formatCurrency(item.TotalFee)}</td>
+              <td>
+                {item.ActualRefundAmount !== null
+                  ? formatCurrency(item.ActualRefundAmount)
+                  : "Chưa hoàn"}
+              </td>
+              <td>
+                {item.ActualReturnDate
+                  ? new Date(item.ActualReturnDate).toLocaleDateString()
+                  : "Chưa trả"}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {details.map((item) => (
-              <tr key={item.Id}>
-                <td>{item.BookTitle}</td>
-                <td>{item.Quantity}</td>
-                <td>{formatCurrency(item.UnitPrice)}</td>
-                <td>{formatCurrency(item.SubTotal)}</td>
-              </tr>
-            ))}
-            <tr>
-              <td colSpan="3"><strong>Tổng cộng</strong></td>
-              <td><strong>{formatCurrency(totalAmount)}</strong></td>
-            </tr>
-          </tbody>
-        </table>
+          ))}
+          <tr>
+            <td colSpan="7"><strong>Tổng cộng</strong></td>
+            <td><strong>{formatCurrency(totalAmount)}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      
       )}
     </div>
   );

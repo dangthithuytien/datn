@@ -188,11 +188,11 @@ const AllBook = () => {
           <h4 className="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <span className="d-flex align-items-center">
               Danh mục Sách Bán{" "}
-              {allBooks.length > 8 && (
+            
                 <Link to="/books-page" className="ms-2 text-success">
                   <FaAngleDown />
                 </Link>
-              )}
+              
             </span>
 
             {/* Bộ lọc & sắp xếp */}

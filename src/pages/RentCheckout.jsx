@@ -299,15 +299,30 @@ const createCashOrder = async (order) => {
         </label>
       </div>
 
-     <div className="checkout-section checkout-footer">
+      <div className="checkout-section checkout-footer">
   <div className="checkout-total">
-    <strong>Tổng thanh toán: </strong>
-    <span>{totalAmount.toLocaleString()}đ</span>
+    <p>
+      <strong>Phí thuê theo thời gian: </strong>
+      <span>{rentalPeriodFee.toLocaleString()}đ</span>
+    </p>
+    <p>
+      <strong>Phí giao hàng: </strong>
+      <span>{shippingFee.toLocaleString()}đ</span>
+    </p>
+    <p>
+      <strong>Giá sách (tạm tính): </strong>
+      <span>{totalBookFee.toLocaleString()}đ</span>
+    </p>
+    <p style={{ fontSize: "18px", marginTop: "10px" }}>
+      <strong>Tổng thanh toán: </strong>
+      <span>{totalAmount.toLocaleString()}đ</span>
+    </p>
   </div>
   <button className="btn btn-success" onClick={handleCheckout}>
     Đặt thuê
   </button>
 </div>
+
 
     </div>
   );
