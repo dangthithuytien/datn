@@ -25,39 +25,65 @@ const UserProfile = () => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const [specificAddress, setSpecificAddress] = useState("");
 
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
-
+ 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await getUserProfile();
-        console.log("✅ API trả về:", data);
+        const res = await getUserProfile();
+        const userData = res?.data || res; // tuỳ backend trả về
+        console.log("UserData từ backend:", userData);
 
+        if (!userData) {
+          console.error("Không có dữ liệu người dùng.");
+          return;
+        }
+  
+        // set full object
         setUser({
-          userName: data.UserName || "",
-          phoneNumber: data.PhonNumber || "",
-          address: data.Address || "",
-          dateOfBirth: data.DateOfBirth || "",
-          imageUser: data.ImageUser || "",
-          email: data.Email || "",
-          point: data.Points || 0,
+          userName: userData.UserName || "",
+          phoneNumber: userData.PhoneNumber || userData.PhonNumber || "",
+
+          address: userData.Address || "",
+          dateOfBirth: userData.DateOfBirth || "",
+          imageUser: userData.ImageUser || "",
+          email: userData.Email || "",
+          point: userData.Points || 0,
+          gender: userData.Gender || "",
+          role: userData.Role || "",
+          currentPassword: "",
+          newPassword: "",
         });
-
-        // ✅ Thêm dòng này
-        localStorage.setItem("user", JSON.stringify(data));
-
-        if (data.ImageUser) {
-          setPreviewImage(`https://localhost:7003${data.ImageUser}`);
+        
+  
+        // address cụ thể
+        const fullAddress = typeof userData.Address === "string" ? userData.Address : "";
+        const addressPart = fullAddress.split(",")[0]?.trim() || "";
+        setSpecificAddress(addressPart);
+  
+        // địa chỉ hành chính
+        setSelectedProvince(userData.provinceName || "");
+        setSelectedDistrict(userData.districtName || "");
+        setSelectedWard(userData.wardName || "");
+  
+        // ảnh đại diện
+        if (userData.ImageUser) {
+          setPreviewImage(`https://localhost:7003${userData.ImageUser}`);
         }
       } catch (err) {
         console.error("❌ Lỗi khi lấy thông tin người dùng:", err);
       }
     };
+  
     fetchUser();
   }, []);
+  
+
+
   useEffect(() => {
     const parseAddressAndSetSelections = async () => {
       if (!user.address) return;
@@ -161,16 +187,19 @@ const districtName =
   districts.find((d) => d.id.toString() === selectedDistrict)?.full_name || "";
 const wardName =
   wards.find((w) => w.id.toString() === selectedWard)?.full_name || "";
-const fullAddress = `${user.address}, ${wardName}, ${districtName}, ${provinceName}`;
+  const fullAddress = `${specificAddress}, ${wardName}, ${districtName}, ${provinceName}`;
       const formData = new FormData();
       formData.append("UserName", user.userName);
       formData.append("PhoneNumber", user.phoneNumber);
       formData.append("Address", fullAddress);
       formData.append("DateOfBirth", new Date(user.dateOfBirth).toISOString());
       if (imageFile) formData.append("ImageUser", imageFile);
-
       await updateUserProfile(formData);
       alert("Cập nhật thành công!");
+      setUser((prev) => ({
+        ...prev,
+        address: fullAddress,
+      }));
     } catch (err) {
       console.error("Lỗi cập nhật:", err);
       alert("Cập nhật thất bại!");
@@ -283,10 +312,11 @@ const fullAddress = `${user.address}, ${wardName}, ${districtName}, ${provinceNa
                   <div className="form-group">
                     <label>Địa chỉ cụ thể</label>
                     <input
-                      value={user.address}
-                      onChange={(e) => handleChange("address", e.target.value)}
-                      placeholder="Số nhà, tên đường..."
-                    />
+  value={specificAddress}
+  onChange={(e) => setSpecificAddress(e.target.value)}
+  placeholder="Số nhà, tên đường..."
+/>
+
                   </div>
 
                 </div>

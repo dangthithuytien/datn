@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../components/style/Checkout.css";
 import { getCartSale } from "../components/Service/cartService";
 import apiClient from "../components/Service/AxiosConfig";
@@ -22,7 +22,7 @@ const Checkout = () => {
   const [selectedWard, setSelectedWard] = useState("");
 
   const location = useLocation();
-const prevPath = useRef(location.pathname);
+  const prevPath = useRef(location.pathname);
 
   const [userInfo, setUserInfo] = useState({
     name: "",
@@ -59,24 +59,24 @@ const prevPath = useRef(location.pathname);
         if (data.error === 0) setProvinces(data.data);
       });
 
-      const fetchVouchers = async () => {
-        try {
-          const res = await apiClient.get("/Voucher/history");
-          const data = res.data;
-      
-          const unused = data.filter((v) => !v.IsUsed);
-          setAvailableVouchers(unused);
-        } catch (err) {
-          console.error("❌ Lỗi khi lấy voucher:", err);
-        }
-      };
+    const fetchVouchers = async () => {
+      try {
+        const res = await apiClient.get("/Voucher/history");
+        const data = res.data;
+
+        const unused = data.filter((v) => !v.IsUsed);
+        setAvailableVouchers(unused);
+      } catch (err) {
+        console.error("❌ Lỗi khi lấy voucher:", err);
+      }
+    };
 
     fetchVouchers();
   }, []);
- 
-  
 
- 
+
+
+
   useEffect(() => {
     if (selectedProvince) {
       fetch(`https://esgoo.net/api-tinhthanh/2/${selectedProvince}.htm`)
@@ -109,9 +109,9 @@ const prevPath = useRef(location.pathname);
     const parseAndRestoreAddress = async () => {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       if (!storedUser || !storedUser.Address || provinces.length === 0) return;
-  
+
       const parts = storedUser.Address.split(",").map(p => p.trim());
-  
+
       const wardPart = parts.find(p =>
         p.startsWith("Xã") || p.startsWith("Phường") || p.startsWith("Thị trấn")
       );
@@ -121,34 +121,34 @@ const prevPath = useRef(location.pathname);
       const provincePart = parts.find(p =>
         p.startsWith("Tỉnh") || p.startsWith("Thành phố")
       );
-  
+
       const matchedProvince = provinces.find(p =>
         provincePart && p.full_name.includes(provincePart)
       );
-  
+
       if (matchedProvince) {
         setSelectedProvince(matchedProvince.id.toString());
-  
+
         const districtRes = await fetch(
           `https://esgoo.net/api-tinhthanh/2/${matchedProvince.id}.htm`
         );
         const districtData = await districtRes.json();
         if (districtData.error === 0) {
           setDistricts(districtData.data);
-  
+
           const matchedDistrict = districtData.data.find(d =>
             districtPart && d.full_name.includes(districtPart)
           );
           if (matchedDistrict) {
             setSelectedDistrict(matchedDistrict.id.toString());
-  
+
             const wardRes = await fetch(
               `https://esgoo.net/api-tinhthanh/3/${matchedDistrict.id}.htm`
             );
             const wardData = await wardRes.json();
             if (wardData.error === 0) {
               setWards(wardData.data);
-  
+
               const matchedWard = wardData.data.find(w =>
                 wardPart && w.full_name.includes(wardPart)
               );
@@ -160,33 +160,33 @@ const prevPath = useRef(location.pathname);
         }
       }
     };
-  
+
     parseAndRestoreAddress();
   }, [provinces]);
-  
-const addToCartSession = async (product) => {
-  try {
-    await apiClient.post("/CartSale/add", {
-      ProductId: product.ProductId,
-      Quantity: product.Quantity,
-    });
-  } catch (error) {
-    const errorText =
-      error.response?.data?.message || error.message || "Không rõ lỗi";
-    throw new Error("❌ Lỗi khi thêm sản phẩm vào session: " + errorText);
-  }
-};
 
-  
-const createCashOrder = async (orderData) => {
-  try {
-    const response = await apiClient.post("/SaleOrders/create-cash", orderData);
-    return response.data;
-  } catch (error) {
-    const errorDetail = error.response?.data || error.message;
-    throw new Error("❌ Lỗi khi tạo đơn hàng: " + errorDetail);
-  }
-};
+  const addToCartSession = async (product) => {
+    try {
+      await apiClient.post("/CartSale/add", {
+        ProductId: product.ProductId,
+        Quantity: product.Quantity,
+      });
+    } catch (error) {
+      const errorText =
+        error.response?.data?.message || error.message || "Không rõ lỗi";
+      throw new Error("❌ Lỗi khi thêm sản phẩm vào session: " + errorText);
+    }
+  };
+
+
+  const createCashOrder = async (orderData) => {
+    try {
+      const response = await apiClient.post("/SaleOrders/create-cash", orderData);
+      return response.data;
+    } catch (error) {
+      const errorDetail = error.response?.data || error.message;
+      throw new Error("❌ Lỗi khi tạo đơn hàng: " + errorDetail);
+    }
+  };
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -240,7 +240,7 @@ const createCashOrder = async (orderData) => {
         }
         await delay(500);
       }
-    
+
       await delay(300);
 
       const sessionCart = await getCartSale();
@@ -249,7 +249,17 @@ const createCashOrder = async (orderData) => {
         return;
       }
 
-      await createCashOrder(orderData);
+      if (payment === "cod") {
+        await createCashOrder(orderData);
+        alert("✅ Đặt hàng thành công (COD)!");
+        window.location.href = "/";
+      } else if (payment === "vnpay") {
+        const response = await apiClient.post("/SaleOrders/create-vnpay", orderData);
+        const paymentUrl = response.data.paymentUrl; // 🟢 Lấy đúng thuộc tính
+        window.location.href = paymentUrl;
+
+      }
+      
       console.log("sadsadsadaaaaa", orderData);
       alert("✅ Đặt hàng thành công!");
       localStorage.removeItem("cartBuy");
@@ -364,26 +374,29 @@ const createCashOrder = async (orderData) => {
       </div>
 
       <div className="checkout-section">
-        <h3 className="checkout-section-title">Phương thức thanh toán</h3>
-        <label>
-          <input
-            type="radio"
-            name="payment"
-            value="cod"
-            checked={payment === "cod"}
-            onChange={() => setPayment("cod")}
-          />
-          COD
-        </label>
-        <label>
-          <input type="radio" name="payment" value="momo" disabled />
-          MoMo
-        </label>
-        <label>
-          <input type="radio" name="payment" value="bank" disabled />
-          Internet Banking
-        </label>
-      </div>
+  <h3 className="checkout-section-title">Phương thức thanh toán</h3>
+  <label>
+    <input
+      type="radio"
+      name="payment"
+      value="cod"
+      checked={payment === "cod"}
+      onChange={() => setPayment("cod")}
+    />
+    COD
+  </label>
+  <label>
+    <input
+      type="radio"
+      name="payment"
+      value="vnpay"
+      checked={payment === "vnpay"}
+      onChange={() => setPayment("vnpay")}
+    />
+    VnPay
+  </label>
+</div>
+
 
       <div className="checkout-section checkout-footer">
         <div
