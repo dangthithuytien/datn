@@ -22,8 +22,9 @@ useEffect(() => {
       console.log("Chi tiết đơn thuê:", resDetails.data);
 
       // Gọi API thông tin đơn thuê
-      const resOrder = await apiClient.get(`/admin/rentorders/${id}`);
-      setOrderInfo(resOrder.data);
+      const resOrder = await apiClient.get(`/admin/rentorders`);
+      const matchedOrder = resOrder.data.find(order => order.OrderId === id); 
+      setOrderInfo(matchedOrder);
       console.log("Thông tin đơn thuê:", resOrder.data);
     } catch (err) {
       alert("Lỗi khi lấy dữ liệu đơn thuê");
@@ -37,10 +38,10 @@ useEffect(() => {
   const totalAmount = orderInfo?.TotalFee || 0;
 
   // Hàm hiển thị trạng thái
-  const getStatusText = (status) => {
-    switch (status) {
+  const getStatusText = (Status) => {
+    switch (Status) {
       case 0:
-        return "Quá hạn";
+        return "Chờ xác nhận";
       case 1:
         return "Đã xác nhận";
       case 2:
@@ -52,7 +53,7 @@ useEffect(() => {
       case 5:
         return "Đã hủy";
       case 6:
-        return "Chờ xác nhận";
+        return "Quá hạn";
       default:
         return "Không rõ";
     }

@@ -87,7 +87,7 @@ const CheckoutRent = () => {
       Math.ceil((end - start) / (1000 * 60 * 60 * 24))
     );
   
-    const baseFee = 10000;
+    const baseFee = 20000;
     const extraFeePerDay = 1000;
   
     if (diffDays <= 60) {

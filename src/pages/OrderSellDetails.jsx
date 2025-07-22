@@ -12,9 +12,11 @@ const OrderSellDetails = () => {
       try {
         const resDetails = await apiClient.get(`/admin/saleorders/${id}/details`);
         setDetails(resDetails.data);
-
-         const resOrder = await apiClient.get(`/admin/saleorders`);
-         setOrderInfo(resOrder.data);
+        
+        const resOrder = await apiClient.get(`/admin/saleorders`);
+    const matchedOrder = resOrder.data.find(order => order.OrderId === id); 
+  
+    setOrderInfo(matchedOrder);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
       }

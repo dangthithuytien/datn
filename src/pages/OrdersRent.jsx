@@ -6,21 +6,21 @@ import apiClient from "../components/Service/AxiosConfig";
 const RENTAL_STATUSES = {
   0: "Chờ xác nhận",
   1: "Đã xác nhận",
-  2: "Đã giao",
-  3: "Đã trả",
-  4: "Thất bại",
-  5: "Đã hủy",
-  6: "Quá hạn",
+  2: "Đang giao",
+  3: "Hoàn thành",
+  4: "Đang thuê",
+  5: "Quá hạn",
+  6: "Đã hủy",
 };
 const OrderStatusTabs = [
   "Tất cả",
   "Chờ xác nhận", 
   "Đã xác nhận",
-  "Đã giao",
-  "Đã trả",
-  "Đã hủy",
+  "Đang giao",
+  "Đang thuê",
   "Quá hạn",
-  "Thất bại",
+  "Hoàn thành",
+  "Đã hủy",
 ];
 
 const OrdersRent = () => {
