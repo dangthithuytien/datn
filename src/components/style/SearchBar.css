@@ -1,0 +1,15 @@
+.dropdown-menu.show {
+    display: block;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 999;
+  }
+  .dropdown-menu li:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  
+
+  

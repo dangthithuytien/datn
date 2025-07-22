@@ -255,8 +255,8 @@ const Checkout = () => {
         window.location.href = "/";
       } else if (payment === "vnpay") {
         const response = await apiClient.post("/SaleOrders/create-vnpay", orderData);
-        const paymentUrl = response.data.paymentUrl; // 🟢 Lấy đúng thuộc tính
-        window.location.href = paymentUrl;
+          const paymentUrl = response.data.paymentUrl; // 🟢 Lấy đúng thuộc tính
+          window.location.href = paymentUrl;
 
       }
       

@@ -1,77 +1,107 @@
-/* ==================== TỔNG QUAN ==================== */
-.container {
-  max-width: 1300px;
-  margin: 20px auto;
-  padding: 15px 2cm;
-  background-color: #f4fff4;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+/* ========== CONTAINER & HEADER ========== */
+.custom-container {
+  width: 100%;
+  padding: 15px 30px;
+  background-color:#a6dfb4;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   font-family: "Segoe UI", sans-serif;
   box-sizing: border-box;
 }
 
-.logo-img {
-  width: 150px !important;
-  height: auto !important;
+header.bg-light {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.input-search {
-  width: 75%;
+/* ========== LOGO ========== */
+.logo-img {
+  height: 60px;
+  width: auto;
+  padding-left: 20px;
+}
+
+/* ========== SEARCH BAR ========== */
+.input-group {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  overflow: hidden;
+  display: flex;
+  width: 100%;
 }
 
 .input-group .form-control {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border: none;
+  padding: 10px 15px;
+  font-size: 0.95rem;
+  border-radius: 8px 0 0 8px;
 }
 
-.custom-bg-green {
+.input-group .btn {
+  border: none;
   background-color: #319740;
+  color: white;
+  padding-inline: 20px;
+  border-radius: 0 8px 8px 0;
 }
 
-/* ==================== ICON-TEXT ==================== */
+/* ========== ICON TEXT ========== */
 .icon-text {
   text-align: center;
-  margin: 0 0.5rem;
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 0.85rem;
-  color: white;
+  color: #256d34;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
 .icon-text svg {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+  color: #256d34;
+}
+
+.icon-text:hover {
+  color: #ff9800;
+  transform: scale(1.1);
 }
 
 .icon-text .small-text {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  color: #388e3c;
+}
+.rounded-bottom-nav {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  overflow: hidden;
 }
 
-/* ==================== DROPDOWN CHUNG ==================== */
+/* ========== DROPDOWN MENU ========== */
 .dropdown-menu-custom {
   position: absolute;
   top: 100%;
   right: 0;
-  background: linear-gradient(135deg, #ffffff, #f8f9fa);
-  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  border: 1px solid #dcdcdc;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  padding: 12px 0;
-  min-width: 220px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  min-width: 230px;
   z-index: 1000;
   font-size: 14px;
   animation: fadeInDropdown 0.3s ease-out;
 }
 
 .dropdown-menu-custom .dropdown-item {
-  padding: 10px 24px;
-  color: #444;
+  padding: 10px 20px;
+  color: #333;
   background: none;
-  border: none;
   text-align: left;
-  text-decoration: none;
   display: block;
   width: 100%;
   cursor: pointer;
@@ -79,8 +109,8 @@
 }
 
 .dropdown-menu-custom .dropdown-item:hover {
-  background-color: #c8e6c9;
-  color: #1b5e20;
+  background-color: #e8f5e9;
+  color: #2e7d32;
   font-weight: 500;
 }
 
@@ -89,19 +119,13 @@
   margin: 8px 0;
 }
 
-/* Submenu trong tài khoản (Đơn hàng) */
-.dropdown-menu-custom .dropdown-item + .dropdown-sub {
-  padding-left: 12px;
-  padding-right: 12px;
-  margin-top: 6px;
-}
-
+/* Submenu */
 .dropdown-sub a.dropdown-item {
   padding-left: 36px;
   font-size: 13.5px;
 }
 
-/* ==================== ANIMATION ==================== */
+/* Fade animation */
 @keyframes fadeInDropdown {
   from {
     opacity: 0;
@@ -113,98 +137,75 @@
   }
 }
 
-/* ==================== NAV DƯỚI CÙNG ==================== */
+/* ========== NAV BOTTOM ========== */
 .bottom-nav-grid {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: 0 8px;
-  font-size: 14px;
-  color: #333;
+  padding: 4px 0; /* Giảm chiều cao */
+  gap: 10px;
 }
-
-.bottom-nav-grid > * {
+.bottom-nav-link {
   display: flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap;
-}
-
-.bottom-nav-link {
   text-decoration: none;
-  color: inherit;
+  color: #555;
   font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
 }
 
-.bottom-nav-link:hover,
-.bottom-nav-grid > *:hover {
-  color: #0d6efd;
+.bottom-nav-link:hover {
+  background-color: #dcedc8;
+  color: #1b5e20;
 }
 
-/* ==================== RESPONSIVE ==================== */
+/* ========== RESPONSIVE (MOBILE) ========== */
 @media (max-width: 768px) {
   .custom-container {
-    padding-inline: 1rem !important;
-  }
-
-  .logo-img {
-    width: 120px !important;
-  }
-
-  .input-search {
-    width: 100%;
-  }
-
-  .input-group {
-    flex-direction: row;
-    width: 100%;
-  }
-
-  .col-3, .col-4, .col-5 {
-    width: 100%;
-    flex: 0 0 100%;
-    max-width: 100%;
-    margin-bottom: 1rem;
-    text-align: center;
+    padding: 12px 16px;
   }
 
   .row.align-items-center {
     flex-direction: column;
+    gap: 16px;
+  }
+
+  .logo-img {
+    padding-left: 0;
+    height: 50px;
+  }
+
+  .col-3, .col-4, .col-5 {
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
   }
 
   .icon-text {
-    margin: 0 8px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    flex: 1;
   }
 
   .icon-text svg {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    color: #2e7d32;
   }
 
   .dropdown-menu-custom {
-    right: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    border-radius: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
+    position: static;
+    width: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
   }
 
   .dropdown-sub a.dropdown-item {
-    padding-left: 24px !important;
+    padding-left: 24px;
   }
 
-  .bottom-nav-grid {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 8px 16px;
-    gap: 10px;
-  }
-
-  .bottom-nav-grid > * {
-    font-size: 15px;
-    gap: 8px;
-  }
+ 
 }

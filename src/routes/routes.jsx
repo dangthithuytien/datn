@@ -29,7 +29,7 @@ import OrderSellDetails from "../pages/OrderSellDetails";
 import OauthCallback from "../pages/oauthcallback";
 import PaymentSuccess from "../pages/paymentsuccess";
 import PaymentFail from "../pages/PaymentFail";
-
+import PaymentRentSuccess from "../pages/PaymentRentSuccess";
 export const appRoutes = [
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
@@ -40,6 +40,7 @@ export const appRoutes = [
   { path: "/oauth-callback", element: <OauthCallback /> },
   { path: "/payment-success", element: <PaymentSuccess /> },
   { path: "/payment-fail", element: <PaymentFail /> },
+  { path: "/rent-payment-success", element: <PaymentRentSuccess /> },
   // Chi tiết sách (bán) - BookId
   { path: "/book/:id", element: <DetailsBook /> },
 

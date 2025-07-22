@@ -1,26 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import apiClient from "../components/Service/AxiosConfig";
+
 const OrderSellDetails = () => {
   const { id } = useParams();
   const [details, setDetails] = useState([]);
-  const [orderInfo, setOrderInfo] = useState(null); // Thêm để chứa Address, Phone
-
+  const [orderInfo, setOrderInfo] = useState(null);
 
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
-        // Gọi chi tiết sản phẩm
         const resDetails = await apiClient.get(`/admin/saleorders/${id}/details`);
         setDetails(resDetails.data);
 
-        // Gọi thông tin đơn hàng chính
-        const resOrder = await apiClient.get(`/admin/saleorders/${id}`);
-        setOrderInfo(resOrder.data);
-
+         const resOrder = await apiClient.get(`/admin/saleorders`);
+         setOrderInfo(resOrder.data);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
-
       }
     };
 
@@ -32,15 +28,24 @@ const OrderSellDetails = () => {
   return (
     <div className="container mt-4">
       <h3>📦 Chi tiết đơn hàng</h3>
-      <p>Mã đơn hàng: <strong>     <td>#{id.substring(0, 6).toUpperCase() || 'N/A'}</td></strong></p>
-      <Link to="/orders-all" className="btn btn-secondary mb-3">← Quay lại danh sách</Link>
+      <p>
+        Mã đơn hàng:{" "}
+        <strong>#{id?.substring(0, 6).toUpperCase() || "N/A"}</strong>
+      </p>
+      <Link to="/orders-all" className="btn btn-secondary mb-3">
+        ← Quay lại danh sách
+      </Link>
 
-      {orderInfo && (
+       {orderInfo && (
         <div className="mb-3">
-          <p><strong>📍 Địa chỉ nhận hàng:</strong> {orderInfo.Address}</p>
-          <p><strong>📞 Số điện thoại:</strong> {orderInfo.Phone}</p>
+          <p>
+            <strong>📍 Địa chỉ nhận hàng:</strong> {orderInfo.Address}
+          </p>
+          <p>
+            <strong>📞 Số điện thoại:</strong> {orderInfo.Phone}
+          </p>
         </div>
-      )}
+      )} 
 
       {details.length === 0 ? (
         <p>Không có dữ liệu chi tiết.</p>
@@ -64,8 +69,12 @@ const OrderSellDetails = () => {
               </tr>
             ))}
             <tr>
-              <td colSpan="3"><strong>Tổng cộng</strong></td>
-              <td><strong>{totalAmount.toLocaleString()}đ</strong></td>
+              <td colSpan="3">
+                <strong>Tổng cộng</strong>
+              </td>
+              <td>
+                <strong>{totalAmount.toLocaleString()}đ</strong>
+              </td>
             </tr>
           </tbody>
         </table>

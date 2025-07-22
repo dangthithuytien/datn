@@ -6,6 +6,7 @@ import { getPromotedBooks } from "../components/Service/saleBookService";
 import "../components/style/sale.css"; // dùng chung CSS với Sale.jsx
 import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService";
 import { tokenUtils } from "../components/Cookie/cookieUtils";
+import { addToCartSale } from "../components/Service/cartService";
 const SaleAll = () => {
   const [books, setBooks] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
@@ -73,19 +74,16 @@ const SaleAll = () => {
   }, [accessToken]);
 
 
-  const handleAddToCart = (book) => {
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    const index = cart.findIndex((item) => item.id === book.id);
-
-    if (index !== -1) {
-      cart[index].quantity += 1;
-    } else {
-      cart.push({ ...book, quantity: 1 });
+  const handleAddToCart = async (book) => {
+    try {
+      await addToCartSale(book.id, 1);
+      alert("✅ Đã thêm vào giỏ hàng!");
+    } catch (error) {
+      console.error("❌ Lỗi thêm vào giỏ hàng:", error);
+      alert("Không thể thêm vào giỏ hàng.");
     }
-
-    localStorage.setItem("cartBuy", JSON.stringify(cart));
-    alert("Đã thêm vào giỏ hàng!");
   };
+
   const isFavorite = (id) => favoriteIds.includes(String(id));
 
   const toggleFavorite = async (book) => {
@@ -107,7 +105,7 @@ const SaleAll = () => {
       alert("Không thể xử lý yêu thích!");
     }
   };
-
+ 
   const handleBuyNow = (book) => {
     const token = localStorage.getItem("accessToken");
     const user = localStorage.getItem("user");

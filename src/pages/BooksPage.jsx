@@ -103,7 +103,7 @@ const BooksPage = () => {
   
     localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
     localStorage.setItem("checkoutTotal", JSON.stringify(book.FinalPrice || book.Price));
-  
+    localStorage.setItem("isBuyNow", "true"); 
     navigate("/checkout");
   };
   

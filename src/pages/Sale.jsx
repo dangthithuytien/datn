@@ -62,6 +62,7 @@ const Sale = () => {
           finalPrice: book.FinalPrice,
           discountPercent: discountPercent,
           packagingSize: book.PackagingSize,
+          IsHidden: book.IsHidden 
         };
       });
 
@@ -178,7 +179,7 @@ const Sale = () => {
                   </div>
                 )}
 
-                <Link to={`/sale-book/${book.id}`} state={{ book }}>
+                <Link to={`/sale-book/$/sale-book/{book.id}`} state={{ book }}>
                   <img src={book.image} alt={book.title} className="book-image" />
                   <h5 className="book-title">{book.title}</h5>
                 </Link>

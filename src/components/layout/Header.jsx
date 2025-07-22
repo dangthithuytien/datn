@@ -9,7 +9,7 @@ import "../style/css.css";
 import ExchangePointsModal from "../../pages/ExchangePointsModal";
 import { tokenUtils } from "../Cookie/cookieUtils";
 import { cookieUtils } from "../Cookie/cookieUtils";
-
+import SearchBar from "../../pages/SearchBar"
 const Header = () => {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false);
@@ -34,34 +34,30 @@ const Header = () => {
 
   return (
     <header className="bg-light shadow-md">
-      <div className="custom-container custom-bg-green text-white py-3 px-4" style={{ paddingInline: "2cm" }}>
+      <div className="custom-container custom-bg-green text-white py-3 px-4">
+
         <div className="row align-items-center">
           <div className="col-3 d-flex align-items-center">
-            <img src="/logodatn.png" alt="Logo" className="logo-img" style={{ maxHeight: "60px", width: "auto" }} />
+            <Link to="/">
+              <img src="/logo.png" alt="Logo" className="logo-img" />
+            </Link>
           </div>
 
+
           <div className="col-5 d-flex align-items-center ps-4">
-            <div className="d-flex align-items-stretch w-100">
-              <div className="input-group ms-2 flex-grow-1">
-                <input type="text" className="form-control" placeholder="Tìm kiếm..." />
-                <button className="btn btn-light"><FaSearch /></button>
-              </div>
-            </div>
+            <SearchBar />
           </div>
 
           <div className="col-4 d-flex justify-content-end align-items-center gap-3">
-            {/* Đổi điểm */}
-            <div className="icon-text text-center" onClick={toggleExchangeModal} style={{ cursor: "pointer" }}>
-              <FaCoins style={{ color: "white" }} />
+            <div className="icon-text text-center" title="Đổi điểm" onClick={toggleExchangeModal}>
+              <FaCoins />
               <div className="small-text">Đổi điểm</div>
             </div>
 
-            {/* Giỏ hàng */}
             <div
               className="icon-text text-center position-relative"
               onMouseEnter={() => handleMouseEnter(setCartDropdownOpen)}
               onMouseLeave={() => handleMouseLeave(setCartDropdownOpen)}
-              style={{ cursor: "pointer" }}
             >
               <FaShoppingCart />
               <div className="small-text">Giỏ hàng</div>
@@ -73,15 +69,16 @@ const Header = () => {
               )}
             </div>
 
-            {/* Tài khoản */}
             <div
-              className="icon-text text-center position-relative"
+              className="position-relative"
               onMouseEnter={() => handleMouseEnter(setAccountDropdownOpen)}
               onMouseLeave={() => handleMouseLeave(setAccountDropdownOpen)}
-              style={{ cursor: "pointer" }}
             >
-              <FaUser />
-              <div className="small-text">Tài khoản</div>
+              <div className="icon-text text-center">
+                <FaUser />
+                <div className="small-text">Tài khoản</div>
+              </div>
+
               {accountDropdownOpen && (
                 <div className="dropdown-menu dropdown-menu-custom show text-start">
                   {!isLoggedIn ? (
@@ -95,7 +92,6 @@ const Header = () => {
                       <div
                         className="dropdown-item d-flex justify-content-between align-items-center"
                         onClick={() => setOrderDropdownOpen(!orderDropdownOpen)}
-                        style={{ cursor: "pointer" }}
                       >
                         🧾 Đơn hàng <span>{orderDropdownOpen ? "▲" : "▼"}</span>
                       </div>
@@ -113,26 +109,28 @@ const Header = () => {
               )}
             </div>
 
-            {/* Yêu thích */}
-            <Link to="/favorite" className="icon-text text-center" style={{ textDecoration: "none", color: "inherit" }}>
-              <FaHeart style={{ color: "white" }} />
+            <Link
+              to="/favorite"
+              className="icon-text text-center"
+              style={{ textDecoration: "none" }}
+            >
+              <FaHeart />
               <div className="small-text">Yêu thích</div>
             </Link>
+
           </div>
         </div>
       </div>
 
-      {/* NAV BOTTOM */}
-      <div className="bg-secondary bg-opacity-10 py-1 border-top">
-        <div className="container-xxl">
-          <nav className="bottom-nav-grid">
-            <a href="/" className="bottom-nav-link"><FaBookOpen /><span>Trang chủ</span></a>
-            <a href="/news" className="bottom-nav-link"><FaNewspaper /><span>Tin Tức</span></a>
-            <a href="/about" className="bottom-nav-link"><FaTags /><span>Giới Thiệu</span></a>
-            <a href="/contact" className="bottom-nav-link"><FaBlog /><span>Blog</span></a>
-          </nav>
-        </div>
+      <div className="container-xxl rounded-bottom-nav">
+        <nav className="bottom-nav-grid">
+          <Link to="/" className="bottom-nav-link"><FaBookOpen /><span>Trang chủ</span></Link>
+          <Link to="/news" className="bottom-nav-link"><FaNewspaper /><span>Tin Tức</span></Link>
+          <Link to="/about" className="bottom-nav-link"><FaTags /><span>Giới Thiệu</span></Link>
+          <Link to="/contact" className="bottom-nav-link"><FaBlog /><span>Blog</span></Link>
+        </nav>
       </div>
+
 
       <ExchangePointsModal isOpen={isExchangeModalOpen} onClose={toggleExchangeModal} />
     </header>

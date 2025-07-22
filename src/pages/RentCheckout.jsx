@@ -16,10 +16,12 @@ const CheckoutRent = () => {
   const [rentCart, setRentCart] = useState([]);
   const [shippingFee, setShippingFee] = useState(0);
 
+
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setStartDate(today);
     const cart = JSON.parse(localStorage.getItem("rentCartBuy")) || [];
+    console.log("✅ Đơn hàng nhận được từ rentCartBuy:", cart);
     setRentCart(cart);
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
@@ -75,20 +77,46 @@ const CheckoutRent = () => {
     setSelectedWard("");
   }, [selectedDistrict]);
 
-  const calculateRentalFee = () => {
+  const calculateBookRentalFee = (bookPrice, startDate, endDate) => {
     if (!startDate || !endDate) return 0;
+  
     const start = new Date(startDate);
     const end = new Date(endDate);
     const diffDays = Math.max(
       1,
       Math.ceil((end - start) / (1000 * 60 * 60 * 24))
     );
-    return diffDays <= 60 ? 10000 : 10000 + (diffDays - 60) * 1000;
+  
+    const baseFee = 10000;
+    const extraFeePerDay = 1000;
+  
+    if (diffDays <= 60) {
+      return baseFee;
+    } else {
+      return baseFee + extraFeePerDay * (diffDays - 60);
+    }
   };
+  const calculateRentalDays = (startDate, endDate) => {
+    if (!startDate || !endDate) return 0;
+  
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffDays = Math.max(
+      1,
+      Math.ceil((end - start) / (1000 * 60 * 60 * 24))
+    );
+    return diffDays;
+  };
+  
+  const rentalDays = calculateRentalDays(startDate, endDate); 
 
   const totalBookFee = rentCart.reduce((sum, item) => sum + Number(item.BookPrice  || 0), 0);
 
-  const rentalPeriodFee = calculateRentalFee();
+  const rentalPeriodFee = rentCart.reduce((sum, item) => {
+    const fee = calculateBookRentalFee(item.BookPrice, startDate, endDate) * (item.Quantity || 1);
+    return sum + fee;
+  }, 0);
+  
   const totalAmount = totalBookFee + shippingFee + rentalPeriodFee;
 
   
@@ -144,17 +172,41 @@ const createCashOrder = async (order) => {
       CartItems: rentCart,
     };
     try {
-      await createCashOrder(order);
-      console.log("Order to submit:", order);
-      alert("✅ Đặt thuê sách thành công!");
-      localStorage.removeItem("rentCartBuy");
-      window.location.href = "/";
+      if (payment === "bank") {
+        const paymentUrl = await createVNPayOrder(order);
+      
+        window.location.href = paymentUrl; // chuyển hướng tới trang thanh toán
+      } else {
+        await createCashOrder(order);
+        alert("✅ Đặt thuê sách thành công!");
+        localStorage.removeItem("rentCartBuy");
+        window.location.href = "/";
+      }
     } catch (err) {
       console.log("Order to submitsssss:", order);
       alert(err.message);
     }
   };
-
+  const createVNPayOrder = async (order) => {
+    try {
+      const res = await apiClient.post("/CashOrder/create-vnpay", order);
+  
+      if (!res || !res.data) {
+        throw new Error("Không có dữ liệu trả về từ server.");
+      }
+  
+      if (res.data.success && res.data.paymentUrl) {
+        return res.data.paymentUrl;
+      } else {
+        throw new Error(res.data.message || "Không nhận được đường dẫn thanh toán từ server.");
+      }
+    } catch (error) {
+      const errorDetail =
+        error.response?.data?.message || error.message || "Không xác định";
+      throw new Error("❌ Lỗi khi tạo đơn hàng VNPay: " + errorDetail);
+    }
+  };
+  
   return (
     <div className="container mt-4">
   <div className="checkout-section">
@@ -230,6 +282,7 @@ const createCashOrder = async (order) => {
           type="date"
           className="checkout-input"
           value={startDate}
+          min={new Date().toISOString().split("T")[0]}
           onChange={(e) => setStartDate(e.target.value)}
         />
         <h5>Ngày trả:</h5>
@@ -237,6 +290,7 @@ const createCashOrder = async (order) => {
           type="date"
           className="checkout-input"
           value={endDate}
+          min={startDate || new Date().toISOString().split("T")[0]} 
           onChange={(e) => setEndDate(e.target.value)}
         />
       </div>
@@ -277,16 +331,7 @@ const createCashOrder = async (order) => {
           />{" "}
           COD
         </label>
-        <label>
-          <input
-            type="radio"
-            name="payment"
-            value="momo"
-            checked={payment === "momo"}
-            onChange={() => setPayment("momo")}
-          />{" "}
-          Ví MoMo
-        </label>
+      
         <label>
           <input
             type="radio"
@@ -301,6 +346,8 @@ const createCashOrder = async (order) => {
 
       <div className="checkout-section checkout-footer">
   <div className="checkout-total">
+  <p>Số ngày thuê: {rentalDays} ngày</p>
+
     <p>
       <strong>Phí thuê theo thời gian: </strong>
       <span>{rentalPeriodFee.toLocaleString()}đ</span>
