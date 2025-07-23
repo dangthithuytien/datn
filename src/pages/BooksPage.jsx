@@ -4,14 +4,15 @@ import { FaHeart } from "react-icons/fa";
 import { getAllSaleBooks } from "../components/Service/saleBookService";
 import "../components/style/booksPage.css";
 import { addToCartSale } from "../components/Service/cartService";
-
+import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService";
+import { tokenUtils } from "../components/Cookie/cookieUtils";
 const BooksPage = () => {
   const [books, setBooks] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [priceRange, setPriceRange] = useState({ min: 0, max: Infinity });
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
   const booksPerPage = 15;
   const baseURL = "https://localhost:7003";
   const navigate = useNavigate();
@@ -21,29 +22,52 @@ const BooksPage = () => {
       try {
         const response = await getAllSaleBooks();
         setBooks(response);
+        if (accessToken) {
+          await loadFavorites();
+        } else {
+          setFavoriteIds([]);
+        }
       } catch (err) {
         console.error("Lỗi lấy sách:", err);
       }
     };
 
-    const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-    setFavoriteIds(favorites.map((b) => b.SaleBookId));
+    
+   
 
     fetchBooks();
   }, []);
-
-  const handleAddToFavorites = (book) => {
-    const favorites = JSON.parse(localStorage.getItem("favoriteBooks")) || [];
-    const exists = favorites.some((b) => b.SaleBookId === book.SaleBookId);
-    if (exists) {
-      alert("Sách đã có trong danh sách yêu thích.");
+  const loadFavorites = async () => {
+    try {
+      const favorites = await FavoriteSaleBookService.getFavorites();
+      const ids = favorites.map((f) => String(f.SaleBookId));
+      setFavoriteIds(ids);
+    } catch (error) {
+      console.error("❌ Lỗi khi lấy danh sách yêu thích:", error);
+      setFavoriteIds([]);
+    }
+  };
+  const handleToggleFavorite = async (book) => {
+    if (!accessToken) {
+      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
       return;
     }
 
-    favorites.push(book);
-    localStorage.setItem("favoriteBooks", JSON.stringify(favorites));
-    setFavoriteIds([...favoriteIds, book.SaleBookId]);
-    alert("Đã thêm vào yêu thích!");
+    try {
+      const bookIdStr = String(book.SaleBookId);
+      const isFav = favoriteIds.includes(bookIdStr);
+
+      if (isFav) {
+        await FavoriteSaleBookService.removeFavorite(bookIdStr);
+      } else {
+        await FavoriteSaleBookService.addFavorite(bookIdStr);
+      }
+
+      await loadFavorites();
+    } catch (error) {
+      console.error("❌ Lỗi khi xử lý yêu thích:", error);
+      alert("Lỗi khi xử lý yêu thích!");
+    }
   };
   const handleAddToCart = async (book) => {
     try {
@@ -56,7 +80,7 @@ const BooksPage = () => {
   };
   
   const handleBookClick = (book) => {
-    navigate(`/book/${book.SaleBookId}`, { state: { book } });
+    navigate(`/sale-book/${book.SaleBookId}`, { state: { book } });
   };
 
   // ==== Lọc và sắp xếp ====
@@ -165,7 +189,7 @@ const BooksPage = () => {
             <div className="book-card position-relative">
               <FaHeart
                 className={`heart-icon ${favoriteIds.includes(book.SaleBookId) ? "active" : ""}`}
-                onClick={() => handleAddToFavorites(book)}
+                onClick={() => handleToggleFavorite(book)}
                 title="Yêu thích"
               />
               <div onClick={() => handleBookClick(book)} style={{ cursor: "pointer" }}>

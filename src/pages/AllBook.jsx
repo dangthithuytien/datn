@@ -263,7 +263,7 @@ const AllBook = () => {
                       />
                     )}
 
-                    <Link to={`/book/${book.SaleBookId}`} state={{ book }}>
+                    <Link to={`/sale-book/${book.SaleBookId}`} state={{ book }}>
                       <div className="image-container">
                         <img
                           src={`${baseURL}${book.ImageUrl}`}
