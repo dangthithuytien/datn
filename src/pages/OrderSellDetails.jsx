@@ -12,11 +12,11 @@ const OrderSellDetails = () => {
       try {
         const resDetails = await apiClient.get(`/admin/saleorders/${id}/details`);
         setDetails(resDetails.data);
-        
+
         const resOrder = await apiClient.get(`/admin/saleorders`);
-    const matchedOrder = resOrder.data.find(order => order.OrderId === id); 
-  
-    setOrderInfo(matchedOrder);
+        const matchedOrder = resOrder.data.find(order => order.OrderId === id);
+
+        setOrderInfo(matchedOrder);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
       }
@@ -38,7 +38,7 @@ const OrderSellDetails = () => {
         ← Quay lại danh sách
       </Link>
 
-       {orderInfo && (
+      {orderInfo && (
         <div className="mb-3">
           <p>
             <strong>📍 Địa chỉ nhận hàng:</strong> {orderInfo.Address}
@@ -46,8 +46,15 @@ const OrderSellDetails = () => {
           <p>
             <strong>📞 Số điện thoại:</strong> {orderInfo.Phone}
           </p>
+          {orderInfo?.Status === 3 && (
+            <p>
+              <strong>🏅 Điểm nhận:</strong> {(totalAmount / 1000).toFixed(1)} điểm
+            </p>
+          )}
+
+
         </div>
-      )} 
+      )}
 
       {details.length === 0 ? (
         <p>Không có dữ liệu chi tiết.</p>

@@ -4,7 +4,8 @@ import { FaFilter } from "react-icons/fa";
 import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService";
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import "../components/style/favorite.css";
-
+import { useMyAlert } from "../components/MyAlertContext";
+import { addToCartSale } from "../components/Service/cartService";
 const FavoriteSaleBooks = () => {
   const [favoriteBooks, setFavoriteBooks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -13,12 +14,12 @@ const FavoriteSaleBooks = () => {
   const [sortBy, setSortBy] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     const loadFavoriteBooks = async () => {
       const token = tokenUtils.getAccessToken();
       if (!token) {
-        alert("❌ Vui lòng đăng nhập để xem sách yêu thích.");
+        showAlert("❌ Vui lòng đăng nhập để xem sách yêu thích.", "error");
         navigate("/login");
         return;
       }
@@ -36,11 +37,7 @@ const FavoriteSaleBooks = () => {
   }, [navigate]);
 
   const removeFromFavorites = async (saleBookId) => {
-    const confirmRemove = window.confirm(
-      "Bạn chắc chắn muốn xoá khỏi yêu thích?"
-    );
-    if (!confirmRemove) return;
-
+  
     try {
       await FavoriteSaleBookService.removeFavorite(saleBookId);
       setFavoriteBooks((prev) =>
@@ -51,16 +48,14 @@ const FavoriteSaleBooks = () => {
     }
   };
 
-  const handleAddToCart = (book) => {
-    const cart = JSON.parse(localStorage.getItem("cartBuy")) || [];
-    if (cart.some((item) => item.saleBookId === book.SaleBookId)) {
-      alert("⚠️ Sách đã có trong giỏ hàng.");
-      return;
+  const handleAddToCart = async (book) => {
+    try {
+      await addToCartSale(book.SaleBookId, 1);
+      showAlert("✅ Đã thêm vào giỏ hàng!");
+    } catch (err) {
+      console.error("❌ Lỗi khi thêm vào giỏ hàng:", err);
+      showAlert("Không thể thêm vào giỏ hàng.","error");
     }
-
-    cart.push({ ...book, saleBookId: book.SaleBookId, quantity: 1 });
-    localStorage.setItem("cartBuy", JSON.stringify(cart));
-    alert("✅ Đã thêm sách vào giỏ!");
   };
 
   // ===== SORTING =====

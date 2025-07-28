@@ -8,7 +8,7 @@ import { addToCartSale } from "../components/Service/cartService";
 import { FaHeart, FaRegHeart, FaShare, FaBookmark, FaRegBookmark } from "react-icons/fa";
 import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService"; // ✅ THÊM: Service yêu thích
 import { tokenUtils } from "../components/Cookie/cookieUtils"; // ✅ THÊM: Quản lý token
-
+import { useMyAlert } from "../components/MyAlertContext";
 const DetailsBook = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const DetailsBook = () => {
 
   const [isFavorite, setIsFavorite] = useState(false); 
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
-
+  const { showAlert } = useMyAlert();
   const baseURL = "https://localhost:7003";
 
   useEffect(() => {
@@ -79,15 +79,15 @@ const DetailsBook = () => {
     try {
       if (!book || !book.SaleBookId) return;
       await addToCartSale(book.SaleBookId, quantity);
-      alert("✅ Đã thêm vào giỏ hàng!");
+      showAlert("✅ Đã thêm vào giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
-      alert("Không thể thêm vào giỏ hàng.");
+      showAlert("Không thể thêm vào giỏ hàng.","error");
     }
   };
   const toggleFavorite = async () => {
     if (!accessToken) {
-      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
       return;
     }
 
@@ -95,15 +95,15 @@ const DetailsBook = () => {
       if (isFavorite) {
         await FavoriteSaleBookService.removeFavorite(String(id));
         setIsFavorite(false);
-        alert("💔 Đã bỏ khỏi danh sách yêu thích!");
+        showAlert("💔 Đã bỏ khỏi danh sách yêu thích!");
       } else {
         await FavoriteSaleBookService.addFavorite(String(id));
         setIsFavorite(true);
-        alert("❤️ Đã thêm vào danh sách yêu thích!");
+        showAlert("❤️ Đã thêm vào danh sách yêu thích!");
       }
     } catch (error) {
       console.error("❌ Lỗi xử lý yêu thích:", error);
-      alert("Không thể xử lý yêu thích!");
+      showAlert("Không thể xử lý yêu thích!","error");
     }
   };
 
@@ -112,7 +112,7 @@ const DetailsBook = () => {
     const user = localStorage.getItem("user");
   
     if (!token || !user) {
-      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.","error");
       navigate("/login"); // Hoặc mở modal đăng nhập
       return;
     }

@@ -3,7 +3,7 @@ import "../components/style/Checkout.css";
 import { getCartSale } from "../components/Service/cartService";
 import apiClient from "../components/Service/AxiosConfig";
 import { useLocation } from "react-router-dom";
-
+import { useMyAlert } from "../components/MyAlertContext";
 const Checkout = () => {
   const [discountValue, setDiscountValue] = useState(0);
   const [shipping, setShipping] = useState("store_pickup");
@@ -12,7 +12,7 @@ const Checkout = () => {
   const [shippingFee, setShippingFee] = useState(0);
   const [availableVouchers, setAvailableVouchers] = useState([]);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
-
+  const { showAlert } = useMyAlert();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -187,7 +187,22 @@ const Checkout = () => {
       throw new Error("❌ Lỗi khi tạo đơn hàng: " + errorDetail);
     }
   };
-
+const createVnpay = async(orderData)=> {
+  try {
+  const response = await apiClient.post("/SaleOrders/create-vnpay", orderData);
+  const paymentUrl = response.data.paymentUrl;
+  if (paymentUrl) {
+    window.open(paymentUrl, "_blank"); 
+  } else {
+    showAlert('❌ Không lấy được link VnPay', "error");
+  }
+ 
+  
+} catch (error) {
+  const errorDetail = error.response?.data || error.message;
+  throw new Error("❌ Lỗi khi tạo đơn hàng: " + errorDetail);
+}
+};
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const handlePlaceOrder = async () => {
@@ -198,7 +213,7 @@ const Checkout = () => {
     const products = JSON.parse(localStorage.getItem("cartBuy")) || [];
 
     if (products.length === 0) {
-      alert("🛒 Giỏ hàng trống!");
+      showAlert("🛒 Giỏ hàng trống!", "error");
       return;
     }
 
@@ -209,7 +224,7 @@ const Checkout = () => {
       !selectedWard ||
       !addressDetail
     ) {
-      alert("⚠️ Vui lòng nhập đầy đủ thông tin người nhận.");
+      showAlert("⚠️ Vui lòng nhập đầy đủ thông tin người nhận.", "error");
       return;
     }
 
@@ -245,30 +260,26 @@ const Checkout = () => {
 
       const sessionCart = await getCartSale();
       if (!sessionCart || sessionCart.length === 0) {
-        alert("❌ Đặt hàng thất bại: Giỏ hàng session rỗng.");
+        showAlert("❌ Đặt hàng thất bại: Giỏ hàng session rỗng.", "error");
         return;
       }
 
       if (payment === "cod") {
         await createCashOrder(orderData);
-        alert("✅ Đặt hàng thành công (COD)!");
+        showAlert("✅ Đặt hàng thành công (COD)!");
         window.location.href = "/";
       } else if (payment === "vnpay") {
-        const response = await apiClient.post("/SaleOrders/create-vnpay", orderData);
-          const paymentUrl = response.data.paymentUrl; // 🟢 Lấy đúng thuộc tính
-          window.location.href = paymentUrl;
-          alert("Chờ một chút để chuyển sang trang VNpay");
-      }
+        await createVnpay(orderData);
       
-    
-    
+      }
+
       localStorage.removeItem("cartBuy");
       localStorage.removeItem("checkoutTotal");
       localStorage.removeItem("isBuyNow");
       window.location.href = "/";
     } catch (error) {
       console.error(error);
-      alert("❌ Đặt hàng thất bại: " + error.message);
+      showAlert("❌ Đặt hàng thất bại: " + error.message, "error");
     }
   };
 
@@ -374,28 +385,28 @@ const Checkout = () => {
       </div>
 
       <div className="checkout-section">
-  <h3 className="checkout-section-title">Phương thức thanh toán</h3>
-  <label>
-    <input
-      type="radio"
-      name="payment"
-      value="cod"
-      checked={payment === "cod"}
-      onChange={() => setPayment("cod")}
-    />
-    COD
-  </label>
-  <label>
-    <input
-      type="radio"
-      name="payment"
-      value="vnpay"
-      checked={payment === "vnpay"}
-      onChange={() => setPayment("vnpay")}
-    />
-    VnPay
-  </label>
-</div>
+        <h3 className="checkout-section-title">Phương thức thanh toán</h3>
+        <label>
+          <input
+            type="radio"
+            name="payment"
+            value="cod"
+            checked={payment === "cod"}
+            onChange={() => setPayment("cod")}
+          />
+          COD
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="payment"
+            value="vnpay"
+            checked={payment === "vnpay"}
+            onChange={() => setPayment("vnpay")}
+          />
+          VnPay
+        </label>
+      </div>
 
 
       <div className="checkout-section checkout-footer">

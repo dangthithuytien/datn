@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/style/Orders.css";
 import apiClient from "../components/Service/AxiosConfig";
+import { useMyAlert } from "../components/MyAlertContext";
 // Icons
 import { HiOutlineSearch } from "react-icons/hi";
 import { MdCancel, MdArrowBack, MdShoppingCartCheckout } from "react-icons/md";
 import { BsBoxSeam, BsCheck2 } from "react-icons/bs";
 
-const OrderStatusTabs = ["Tất cả", "Đã đặt", "Đang giao", "Đã giao", "Đã hủy"];
+const OrderStatusTabs = ["Tất cả", "Chờ xử lý","Đã xác nhận", "Đang giao", "Hoàn thành", "Đã hủy"];
 const cancelReasons = [
   "Thay đổi ý định",
   "Đặt nhầm",
@@ -18,18 +19,15 @@ const cancelReasons = [
 const getStatusString = (status) => {
   switch (status) {
     case 0:
+      return "Chờ xử lý";
     case 1:
-      return "Đã đặt";
+      return "Đã xác nhận";
     case 2:
       return "Đang giao";
     case 3:
-      return "Đã giao";
-    case 4:
-      return "Đã hủy";
-    case 5:
-      return "Thất bại";
+      return "Hoàn thành";
     case 6:
-      return "Quá hạn";
+      return "Đã hủy";
     default:
       return "Không xác định";
   }
@@ -41,7 +39,7 @@ const AllOrders = () => {
   const [statusFilter, setStatusFilter] = useState("Tất cả");
   const [showReasonInput, setShowReasonInput] = useState(null);
   const navigate = useNavigate();
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -84,13 +82,14 @@ const AllOrders = () => {
             : o
         );
         setOrders(updated);
+        showAlert("Hủy đơn hàng thành công");
         setShowReasonInput(null);
       } else {
-        alert("Không thể hủy đơn hàng. Vui lòng thử lại.");
+        showAlert("Không thể hủy đơn hàng. Vui lòng thử lại.", "error");
       }
     } catch (error) {
       console.error("Lỗi khi hủy đơn hàng:", error);
-      alert("Lỗi mạng khi hủy đơn hàng.");
+      showAlert("Lỗi khi hủy đơn hàng.", "error");
     }
   };
   
@@ -104,26 +103,23 @@ const AllOrders = () => {
             ? {
                 ...o,
                 Status: 3,
-                statusText: "Đã giao",
+                statusText: "Hoàn thành",
               }
             : o
         );
         setOrders(updated);
+        showAlert("Đã nhận đơn hàng thành công");
       } else {
-        alert("Không thể cập nhật trạng thái. Vui lòng thử lại.");
+        showAlert("Không thể cập nhật trạng thái. Vui lòng thử lại.", "error");
       }
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
-      alert("Lỗi mạng khi cập nhật trạng thái.");
+      showAlert("Lỗi mạng khi cập nhật trạng thái.", "error");
     }
   };
   
   
-  const handleBuyAgain = (products) => {
-    localStorage.setItem("cartBuy", JSON.stringify(products));
-    window.location.href = "/cart";
-  };
-
+  
   const filteredOrders =
     statusFilter === "Tất cả"
       ? orders
@@ -189,7 +185,7 @@ const AllOrders = () => {
                       <HiOutlineSearch />
                     </button>
 
-                    {order.statusText === "Đã đặt" && (
+                    {(order.statusText === "Chờ xử lý"||order.statusText === "Đã xác nhận" )&& (
                       <>
                         {showReasonInput === order.OrderId ? (
                           <div style={{ width: "100%" }}>

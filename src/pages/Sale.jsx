@@ -7,10 +7,12 @@ import { tokenUtils } from "../components/Cookie/cookieUtils";
 import { addToCartSale } from "../components/Service/cartService";
 import "../components/style/sale.css";
 import { useNavigate } from "react-router-dom";
+import { useMyAlert } from "../components/MyAlertContext";
 const Sale = () => {
   const [books, setBooks] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
+  const { showAlert } = useMyAlert();
   const baseURL = "https://localhost:7003";
   const navigate = useNavigate();
   useEffect(() => {
@@ -86,7 +88,7 @@ const Sale = () => {
 
   const toggleFavorite = async (book) => {
     if (!accessToken) {
-      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
       return;
     }
 
@@ -100,17 +102,17 @@ const Sale = () => {
       await loadFavorites();
     } catch (error) {
       console.error("❌ Lỗi xử lý yêu thích:", error);
-      alert("Không thể xử lý yêu thích!");
+      showAlert("Không thể xử lý yêu thích!","error");
     }
   };
 
   const handleAddToCart = async (book) => {
     try {
       await addToCartSale(book.id, 1);
-      alert("✅ Đã thêm vào giỏ hàng!");
+      showAlert("✅ Đã thêm vào giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi thêm vào giỏ hàng:", error);
-      alert("Không thể thêm vào giỏ hàng.");
+      showAlert("Không thể thêm vào giỏ hàng.","error");
     }
   };
   const handleBuyNow = (book) => {
@@ -118,7 +120,7 @@ const Sale = () => {
     const user = localStorage.getItem("user");
 
     if (!token || !user) {
-      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.","error");
       navigate("/login"); // Hoặc mở modal đăng nhập
       return;
     }

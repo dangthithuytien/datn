@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/style/Orders.css";
 import apiClient from "../components/Service/AxiosConfig";
-
+import { useMyAlert } from "../components/MyAlertContext";
 const RENTAL_STATUSES = {
   0: "Chờ xác nhận",
   1: "Đã xác nhận",
@@ -27,7 +27,7 @@ const OrdersRent = () => {
   const [orders, setOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState("Tất cả");
   const navigate = useNavigate();
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -42,18 +42,33 @@ const OrdersRent = () => {
         setOrders(userOrders);
       } catch (err) {
         console.error("Lỗi lấy danh sách đơn thuê:", err);
-        alert("Không thể lấy danh sách đơn thuê");
+        showAlert("Không thể lấy danh sách đơn thuê","error");
       }
     };
 
     fetchOrders();
   }, []);
 
-  const updateOrderStatus = (id, newStatus) => {
-    const updated = orders.map((o) =>
-      o.OrderId === id ? { ...o, Status: newStatus } : o
-    );
-    setOrders(updated);
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      // Gửi PUT request
+      await apiClient.put(`/admin/rentorders/${orderId}/status`, newStatus, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      // Nếu thành công, cập nhật trong state
+      const updated = orders.map((o) =>
+        o.OrderId === orderId ? { ...o, Status: newStatus } : o
+      );
+      setOrders(updated);
+  
+      showAlert("✅ Cập nhật trạng thái thành công!");
+    } catch (error) {
+      console.error("❌ Lỗi cập nhật trạng thái:", error);
+      showAlert("❌ Không thể cập nhật trạng thái đơn thuê.","error");
+    }
   };
 
   const getStatusText = (status) => RENTAL_STATUSES[status] || "Không xác định";
@@ -108,22 +123,23 @@ const OrdersRent = () => {
                   <td>{order.TotalDeposit.toLocaleString()}đ</td>
                   <td>{getStatusText(order.Status)}</td>
                   <td>
-                    {order.Status === 1 && (
+                    {order.Status === 0 && (
                       <button
                         className="btn btn-sm btn-danger mb-1"
-                        onClick={() => updateOrderStatus(order.OrderId, 5)} // Hủy
+                        onClick={() => updateOrderStatus(order.OrderId, 6)} // Hủy
                       >
                         Hủy đơn
                       </button>
                     )}
-                    {order.Status === 2 && (
+                     {order.Status === 2 && (
                       <button
                         className="btn btn-sm btn-primary mb-1"
-                        onClick={() => updateOrderStatus(order.OrderId, 3)} // Trả
+                        onClick={() => updateOrderStatus(order.OrderId, 4)} // Hủy
                       >
-                        Đã trả sách
+                        Đã nhận
                       </button>
                     )}
+                   
                     <br />
                     <button
                       className="btn btn-sm btn-outline-secondary mt-1"

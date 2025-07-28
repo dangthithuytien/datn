@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import apiClient from "../components/Service/AxiosConfig";
+import { useMyAlert } from "../components/MyAlertContext";
 const OrderRentDetail = () => {
   const { id } = useParams();
   const [details, setDetails] = useState([]);
   const [orderInfo, setOrderInfo] = useState(null);
-
+  const { showAlert } = useMyAlert();
   // Hàm format tiền tệ an toàn
   const formatCurrency = (value) => {
     if (typeof value !== "number") return "0";
@@ -27,7 +28,7 @@ useEffect(() => {
       setOrderInfo(matchedOrder);
       console.log("Thông tin đơn thuê:", resOrder.data);
     } catch (err) {
-      alert("Lỗi khi lấy dữ liệu đơn thuê");
+      showAlert("Lỗi khi lấy dữ liệu đơn thuê","error");
       console.error(err);
     }
   };

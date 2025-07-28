@@ -9,6 +9,7 @@ import CommentSection from "./CommentSection";
 import { FaHeart, FaRegHeart, FaShare, FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import FavoriteRentBookService from "../components/Service/FavoriteRentBookService"; //
+import { useMyAlert } from "../components/MyAlertContext";
 const baseURL = "https://localhost:7003";
 
 const RentBookDetails = () => {
@@ -19,7 +20,7 @@ const RentBookDetails = () => {
   const [isLoading, setIsLoading] = useState(true); // Trạng thái tải
   const [error, setError] = useState(null); // Trạng thái lỗi
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 }); // Vị trí zoom mặc định ở giữa
-
+  const { showAlert } = useMyAlert();
   
   
   const [isFavorite, setIsFavorite] = useState(false);
@@ -70,12 +71,12 @@ const RentBookDetails = () => {
   };
   const toggleFavorite = async () => {
     if (!accessToken) {
-      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
       return;
     }
   
     if (!rentBookItem) {
-      alert("❌ Thông tin sách chưa được tải!");
+      showAlert("❌ Thông tin sách chưa được tải!","error");
       return;
     }
   
@@ -83,22 +84,22 @@ const RentBookDetails = () => {
       if (isFavorite) {
         await FavoriteRentBookService.deleteFavorite(rentBookItem.RentBookId);
         setIsFavorite(false);
-        alert("💔 Đã bỏ khỏi danh sách yêu thích!");
+        showAlert("💔 Đã bỏ khỏi danh sách yêu thích!");
       } else {
         await FavoriteRentBookService.toggleFavorite(rentBookItem.RentBookId);
    // ✅ SỬA Ở ĐÂY
         setIsFavorite(true);
-        alert("❤️ Đã thêm vào danh sách yêu thích!");
+        showAlert("❤️ Đã thêm vào danh sách yêu thích!");
       }
     } catch (error) {
       console.error("❌ Lỗi xử lý yêu thích:", error);
   
       if (error.message.includes("404") || error.message.includes("not found")) {
-        alert("❌ API endpoint không tồn tại. Vui lòng kiểm tra backend!");
+        showAlert("❌ API endpoint không tồn tại. Vui lòng kiểm tra backend!","error");
       } else if (error.message.includes("Token hết hạn")) {
-        alert("❌ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!");
+        showAlert("❌ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!","error");
       } else {
-        alert("❌ Không thể xử lý yêu thích. Vui lòng thử lại!");
+        showAlert("❌ Không thể xử lý yêu thích. Vui lòng thử lại!","error");
       }
     }
   };

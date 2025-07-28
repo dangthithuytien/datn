@@ -7,12 +7,12 @@ import {
   clearCartRent,
  
 } from "../components/Service/CartRentService";
-
+import { useMyAlert } from "../components/MyAlertContext";
 const RentCart = () => {
   const [rentItems, setRentItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     fetchRentCart();
   }, []);
@@ -44,12 +44,13 @@ const RentCart = () => {
   };
 
   const handleClear = async () => {
-    if (window.confirm("Xóa toàn bộ giỏ thuê?")) {
-      await clearCartRent();
-      fetchRentCart();
-    }
+    const confirmed = await showAlert("Xóa toàn bộ giỏ thuê?", "warning");
+    if (!confirmed) return;
+  
+    await clearCartRent();
+    fetchRentCart();
   };
-
+  
 
   const calculateSelectedTotal = () => {
     return rentItems
@@ -60,7 +61,7 @@ const RentCart = () => {
 
   const handleCheckout = () => {
     if (selectedItems.length === 0) {
-      alert("Vui lòng chọn sản phẩm để thanh toán!");
+      showAlert("Vui lòng chọn sản phẩm để thanh toán!", "error");
       return;
     }
     const selectedProducts = rentItems.filter((item) =>

@@ -16,8 +16,7 @@ const Home = () => {
   categoryName="Tiểu Thuyết"
 /> */}
 
-      <TopCategorySection categoryName="Tiểu thuyết" />
-       <TopCategorySection  categoryId="e511b772-3a05-44d9-847e-384dc84dabee" categoryName="Kinh dị" />
+     
     
     </div>
   );

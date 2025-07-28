@@ -7,12 +7,13 @@ import "../components/style/sale.css"; // dùng chung CSS với Sale.jsx
 import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService";
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import { addToCartSale } from "../components/Service/cartService";
+import { useMyAlert } from "../components/MyAlertContext";
 const SaleAll = () => {
   const [books, setBooks] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
-
+  const { showAlert } = useMyAlert();
   const booksPerPage = 15;
   const baseURL = "https://localhost:7003";
   const navigate = useNavigate();
@@ -77,10 +78,10 @@ const SaleAll = () => {
   const handleAddToCart = async (book) => {
     try {
       await addToCartSale(book.id, 1);
-      alert("✅ Đã thêm vào giỏ hàng!");
+      showAlert("✅ Đã thêm vào giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi thêm vào giỏ hàng:", error);
-      alert("Không thể thêm vào giỏ hàng.");
+      showAlert("Không thể thêm vào giỏ hàng.","error");
     }
   };
 
@@ -88,7 +89,7 @@ const SaleAll = () => {
 
   const toggleFavorite = async (book) => {
     if (!accessToken) {
-      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
       return;
     }
 
@@ -102,7 +103,7 @@ const SaleAll = () => {
       await loadFavorites();
     } catch (error) {
       console.error("❌ Lỗi xử lý yêu thích:", error);
-      alert("Không thể xử lý yêu thích!");
+      showAlert("Không thể xử lý yêu thích!","error");
     }
   };
  
@@ -111,7 +112,7 @@ const SaleAll = () => {
     const user = localStorage.getItem("user");
 
     if (!token || !user) {
-      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.","error");
       navigate("/login"); // Hoặc mở modal đăng nhập
       return;
     }

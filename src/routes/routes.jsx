@@ -30,8 +30,13 @@ import OauthCallback from "../pages/oauthcallback";
 import PaymentSuccess from "../pages/paymentsuccess";
 import PaymentFail from "../pages/PaymentFail";
 import PaymentRentSuccess from "../pages/PaymentRentSuccess";
+
+import TestAlert from "../pages/TestAlert";
 export const appRoutes = [
   { path: "/", element: <Home /> },
+
+  { path: "/testAlert", element: <TestAlert /> },
+
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/user-profile", element: <UserProfile /> },

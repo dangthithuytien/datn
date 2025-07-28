@@ -55,7 +55,8 @@ const SearchBar = () => {
                             const relatedItems = rentItems.filter(
                                 (i) =>
                                     i.RentBookId === book.RentBookId &&
-                                    i.IsHidden === true // CHỈ lấy item có IsHidden = true
+                                    i.IsHidden === true &&
+                                    i.status === "Available"// CHỈ lấy item có IsHidden = true
                             );
                             return {
                                 ...book,

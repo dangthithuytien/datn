@@ -2,16 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 
-const baseURL = "https://via.placeholder.com/200";
 
-// Dữ liệu giả
-const dummyItems = [
-  { id: 1, Title: "Sách A", ImageUrl: baseURL, Price: 75000, PackagingSize: "20x13 cm" },
-  { id: 2, Title: "Sách B", ImageUrl: baseURL, Price: 90000, PackagingSize: "18x12 cm" },
-  { id: 3, Title: "Sách C", ImageUrl: baseURL, Price: 120000, PackagingSize: "22x14 cm" },
-  { id: 4, Title: "Sách D", ImageUrl: baseURL, Price: 50000, PackagingSize: "19x13 cm" },
-  { id: 5, Title: "Sách E", ImageUrl: baseURL, Price: 65000, PackagingSize: "21x15 cm" },
-];
 
 const formatPrice = (price) => `${price.toLocaleString("vi-VN")} đ`;
 

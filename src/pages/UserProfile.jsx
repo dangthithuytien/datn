@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile, changePassword } from "../components/Service/userService";
 import "../components/style/UserProfile.css";
-
+import { useMyAlert } from "../components/MyAlertContext";
 const UserProfile = () => {
   const [user, setUser] = useState({
     userName: "",
@@ -28,9 +28,9 @@ const UserProfile = () => {
   const [specificAddress, setSpecificAddress] = useState("");
 
   const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState(""); 
   const [selectedWard, setSelectedWard] = useState("");
- 
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -195,14 +195,14 @@ const wardName =
       formData.append("DateOfBirth", new Date(user.dateOfBirth).toISOString());
       if (imageFile) formData.append("ImageUser", imageFile);
       await updateUserProfile(formData);
-      alert("Cập nhật thành công!");
+      showAlert("Cập nhật thành công!");
       setUser((prev) => ({
         ...prev,
         address: fullAddress,
       }));
     } catch (err) {
       console.error("Lỗi cập nhật:", err);
-      alert("Cập nhật thất bại!");
+      showAlert("Cập nhật thất bại!", "error");
     }
   };
 
@@ -341,18 +341,18 @@ const wardName =
                 onClick={async () => {
                   try {
                     if (!currentPassword || !newPassword) {
-                      alert("Vui lòng nhập đầy đủ mật khẩu.");
+                      showAlert("Vui lòng nhập đầy đủ mật khẩu.", "error");
                       return;
                     }
 
                     await changePassword({ CurrentPassword: currentPassword, NewPassword: newPassword });
-                    alert("✅ Đổi mật khẩu thành công!");
+                    showAlert("✅ Đổi mật khẩu thành công!");
                     setCurrentPassword("");
                     setNewPassword("");
                     setActiveTab("profile");
                   } catch (err) {
                     console.error("❌ Đổi mật khẩu lỗi:", err);
-                    alert("❌ Mật khẩu hiện tại không đúng hoặc lỗi hệ thống.");
+                    showAlert("❌ Mật khẩu hiện tại không đúng hoặc lỗi hệ thống.", "error");
                   }
                 }}
               >

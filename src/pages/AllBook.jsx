@@ -8,7 +8,7 @@ import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookServi
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import "../components/style/allbook.css";
 import { useNavigate } from "react-router-dom"; // thêm ở đầu file
-
+import { useMyAlert } from "../components/MyAlertContext";
 
 const AllBook = () => {
   const [allBooks, setAllBooks] = useState([]);
@@ -19,6 +19,7 @@ const AllBook = () => {
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
+  const { showAlert } = useMyAlert();
   const baseURL = "https://localhost:7003";
   const navigate = useNavigate(); 
   // Theo dõi token thay đổi
@@ -64,14 +65,14 @@ const AllBook = () => {
       const ids = favorites.map((f) => String(f.SaleBookId));
       setFavoriteIds(ids);
     } catch (error) {
-      console.error("❌ Lỗi khi lấy danh sách yêu thích:", error);
+      console.error("❌ Lỗi khi lấy danh sách yêu thích:", );
       setFavoriteIds([]);
     }
   };
 
   const handleToggleFavorite = async (book) => {
     if (!accessToken) {
-      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
       return;
     }
 
@@ -88,7 +89,7 @@ const AllBook = () => {
       await loadFavorites();
     } catch (error) {
       console.error("❌ Lỗi khi xử lý yêu thích:", error);
-      alert("Lỗi khi xử lý yêu thích!");
+      showAlert("Lỗi khi xử lý yêu thích!","error");
     }
   };
 
@@ -97,10 +98,10 @@ const AllBook = () => {
   const handleAddToCart = async (book) => {
     try {
       await addToCartSale(book.SaleBookId, 1);
-      alert("✅ Đã thêm vào giỏ hàng!");
+      showAlert("✅ Đã thêm vào giỏ hàng!");
     } catch (err) {
       console.error("❌ Lỗi khi thêm vào giỏ hàng:", err);
-      alert("Không thể thêm vào giỏ hàng.");
+      showAlert("Không thể thêm vào giỏ hàng.","error");
     }
   };
 
@@ -132,7 +133,7 @@ const AllBook = () => {
     const user = localStorage.getItem("user");
   
     if (!token || !user) {
-      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.","error");
       navigate("/login"); // Hoặc mở modal đăng nhập
       return;
     }

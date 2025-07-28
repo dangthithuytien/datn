@@ -9,7 +9,7 @@ import { addToRentCart } from "../components/Service/CartRentService";
 import FavoriteRentBookService from "../components/Service/FavoriteRentBookService";
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import "../components/style/rentbook.css";
-
+import { useMyAlert } from "../components/MyAlertContext";
 const baseURL = "https://localhost:7003";
 
 const AllRentBooks = () => {
@@ -18,7 +18,7 @@ const AllRentBooks = () => {
   const [conditionRange, setConditionRange] = useState({ min: 0, max: 100 });
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const { showAlert } = useMyAlert();
   const booksPerPage = 15;
   const navigate = useNavigate();
 
@@ -74,7 +74,7 @@ const AllRentBooks = () => {
   const handleAddToFavorites = async (item) => {
     const token = tokenUtils.getAccessToken();
     if (!token || tokenUtils.isTokenExpired(token)) {
-      alert("Vui lòng đăng nhập để yêu thích!");
+      showAlert("Vui lòng đăng nhập để yêu thích!","error");
       return;
     }
 
@@ -89,9 +89,9 @@ const AllRentBooks = () => {
   const handleAddToCart = async (item) => {
     try {
       await addToRentCart(item.RentBookItemId);
-      alert("Đã thêm vào giỏ thuê!");
+      showAlert("Đã thêm vào giỏ thuê!");
     } catch (err) {
-      alert("Sách đã được thuê");
+      showAlert("Sách đã được thuê","warning");
     }
   };
 
@@ -99,6 +99,7 @@ const AllRentBooks = () => {
   const filtered = items.filter(
     (i) =>
       i.IsHidden === true &&
+    i.status === "Available" && 
       i.Condition >= conditionRange.min &&
       i.Condition <= conditionRange.max
   );
@@ -179,7 +180,7 @@ const AllRentBooks = () => {
                 <div className="book-title">{item.Title}</div>
                 <div className="book-price">{item.Price.toLocaleString("vi-VN")}₫</div>
                 <p className="book-size">
-                Trạng thái thuê: {item.status === "Rented" ? "Đã thuê" : "Còn sách"}
+                Tình trạng: {item.Condition}
               </p>
               </div>
               <div className="button-group">

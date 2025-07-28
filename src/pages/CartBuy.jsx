@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { getCartSale, removeFromCartSale, increaseQuantity, decreaseQuantity, clearCartSale } from "../components/Service/cartService";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
+import { useMyAlert } from "../components/MyAlertContext";
 const CartSale = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     fetchCart();
   }, []);
@@ -48,13 +48,14 @@ const CartSale = () => {
     await removeFromCartSale(id);
     fetchCart();
   };
+const handleClear = async () => {
+  const confirmed = await showAlert("Bạn có chắc muốn xóa toàn bộ giỏ hàng?", "warning");
+  if (!confirmed) return;
 
-  const handleClear = async () => {
-    if (window.confirm("Xóa toàn bộ giỏ hàng?")) {
-      await clearCartSale();
-      fetchCart();
-    }
-  };
+  await clearCartSale();
+  fetchCart();
+};
+
 
   const calculateSelectedTotal = () => {
     return cartItems
@@ -64,7 +65,7 @@ const CartSale = () => {
 
   const handleCheckout = () => {
     if (selectedItems.length === 0) {
-      alert("Vui lòng chọn sản phẩm để thanh toán!");
+      showAlert("Vui lòng chọn sản phẩm để thanh toán!","error");
       return;
     }
 

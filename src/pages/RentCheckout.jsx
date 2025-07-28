@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../components/style/rentcheckout.css";
 import apiClient from "../components/Service/AxiosConfig";
+import { useMyAlert } from "../components/MyAlertContext";
 const CheckoutRent = () => {
   const [userInfo, setUserInfo] = useState({ name: "", phone: "", email: "" });
   const [provinces, setProvinces] = useState([]);
@@ -15,7 +16,7 @@ const CheckoutRent = () => {
   const [endDate, setEndDate] = useState("");
   const [rentCart, setRentCart] = useState([]);
   const [shippingFee, setShippingFee] = useState(0);
-
+  const { showAlert } = useMyAlert();
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -142,14 +143,14 @@ const createCashOrder = async (order) => {
       !startDate ||
       !endDate
     ) {
-      alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
+      showAlert("⚠️ Vui lòng nhập đầy đủ thông tin!", "error");
       return;
     }
     const addressDetail = document.querySelector(
       'input[placeholder="Địa chỉ cụ thể"]'
     ).value;
     if (!addressDetail) {
-      alert("⚠️ Vui lòng nhập địa chỉ cụ thể!");
+      showAlert("⚠️ Vui lòng nhập địa chỉ cụ thể!", "error");
       return;
     }
     const provinceName =
@@ -175,16 +176,16 @@ const createCashOrder = async (order) => {
       if (payment === "bank") {
         const paymentUrl = await createVNPayOrder(order);
       
-        window.location.href = paymentUrl; // chuyển hướng tới trang thanh toán
+        window.open(paymentUrl, "_blank"); // chuyển hướng tới trang thanh toán
       } else {
         await createCashOrder(order);
-        alert("✅ Đặt thuê sách thành công!");
+        showAlert("✅ Đặt thuê sách thành công!");
         localStorage.removeItem("rentCartBuy");
         window.location.href = "/";
       }
     } catch (err) {
       console.log("Order to submitsssss:", order);
-      alert(err.message);
+      showAlert(err.message, "error");
     }
   };
   const createVNPayOrder = async (order) => {

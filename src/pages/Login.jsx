@@ -4,10 +4,12 @@ import apiClient from "../components/Service/AxiosConfig"; // <-- Đường dẫ
 import { tokenUtils } from "../components/Cookie/tokenUtils"; // <-- Đường dẫn đúng tới tokenUtils
 import "../components/style/Login.css";
 import authService from "../components/Service/authService"; 
+import { useMyAlert } from "../components/MyAlertContext";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { showAlert } = useMyAlert();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -30,14 +32,14 @@ export default function Login() {
           localStorage.setItem("user", JSON.stringify(userRes.data)); // ✅ Lưu thông tin người dùng
         }
 
-        alert("✅ Đăng nhập thành công!");
+        showAlert("✅ Đăng nhập thành công!");
         navigate("/");
       } else {
-        alert("❌ Sai thông tin đăng nhập!");
+        showAlert("❌ Sai thông tin đăng nhập!", "error");
       }
     } catch (err) {
       console.error("Login error:", err);
-      alert("❌ Lỗi hệ thống hoặc mạng!");
+      showAlert("❌ Lỗi hệ thống hoặc mạng!", "error");
     }
   };
   const handleGoogleLogin = async () => {
@@ -45,13 +47,14 @@ export default function Login() {
       const response = await apiClient.get('/Auth/external-login');
       const loginUrl = response.data?.loginUrl;
       if (loginUrl) {
-        window.location.href = loginUrl; // Chuyển hướng tới Google
+        window.location.href = loginUrl;
+      // Chuyển hướng tới Google
       } else {
-        alert('❌ Không lấy được link đăng nhập Google');
+        showAlert('❌ Không lấy được link đăng nhập Google', "error");
       }
     } catch (error) {
       console.error("Google login failed:", error);
-      alert("❌ Lỗi khi đăng nhập bằng Google!");
+      showAlert("❌ Lỗi khi đăng nhập bằng Google!", "error");
     }
   };
   return (

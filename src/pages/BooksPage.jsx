@@ -6,6 +6,7 @@ import "../components/style/booksPage.css";
 import { addToCartSale } from "../components/Service/cartService";
 import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookService";
 import { tokenUtils } from "../components/Cookie/cookieUtils";
+import { useMyAlert } from "../components/MyAlertContext";
 const BooksPage = () => {
   const [books, setBooks] = useState([]);
   const [sortBy, setSortBy] = useState("");
@@ -13,6 +14,7 @@ const BooksPage = () => {
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
+  const { showAlert } = useMyAlert();
   const booksPerPage = 15;
   const baseURL = "https://localhost:7003";
   const navigate = useNavigate();
@@ -49,7 +51,7 @@ const BooksPage = () => {
   };
   const handleToggleFavorite = async (book) => {
     if (!accessToken) {
-      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
       return;
     }
 
@@ -66,16 +68,16 @@ const BooksPage = () => {
       await loadFavorites();
     } catch (error) {
       console.error("❌ Lỗi khi xử lý yêu thích:", error);
-      alert("Lỗi khi xử lý yêu thích!");
+      showAlert("Lỗi khi xử lý yêu thích!","error");
     }
   };
   const handleAddToCart = async (book) => {
     try {
       await addToCartSale(book.SaleBookId, 1);
-      alert("✅ Đã thêm vào giỏ hàng!");
+      showAlert("✅ Đã thêm vào giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
-      alert("Không thể thêm vào giỏ hàng. Vui lòng đăng nhập hoặc thử lại sau.");
+      showAlert("Không thể thêm vào giỏ hàng.","error");
     }
   };
   
@@ -112,7 +114,7 @@ const BooksPage = () => {
     const user = localStorage.getItem("user");
   
     if (!token || !user) {
-      alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+      showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.");
       navigate("/login"); // Hoặc mở modal đăng nhập
       return;
     }

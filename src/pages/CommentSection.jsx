@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import commentService from "../components/Service/commentService";
 import apiClient from "../components/Service/AxiosConfig";
+import { useMyAlert } from "../components/MyAlertContext";
 import {
   FaReply,
   FaChevronRight,
@@ -17,7 +18,7 @@ const CommentSection = ({ bookId }) => {
   const [user, setUser] = useState(null);
   const [filter, setFilter] = useState("all");
   const [expandedComments, setExpandedComments] = useState([]);
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) setUser(storedUser);
@@ -52,7 +53,7 @@ const CommentSection = ({ bookId }) => {
   }, [bookId]);
 
   const handleSendComment = async () => {
-    if (!user) return alert("Bạn cần đăng nhập để bình luận!");
+    if (!user) return showAlert("Bạn cần đăng nhập để bình luận!");
     if (comment.trim() === "") return;
     try {
       await commentService.postComment(comment, bookId);
@@ -64,7 +65,7 @@ const CommentSection = ({ bookId }) => {
   };
 
   const handleSendReply = async (parentId) => {
-    if (!user) return alert("Bạn cần đăng nhập để phản hồi!");
+    if (!user) return showAlert("Bạn cần đăng nhập để phản hồi!","error");
     if (replyContent.trim() === "") return;
     try {
       await commentService.postComment(replyContent, bookId, parentId);
@@ -77,15 +78,18 @@ const CommentSection = ({ bookId }) => {
   };
 
   const handleDeleteComment = async (commentId) => {
-    const confirmDelete = window.confirm("Bạn có chắc muốn xóa bình luận này?");
-    if (!confirmDelete) return;
+    const confirm = await showAlert("Bạn có chắc muốn xóa bình luận này?", "warning");
+    if (!confirm) return;
+  
 
     try {
       await commentService.deleteComment(commentId);
+      showAlert("Xóa Bình luận thành công");
       fetchComments();
+      
     } catch (error) {
       console.error("Lỗi khi xóa bình luận:", error);
-      alert("Xóa bình luận thất bại.");
+      showAlert("Xóa bình luận thất bại.","error");
     }
   };
 

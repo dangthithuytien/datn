@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { FaFilter, FaTimes } from "react-icons/fa";
 import FavoriteRentBookService from "../components/Service/FavoriteRentBookService";
 import "../components/style/rentbook.css";
-
+import { useMyAlert } from "../components/MyAlertContext";
+import { addToRentCart } from "../components/Service/CartRentService";
 const baseURL = "https://localhost:7003";
 
 const FavoriteRentBooks = () => {
@@ -13,7 +14,7 @@ const FavoriteRentBooks = () => {
 
   const [sortBy, setSortBy] = useState("");
   const [showFilter, setShowFilter] = useState(false);
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     fetchFavorites();
   }, []);
@@ -33,35 +34,19 @@ const FavoriteRentBooks = () => {
       await fetchFavorites(); // Refresh sau khi xóa
     } catch (error) {
       console.error("❌ Lỗi khi xóa khỏi yêu thích:", error);
-      alert("Lỗi khi xóa khỏi yêu thích.");
+      showAlert("Lỗi khi xóa khỏi yêu thích.","error");
     }
   };
 
-  const handleAddToRentCart = (book) => {
-    const existingCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-    const exists = existingCart.some((item) => item.id === book.RentBookId);
-    if (exists) {
-      alert("⚠️ Sách đã có trong giỏ thuê.");
-      return;
+ 
+  const handleAddToRentCart = async (book) => {
+    try {
+      await addToRentCart(book.RentBookId);
+      showAlert("✅ Đã thêm sách thuê vào giỏ!");
+    } catch (error) {
+      console.error("Lỗi thêm vào giỏ thuê:", error);
+      showAlert("Sách đã được thuê","error");
     }
-
-    const today = new Date();
-    const returnDate = new Date();
-    returnDate.setDate(today.getDate() + 3);
-
-    const rentItem = {
-      id: book.RentBookId,
-      Title: book.Title,
-      rentPrice: book.Price,
-      image: `${baseURL}${book.ImageUrl}`,
-      rentDate: today.toISOString().split("T")[0],
-      returnDate: returnDate.toISOString().split("T")[0],
-      quantity: 1,
-      deposit: 50000,
-    };
-
-    localStorage.setItem("rentCart", JSON.stringify([...existingCart, rentItem]));
-    alert("✅ Đã thêm sách vào giỏ thuê!");
   };
 
   // ==== SẮP XẾP ====
@@ -145,6 +130,7 @@ const FavoriteRentBooks = () => {
                   </div>
 
                   <h6 className="book-title mt-2">{book.Title}</h6>
+                 
                   <p className="book-price">
                     Thuê: {book.Price?.toLocaleString()} đ
                   </p>

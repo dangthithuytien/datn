@@ -11,7 +11,7 @@ import FavoriteSaleBookService from "../components/Service/FavoriteSaleBookServi
 import { tokenUtils } from "../components/Cookie/cookieUtils"; // ✅ THÊM: Quản lý token
 
 
-
+import { useMyAlert } from "../components/MyAlertContext";
 
 
 const DetailsSale = () => {
@@ -21,7 +21,7 @@ const DetailsSale = () => {
   const [quantity, setQuantity] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const baseURL = "https://localhost:7003";
-
+  const { showAlert } = useMyAlert();
   const [isFavorite, setIsFavorite] = useState(false); // Trạng thái yêu thích (đồng bộ server)
  
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken()); // Token đồng bộ
@@ -74,7 +74,7 @@ const DetailsSale = () => {
   };
   const toggleFavorite = async () => {
     if (!accessToken) {
-      alert("❌ Vui lòng đăng nhập để yêu thích sách!");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
       return;
     }
 
@@ -82,15 +82,15 @@ const DetailsSale = () => {
       if (isFavorite) {
         await FavoriteSaleBookService.removeFavorite(String(id));
         setIsFavorite(false);
-        alert("💔 Đã bỏ khỏi danh sách yêu thích!");
+        showAlert("💔 Đã bỏ khỏi danh sách yêu thích!");
       } else {
         await FavoriteSaleBookService.addFavorite(String(id));
         setIsFavorite(true);
-        alert("❤️ Đã thêm vào danh sách yêu thích!");
+        showAlert("❤️ Đã thêm vào danh sách yêu thích!");
       }
     } catch (error) {
       console.error("❌ Lỗi xử lý yêu thích:", error);
-      alert("Không thể xử lý yêu thích!");
+      showAlert("Không thể xử lý yêu thích!","error");
     }
   };
   // ✅ SỬA: Thêm accessToken dependency
@@ -115,10 +115,10 @@ const DetailsSale = () => {
   if (!book) return;
   try {
     await addToCartSale(book.SaleBookId, quantity); // ✅ Gọi API
-    alert("✅ Đã thêm vào giỏ hàng!");
+    showAlert("✅ Đã thêm vào giỏ hàng!");
   } catch (err) {
     console.error("Lỗi thêm vào giỏ hàng:", err);
-    alert("❌ Không thể thêm vào giỏ hàng. Bạn đã đăng nhập chưa?");
+    showAlert("❌ Không thể thêm vào giỏ hàng","error");
   }
 };
 const handleBuyNow = (book) => {
@@ -126,7 +126,7 @@ const handleBuyNow = (book) => {
   const user = localStorage.getItem("user");
 
   if (!token || !user) {
-    alert("Vui lòng đăng nhập để tiếp tục mua hàng.");
+    showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.","error");
     navigate("/login"); // Hoặc mở modal đăng nhập
     return;
   }

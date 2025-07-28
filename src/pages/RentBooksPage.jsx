@@ -9,7 +9,7 @@ import { addToRentCart } from "../components/Service/CartRentService";
 import FavoriteRentBookService from "../components/Service/FavoriteRentBookService";
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import "../components/style/rentbook.css";
-
+import { useMyAlert } from "../components/MyAlertContext";
 const baseURL = "https://localhost:7003";
 
 const RentBooksPage = () => {
@@ -17,7 +17,7 @@ const RentBooksPage = () => {
   const [sortBy, setSortBy] = useState("");
   const [conditionRange, setConditionRange] = useState({ min: 0, max: 100 });
   const [favoriteIds, setFavoriteIds] = useState([]);
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -78,7 +78,7 @@ const RentBooksPage = () => {
   const toggleFavorite = async (item) => {
     const token = tokenUtils.getAccessToken();
     if (!token || tokenUtils.isTokenExpired(token)) {
-      alert("❗ Bạn cần đăng nhập để yêu thích sách.");
+      showAlert("❗ Bạn cần đăng nhập để yêu thích sách.", "error");
       return;
     }
 
@@ -87,7 +87,7 @@ const RentBooksPage = () => {
       await fetchFavorites();
     } catch (error) {
       console.error("Lỗi toggle yêu thích:", error);
-      alert("❌ Không thể cập nhật yêu thích.");
+      showAlert("❌ Không thể cập nhật yêu thích.", "error");
     }
   };
 
@@ -99,10 +99,10 @@ const RentBooksPage = () => {
   const handleAddToRentCart = async (item) => {
     try {
       await addToRentCart(item.id);
-      alert("✅ Đã thêm sách thuê vào giỏ!");
+      showAlert("✅ Đã thêm sách thuê vào giỏ!");
     } catch (error) {
       console.error("Lỗi thêm vào giỏ thuê:", error);
-      alert("Sách đã được thuê");
+      showAlert("Sách đã được thuê", "error");
     }
   };
 
@@ -110,6 +110,7 @@ const RentBooksPage = () => {
   const filteredByCondition = displayItems.filter(
     (item) =>
       item.IsHidden === true &&
+      item.status === "Available" &&
       item.Condition >= conditionRange.min &&
       item.Condition <= conditionRange.max
   );
@@ -149,30 +150,42 @@ const RentBooksPage = () => {
             <option value="priceDesc">Giá thuê giảm dần</option>
           </select>
 
-          <select
-            className="form-select"
-            onChange={(e) => {
-              const value = e.target.value;
-              switch (value) {
-                case "80-90":
-                  setConditionRange({ min: 80, max: 90 });
-                  break;
-                case "91-95":
-                  setConditionRange({ min: 91, max: 95 });
-                  break;
-                case "96-100":
-                  setConditionRange({ min: 96, max: 100 });
-                  break;
-                default:
-                  setConditionRange({ min: 0, max: 100 });
+          <div className="d-flex align-items-center gap-2">
+            <label htmlFor="minCondition" className="form-label mb-0">Tình trạng:</label>
+            <input
+              type="number"
+              id="minCondition"
+              className="form-control"
+              style={{ width: "80px" }}
+              placeholder="Từ"
+              min={0}
+              max={100}
+              value={conditionRange.min}
+              onChange={(e) =>
+                setConditionRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }))
               }
-            }}
-          >
-            <option value="">-- Tình trạng sách --</option>
-            <option value="80-90">80% - 90%</option>
-            <option value="91-95">91% - 95%</option>
-            <option value="96-100">96% - 100%</option>
-          </select>
+            />
+            <span>-</span>
+            <input
+              type="number"
+              className="form-control"
+              style={{ width: "80px" }}
+              placeholder="Đến"
+              min={0}
+              max={100}
+              value={conditionRange.max}
+              onChange={(e) =>
+                setConditionRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }))
+              }
+            />
+          </div>
+
         </div>
       </h4>
 
@@ -211,7 +224,7 @@ const RentBooksPage = () => {
 
               <p className="book-price">{formatPrice(item.Price)}</p>
               <p className="book-size">
-                Trạng thái thuê: {item.status === "Rented" ? "Đã thuê" : "Còn sách"}
+                Tình trạng: {item.Condition}
               </p>
               <div className="button-group">
                 <button
