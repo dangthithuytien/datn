@@ -176,7 +176,8 @@ const createCashOrder = async (order) => {
       if (payment === "bank") {
         const paymentUrl = await createVNPayOrder(order);
       
-        window.open(paymentUrl, "_blank"); // chuyển hướng tới trang thanh toán
+        window.open(paymentUrl, "_blank"); 
+        window.location.href = "/";
       } else {
         await createCashOrder(order);
         showAlert("✅ Đặt thuê sách thành công!");

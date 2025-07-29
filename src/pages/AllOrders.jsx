@@ -28,6 +28,8 @@ const getStatusString = (status) => {
       return "Hoàn thành";
     case 6:
       return "Đã hủy";
+      case 7:
+      return "Hoàn tiền";
     default:
       return "Không xác định";
   }

@@ -11,6 +11,7 @@ const RENTAL_STATUSES = {
   4: "Đang thuê",
   5: "Quá hạn",
   6: "Đã hủy",
+  7: "Hoàn tiền",
 };
 const OrderStatusTabs = [
   "Tất cả",

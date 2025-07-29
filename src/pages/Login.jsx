@@ -31,7 +31,9 @@ export default function Login() {
         if (userRes.data) {
           localStorage.setItem("user", JSON.stringify(userRes.data)); // ✅ Lưu thông tin người dùng
         }
-
+        const payload = tokenUtils.getTokenPayload(accessToken);
+        console.log("🔒 Token payload:", payload);
+        console.log("⏰ Token expires at:", new Date(payload.exp * 1000).toLocaleString());
         showAlert("✅ Đăng nhập thành công!");
         navigate("/");
       } else {

@@ -21,7 +21,7 @@ const AllBook = () => {
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
   const { showAlert } = useMyAlert();
   const baseURL = "https://localhost:7003";
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   // Theo dõi token thay đổi
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,14 +65,14 @@ const AllBook = () => {
       const ids = favorites.map((f) => String(f.SaleBookId));
       setFavoriteIds(ids);
     } catch (error) {
-      console.error("❌ Lỗi khi lấy danh sách yêu thích:", );
+      console.error("❌ Lỗi khi lấy danh sách yêu thích:");
       setFavoriteIds([]);
     }
   };
 
   const handleToggleFavorite = async (book) => {
     if (!accessToken) {
-      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!", "error");
       return;
     }
 
@@ -84,12 +84,12 @@ const AllBook = () => {
         await FavoriteSaleBookService.removeFavorite(bookIdStr);
       } else {
         await FavoriteSaleBookService.addFavorite(bookIdStr);
-      }
+}
 
       await loadFavorites();
     } catch (error) {
       console.error("❌ Lỗi khi xử lý yêu thích:", error);
-      showAlert("Lỗi khi xử lý yêu thích!","error");
+      showAlert("Lỗi khi xử lý yêu thích!", "error");
     }
   };
 
@@ -101,7 +101,7 @@ const AllBook = () => {
       showAlert("✅ Đã thêm vào giỏ hàng!");
     } catch (err) {
       console.error("❌ Lỗi khi thêm vào giỏ hàng:", err);
-      showAlert("Không thể thêm vào giỏ hàng.","error");
+      showAlert("Không thể thêm vào giỏ hàng.", "error");
     }
   };
 
@@ -112,7 +112,7 @@ const AllBook = () => {
       selectedCategory ? book.CategoryIds?.includes(selectedCategory) : true
     )
     .filter((book) => {
-      const price = (book.FinalPrice || book.Price) ;
+      const price = book.FinalPrice || book.Price;
       return price >= priceRange.min && price <= priceRange.max;
     });
 
@@ -131,13 +131,13 @@ const AllBook = () => {
   const handleBuyNow = (book) => {
     const token = localStorage.getItem("accessToken");
     const user = localStorage.getItem("user");
-  
+
     if (!token || !user) {
-      showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.","error");
+      showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.", "error");
       navigate("/login"); // Hoặc mở modal đăng nhập
       return;
     }
-  
+
     const selectedProduct = {
       ProductId: book.SaleBookId,
       ProductName: book.Title,
@@ -145,43 +145,54 @@ const AllBook = () => {
       UnitPrice: book.FinalPrice || book.Price,
       ImageUrl: book.ImageUrl,
     };
-  
+
     localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
-    localStorage.setItem("checkoutTotal", JSON.stringify(book.FinalPrice || book.Price));
-    localStorage.setItem("isBuyNow", "true"); 
+    localStorage.setItem(
+      "checkoutTotal",
+      JSON.stringify(book.FinalPrice || book.Price)
+    );
+    localStorage.setItem("isBuyNow", "true");
     navigate("/checkout");
   };
-  
-  
-  const displayedBooks = sortedBooks.slice(0, 8);
+
+  const getRandomBooks = (books, count) => {
+    const shuffled = [...books].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
+  const displayedBooks = getRandomBooks(sortedBooks, 8);
 
   return (
     <div className="container mt-3">
       <div className="row">
-        {/* DANH MỤC */}
         <div className="col-md-3 mb-4">
           <h4 className="category-title">Danh mục sản phẩm</h4>
-          <ul className="list-group category-list">
-            <li
-              className={`list-group-item category-item ${
-                !selectedCategory ? "active" : ""
-              }`}
-              onClick={() => setSelectedCategory(null)}
-            >
-              Tất cả
-            </li>
-            {categories.map((cat) => (
+          <div
+            className="category-list-wrapper"
+            style={{ maxHeight: "630px", overflowY: "auto" }}
+          >
+            <ul className="list-group category-list">
               <li
-                key={cat.CategoryId}
                 className={`list-group-item category-item ${
-                  selectedCategory === cat.CategoryId ? "active" : ""
+                  !selectedCategory ? "active" : ""
                 }`}
-                onClick={() => setSelectedCategory(cat.CategoryId)}
+                onClick={() => setSelectedCategory(null)}
               >
-                {cat.CategoryName}
+                Tất cả
               </li>
-            ))}
-          </ul>
+{categories.map((cat) => (
+                <li
+                  key={cat.CategoryId}
+                  className={`list-group-item category-item ${
+                    selectedCategory === cat.CategoryId ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedCategory(cat.CategoryId)}
+                >
+                  {cat.CategoryName}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* DANH SÁCH SÁCH */}
@@ -189,11 +200,9 @@ const AllBook = () => {
           <h4 className="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <span className="d-flex align-items-center">
               Danh mục Sách Bán{" "}
-            
-                <Link to="/books-page" className="ms-2 text-success">
-                  <FaAngleDown />
-                </Link>
-              
+              <Link to="/books-page" className="ms-2 text-success">
+                <FaAngleDown />
+              </Link>
             </span>
 
             {/* Bộ lọc & sắp xếp */}
@@ -248,7 +257,7 @@ const AllBook = () => {
                 <div key={book.SaleBookId} className="col-6 col-md-3 mb-4">
                   <div className="book-card position-relative">
                     {/* ❤️ ICON */}
-                    {isFavorite(book.SaleBookId) ? (
+{isFavorite(book.SaleBookId) ? (
                       <FaHeart
                         className="heart-icon"
                         style={{ color: "red" }}
@@ -276,7 +285,7 @@ const AllBook = () => {
                     </Link>
 
                     <p className="book-price">
-                      {(book.Price ).toLocaleString("vi-VN")}đ
+                      {book.Price.toLocaleString("vi-VN")}đ
                     </p>
                     <p className="text-muted" style={{ fontSize: "13px" }}>
                       Số lượng: {book.Quantity}
@@ -289,8 +298,10 @@ const AllBook = () => {
                       >
                         Giỏ hàng
                       </button>
-                      <button className="btn btn-primary btn-sm"  
-                        onClick={() => handleBuyNow(book)}>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handleBuyNow(book)}
+                      >
                         Mua ngay
                       </button>
                     </div>

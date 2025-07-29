@@ -152,7 +152,7 @@
 .filter-icon-btn {
   background-color: transparent;
   border: 1.5px solid #71e9b9;
-  color: #065a3c;
+color: #065a3c;
   padding: 4px 8px;
   font-size: 1rem;
   border-radius: 6px;
@@ -343,3 +343,4 @@ h4.d-flex.align-items-center {
     height: 130px;
   }
 }
+/*///////////*/

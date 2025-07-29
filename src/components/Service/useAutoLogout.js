@@ -12,8 +12,6 @@ export const useAutoLogout = () => {
         tokenUtils.removeAccessToken();
         // Có thể xóa thêm refreshToken nếu bạn dùng
         cookieUtils.deleteCookie("refreshToken");
-
-        navigate("/login"); // hoặc "/" nếu muốn về trang chủ
       }
     }, 60 * 1000); // Kiểm tra mỗi 60 giây
 
