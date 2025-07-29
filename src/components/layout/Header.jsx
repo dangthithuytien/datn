@@ -10,13 +10,14 @@ import ExchangePointsModal from "../../pages/ExchangePointsModal";
 import { tokenUtils } from "../Cookie/cookieUtils";
 import { cookieUtils } from "../Cookie/cookieUtils";
 import SearchBar from "../../pages/SearchBar"
+import { useMyAlert } from "../MyAlertContext";
 const Header = () => {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false);
   const [orderDropdownOpen, setOrderDropdownOpen] = useState(false);
   const [isExchangeModalOpen, setIsExchangeModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const { showAlert } = useMyAlert();
   useEffect(() => {
     setIsLoggedIn(!!tokenUtils.getAccessToken());
   }, [accountDropdownOpen]);
@@ -27,7 +28,7 @@ const Header = () => {
   const handleLogout = () => {
     tokenUtils.removeAccessToken();
     cookieUtils.deleteCookie("refreshToken");
-    alert("Đăng xuất thành công!");
+    showAlert("Đăng xuất thành công!");
     setAccountDropdownOpen(false);
     window.location.href = "/";
   };
