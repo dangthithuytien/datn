@@ -10,9 +10,10 @@ export default defineConfig(({ command }) => ({
   preview: {
     port: process.env.PORT || 4173,
     host: true,
-    allowedHosts: ["datn-9f68.onrender.com"],
+    allowedHosts: ["datn-rg9q.onrender.com"],
   },
   server: command === "serve" ? {
+    port: 3000,
     proxy: {
       "/api": {
         target: "https://chosachonline-datn.onrender.com",
