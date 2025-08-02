@@ -70,14 +70,14 @@ const AllOrders = () => {
 
   const handleCancelOrder = async (orderId, reason) => {
     try {
-      const res = await apiClient.put(`/admin/saleorders/${orderId}/status`, 4); // Gửi status = 4
+      const res = await apiClient.put(`/admin/saleorders/${orderId}/status`, 6); // Gửi status = 4
   
       if (res.status === 200) {
         const updated = orders.map((o) =>
           o.OrderId === orderId
             ? {
                 ...o,
-                Status: 4,
+                Status: 6,
                 statusText: "Đã hủy",
                 cancelReason: reason,
               }
