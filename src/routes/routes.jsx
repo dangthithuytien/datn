@@ -27,7 +27,7 @@ import ResetPass from "../pages/ResetPass";
 import DetailsSale from "../pages/DetailsSale";
 import OrderSellDetails from "../pages/OrderSellDetails";
 import OauthCallback from "../pages/oauthcallback";
-import PaymentSuccess from "../pages/paymentsuccess";
+import PaymentSuccess from "../pages/PaymentSuccess";
 import PaymentFail from "../pages/PaymentFail";
 import PaymentRentSuccess from "../pages/PaymentRentSuccess";
 
