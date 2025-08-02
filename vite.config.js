@@ -6,10 +6,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
+  // ✅ Thêm cấu hình cho preview (Render dùng lệnh `vite preview`)
+  preview: {
+    port: process.env.PORT || 4173,
+    host: true,
+    allowedHosts: ['datn-9f68.onrender.com'], // Cho phép domain của bạn
+  },
   server: {
     proxy: {
       "/api": {
-        target: "https://localhost:7003", // hoặc URL backend online nếu đã deploy API
+        target: "https://localhost:7003", // nếu API chạy local
         changeOrigin: true,
         secure: false,
       },
