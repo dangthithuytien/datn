@@ -5,7 +5,7 @@ import FavoriteRentBookService from "../components/Service/FavoriteRentBookServi
 import "../components/style/rentbook.css";
 import { useMyAlert } from "../components/MyAlertContext";
 import { addToRentCart } from "../components/Service/CartRentService";
-const baseURL = "https://localhost:7003";
+const baseURL = "https://chosachonline-datn.onrender.com";
 
 const FavoriteRentBooks = () => {
   const [favoriteBooks, setFavoriteBooks] = useState([]);

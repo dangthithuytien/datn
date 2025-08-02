@@ -116,7 +116,7 @@ const RentCart = () => {
                     <img
                       src={
                         item.imageUrl
-                          ? `https://localhost:7003${item.imageUrl}`
+                          ? `https://chosachonline-datn.onrender.com${item.imageUrl}`
                           : "/default-avatar.png"
                       }
                       alt={item.RentBookTitle}

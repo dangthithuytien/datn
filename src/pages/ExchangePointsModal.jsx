@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../components/style/Voucher.css";
 import { getAuthHeaders } from "../components/Cookie/authUtils";
 
-const baseURL = "https://localhost:7003";
+const baseURL = "https://chosachonline-datn.onrender.com";
 
 const ExchangePointsModal = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("exchange");

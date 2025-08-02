@@ -72,7 +72,7 @@ const UserProfile = () => {
   
         // ảnh đại diện
         if (userData.ImageUser) {
-          setPreviewImage(`https://localhost:7003${userData.ImageUser}`);
+          setPreviewImage(`https://chosachonline-datn.onrender.com${userData.ImageUser}`);
         }
       } catch (err) {
         console.error("❌ Lỗi khi lấy thông tin người dùng:", err);

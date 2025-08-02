@@ -117,7 +117,7 @@ const handleClear = async () => {
                   </td>
                   <td>
                     <img
-                      src={item.ImageUrl ? `https://localhost:7003${item.ImageUrl}` : "/default-avatar.png"}
+                      src={item.ImageUrl ? `https://chosachonline-datn.onrender.com${item.ImageUrl}` : "/default-avatar.png"}
                       alt={item.ProductName}
                       width={50}
                       height="auto"

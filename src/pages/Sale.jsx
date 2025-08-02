@@ -13,7 +13,7 @@ const Sale = () => {
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
   const { showAlert } = useMyAlert();
-  const baseURL = "https://localhost:7003";
+  const baseURL = "https://chosachonline-datn.onrender.com";
   const navigate = useNavigate();
   useEffect(() => {
     const interval = setInterval(() => {

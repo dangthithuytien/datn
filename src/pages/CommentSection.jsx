@@ -125,7 +125,7 @@ const CommentSection = ({ bookId }) => {
             <img
               src={
                 cmt.ImageUser
-                  ? `https://localhost:7003${cmt.ImageUser}`
+                  ? `https://chosachonline-datn.onrender.com${cmt.ImageUser}`
                   : "/default-avatar.png"
               }
               alt="avatar"

@@ -15,7 +15,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://localhost:7003", // nếu API chạy local
+        target: "https://chosachonline-datn.onrender.com", // nếu API chạy local
         changeOrigin: true,
         secure: false,
       },

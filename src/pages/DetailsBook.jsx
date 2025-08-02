@@ -19,7 +19,7 @@ const DetailsBook = () => {
   const [isFavorite, setIsFavorite] = useState(false); 
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
   const { showAlert } = useMyAlert();
-  const baseURL = "https://localhost:7003";
+  const baseURL = "https://chosachonline-datn.onrender.com";
 
   useEffect(() => {
     const fetchBook = async () => {

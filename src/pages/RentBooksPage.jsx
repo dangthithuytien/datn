@@ -10,7 +10,7 @@ import FavoriteRentBookService from "../components/Service/FavoriteRentBookServi
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import "../components/style/rentbook.css";
 import { useMyAlert } from "../components/MyAlertContext";
-const baseURL = "https://localhost:7003";
+const baseURL = "https://chosachonline-datn.onrender.com";
 
 const RentBooksPage = () => {
   const [displayItems, setDisplayItems] = useState([]);

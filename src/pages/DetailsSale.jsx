@@ -20,7 +20,7 @@ const DetailsSale = () => {
   const [book, setBook] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const baseURL = "https://localhost:7003";
+  const baseURL = "https://chosachonline-datn.onrender.com";
   const { showAlert } = useMyAlert();
   const [isFavorite, setIsFavorite] = useState(false); // Trạng thái yêu thích (đồng bộ server)
  

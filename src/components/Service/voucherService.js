@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthHeaders } from "../Cookie/authUtils";
 
-const baseURL = "https://localhost:7003";
+const baseURL = "https://chosachonline-datn.onrender.com";
 
 export const getDiscountCodes = async () => {
   const res = await axios.get(`${baseURL}/api/DiscountCode`, getAuthHeaders());

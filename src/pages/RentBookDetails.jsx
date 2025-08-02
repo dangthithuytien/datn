@@ -10,7 +10,7 @@ import { FaHeart, FaRegHeart, FaShare, FaBookmark, FaRegBookmark } from "react-i
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import FavoriteRentBookService from "../components/Service/FavoriteRentBookService"; //
 import { useMyAlert } from "../components/MyAlertContext";
-const baseURL = "https://localhost:7003";
+const baseURL = "https://chosachonline-datn.onrender.com";
 
 const RentBookDetails = () => {
   const { id } = useParams(); // 'id' ở đây là RentBookItemId
