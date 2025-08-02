@@ -2,8 +2,9 @@
 
   const authService = {
       register: async (data) => {
-          console.log('ádasdasdasdsadad',data)
+      
         const response = await apiClient.post("/Auth/register", data);
+        console.log('ádasdasdasdsadad',data)
         return response.data;
       },
       confirmEmail: async ({ Email, Code }) => {
