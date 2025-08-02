@@ -1,16 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
 export default defineConfig({
+  base: "./", // ✅ Quan trọng để tải đúng tài nguyên trên Render
+
   plugins: [react()],
-  // ✅ Thêm cấu hình preview
+
+  // ✅ Dùng để chạy thử build local bằng: npm run preview
   preview: {
-    port: 4173, // hoặc PORT mặc định nếu cần
+    port: 4173,
     host: true,
-    allowedHosts: ['datn-9f68.onrender.com'], // Cho phép host trên Render
+    allowedHosts: ['datn-9f68.onrender.com'],
   },
-  // ✅ Cấu hình proxy dành cho dev
+
+  // ✅ Chỉ dùng trong môi trường phát triển (localhost)
   server: {
     proxy: {
       "/api": {
