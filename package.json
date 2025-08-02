@@ -8,8 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "start": "serve -s dist -l $PORT"
-  }
-  ,
+  },
   "dependencies": {
     "vite": "^6.3.5",
     "axios": "^1.10.0",
@@ -35,8 +34,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.7",
-  
+    "tailwindcss": "^4.1.7"
   },
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "eslint.config.js",
