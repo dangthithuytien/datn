@@ -22,7 +22,7 @@ export default function Login() {
         const accessToken = res.data.Token;
         tokenUtils.setAccessToken(accessToken);
         document.cookie = `refreshToken=${res.data.RefreshToken}; path=/; secure; samesite=strict`;
-
+        document.cookie = `Token=${res.data.Token}; path=/; secure; samesite=strict`;
         // 🟢 Gọi API lấy thông tin người dùng sau khi đăng nhập thành công
         const userRes = await apiClient.get("/user/profile", {
           headers: { Authorization: `Bearer ${accessToken}` },

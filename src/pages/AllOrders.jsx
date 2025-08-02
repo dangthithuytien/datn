@@ -46,7 +46,7 @@ const AllOrders = () => {
     const fetchOrders = async () => {
       try {
         const currentUser = JSON.parse(localStorage.getItem("user"));
-  
+        
         const res = await apiClient.get("/admin/saleorders");
   
         const allOrders = res.data; // ✅ Đây là cách đúng với axios

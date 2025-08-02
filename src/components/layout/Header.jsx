@@ -28,6 +28,7 @@ const Header = () => {
   const handleLogout = () => {
     tokenUtils.removeAccessToken();
     cookieUtils.deleteCookie("refreshToken");
+    cookieUtils.deleteCookie("Token");
     showAlert("Đăng xuất thành công!");
     setAccountDropdownOpen(false);
     window.location.href = "/";
