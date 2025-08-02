@@ -6,12 +6,12 @@ export default defineConfig(({ command }) => ({
   build: {
     outDir: "dist",
   },
+  base: "/", // ✳️ QUAN TRỌNG để router không lỗi khi F5
   preview: {
     port: process.env.PORT || 4173,
     host: true,
     allowedHosts: ["datn-9f68.onrender.com"],
   },
-  // ✅ CHỈ dùng proxy khi chạy local dev
   server: command === "serve" ? {
     proxy: {
       "/api": {
