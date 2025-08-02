@@ -123,7 +123,7 @@ const CheckoutRent = () => {
   
 const createCashOrder = async (order) => {
   try {
-    const res = await apiClient.post("/CashOrder/create", order); // Không cần stringify
+    const res = await apiClient.post("https://chosachonline-datn.onrender.com/api/CashOrder/create", order); // Không cần stringify
     console.log("Order to submit:", order);
 
     return res.data; // Axios tự động parse JSON
@@ -191,7 +191,7 @@ const createCashOrder = async (order) => {
   };
   const createVNPayOrder = async (order) => {
     try {
-      const res = await apiClient.post("/CashOrder/create-vnpay", order);
+      const res = await apiClient.post("https://chosachonline-datn.onrender.com/api/CashOrder/create-vnpay", order);
   
       if (!res || !res.data) {
         throw new Error("Không có dữ liệu trả về từ server.");
