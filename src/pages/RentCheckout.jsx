@@ -123,7 +123,7 @@ const CheckoutRent = () => {
   
 const createCashOrder = async (order) => {
   try {
-    const res = await apiClient.post("https://chosachonline-datn.onrender.com/api/CashOrder/create", order); // Không cần stringify
+    const res = await apiClient.post("http://chosachonline-datn.onrender.com/api/CashOrder/create", order); // Không cần stringify
     console.log("Order to submit:", order);
 
     return res.data; // Axios tự động parse JSON
