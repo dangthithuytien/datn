@@ -178,6 +178,7 @@ const order = {
   UserId: "string",
   StartDate: startDate,
   EndDate: endDate,
+  PaymentMethod: "string",
   HasShippingFee: shipping === "home_delivery",
   Address: fullAddress,
   Phone: userInfo.phone,
