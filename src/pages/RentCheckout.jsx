@@ -164,10 +164,11 @@ const createCashOrder = async (order) => {
     const fullAddress = `${addressDetail}, ${wardName}, ${districtName}, ${provinceName}`;
    const sanitizedCartItems = rentCart.map(item => ({
   RentBookItemId: item.RentBookItemId,
-  BookTitle: item.RentBookTitle, // ✅ sửa tên field đúng với backend
+  RentBookTitle: item.RentBookTitle, // ✅ sửa tên field đúng với backend
   BookPrice: item.BookPrice,
   Condition: item.Condition,
   RentalFee: item.RentalFee,
+  imageUrl : "string",
   TotalFee: item.TotalFee,
   Quantity: item.Quantity || 1,
   IsSelected: item.IsSelected ?? true
