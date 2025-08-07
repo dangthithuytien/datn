@@ -166,8 +166,8 @@ const CheckoutRent = () => {
 
     const order = {
       UserId: "string",
-      StartDate: startDate,
-      EndDate: endDate,
+      StartDate: new Date(startDate).toISOString(),
+      EndDate: new Date(endDate).toISOString(),
       PaymentMethod: "string",
       HasShippingFee: shipping === "home_delivery",
       Address: fullAddress,
