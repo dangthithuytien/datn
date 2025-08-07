@@ -87,7 +87,7 @@ const CheckoutRent = () => {
       1,
       Math.ceil((end - start) / (1000 * 60 * 60 * 24))
     );
-  
+
     const baseFee = 20000;
     const extraFeePerDay = 1000;
   
@@ -123,10 +123,9 @@ const CheckoutRent = () => {
   
 const createCashOrder = async (order) => {
   try {
-    const res = await apiClient.post("/CashOrder/create", order); // Không cần stringify
+     await apiClient.post("/CashOrder/create", order); // Không cần stringify
     console.log("Order to submit:", order);
-
-    return res.data; // Axios tự động parse JSON
+// Axios tự động parse JSON
   } catch (error) {
     const errorDetail = error.response?.data?.message || error.message || "Không xác định";
 
