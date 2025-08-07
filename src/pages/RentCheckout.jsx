@@ -162,14 +162,27 @@ const createCashOrder = async (order) => {
     const wardName =
       wards.find((w) => w.id.toString() === selectedWard)?.full_name || "";
     const fullAddress = `${addressDetail}, ${wardName}, ${districtName}, ${provinceName}`;
-   const order = {
-  UserId: "fad314e7-2deb-4c4c-b9ec-30edbff8eb66",
+   const sanitizedCartItems = rentCart.map(item => ({
+  RentBookItemId: item.RentBookItemId,
+  BookTitle: item.RentBookTitle, // ✅ sửa tên field đúng với backend
+  BookPrice: item.BookPrice,
+  Condition: item.Condition,
+  RentalFee: item.RentalFee,
+  TotalFee: item.TotalFee,
+  Quantity: item.Quantity || 1,
+  IsSelected: item.IsSelected ?? true
+}));
+
+
+const order = {
+  UserId: "string",
   StartDate: startDate,
   EndDate: endDate,
   HasShippingFee: shipping === "home_delivery",
   Address: fullAddress,
   Phone: userInfo.phone,
-  CartItems: rentCart.map(({ imageUrl, ...rest }) => rest), // 👈 Xóa imageUrl
+  CartItems: sanitizedCartItems, // ✅ dùng dữ liệu đã được làm sạch
+ // 👈 Xóa imageUrl
 };
     try {
       if (payment === "bank") {
