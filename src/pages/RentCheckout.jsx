@@ -162,16 +162,16 @@ const createCashOrder = async (order) => {
     const wardName =
       wards.find((w) => w.id.toString() === selectedWard)?.full_name || "";
     const fullAddress = `${addressDetail}, ${wardName}, ${districtName}, ${provinceName}`;
-    const order = {
-      UserId: "string",
-      StartDate: startDate,
-      EndDate: endDate,
-      HasShippingFee: shipping === "home_delivery",
-      Address: fullAddress,
-      Phone: userInfo.phone,
-      PaymentMethod: "string",
-      CartItems: rentCart,
-    };
+   const order = {
+  UserId: "string",
+  StartDate: startDate,
+  EndDate: endDate,
+  HasShippingFee: shipping === "home_delivery",
+  Address: fullAddress,
+  Phone: userInfo.phone,
+  PaymentMethod: "string",
+  CartItems: rentCart.map(({ imageUrl, ...rest }) => rest), // 👈 Xóa imageUrl
+};
     try {
       if (payment === "bank") {
         const paymentUrl = await createVNPayOrder(order);
