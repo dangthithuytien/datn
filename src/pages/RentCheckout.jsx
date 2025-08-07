@@ -87,7 +87,7 @@ const CheckoutRent = () => {
       1,
       Math.ceil((end - start) / (1000 * 60 * 60 * 24))
     );
-
+  
     const baseFee = 20000;
     const extraFeePerDay = 1000;
   
@@ -123,9 +123,10 @@ const CheckoutRent = () => {
   
 const createCashOrder = async (order) => {
   try {
-     await apiClient.post("/CashOrder/create", order); // Không cần stringify
+    const res = await apiClient.post("/CashOrder/create", order); // Không cần stringify
     console.log("Order to submit:", order);
-// Axios tự động parse JSON
+
+    return res.data; // Axios tự động parse JSON
   } catch (error) {
     const errorDetail = error.response?.data?.message || error.message || "Không xác định";
 
@@ -175,8 +176,7 @@ const createCashOrder = async (order) => {
       if (payment === "bank") {
         const paymentUrl = await createVNPayOrder(order);
       
-        window.open(paymentUrl, "_blank"); 
-        window.location.href = "/";
+        window.open(paymentUrl, "_blank"); // chuyển hướng tới trang thanh toán
       } else {
         await createCashOrder(order);
         showAlert("✅ Đặt thuê sách thành công!");
