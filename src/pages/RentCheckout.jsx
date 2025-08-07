@@ -163,7 +163,7 @@ const createCashOrder = async (order) => {
       wards.find((w) => w.id.toString() === selectedWard)?.full_name || "";
     const fullAddress = `${addressDetail}, ${wardName}, ${districtName}, ${provinceName}`;
    const order = {
-  UserId: "string",
+  UserId: "fad314e7-2deb-4c4c-b9ec-30edbff8eb66",
   StartDate: startDate,
   EndDate: endDate,
   HasShippingFee: shipping === "home_delivery",
