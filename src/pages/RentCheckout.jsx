@@ -169,7 +169,6 @@ const createCashOrder = async (order) => {
   HasShippingFee: shipping === "home_delivery",
   Address: fullAddress,
   Phone: userInfo.phone,
-  PaymentMethod: "string",
   CartItems: rentCart.map(({ imageUrl, ...rest }) => rest), // 👈 Xóa imageUrl
 };
     try {
