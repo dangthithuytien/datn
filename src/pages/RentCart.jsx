@@ -64,9 +64,17 @@ const RentCart = () => {
       showAlert("Vui lòng chọn sản phẩm để thanh toán!", "error");
       return;
     }
-    const selectedProducts = rentItems.filter((item) =>
-      selectedItems.includes(item.RentBookItemId)
-    );
+    const selectedProducts = rentItems
+    .filter((item) => selectedItems.includes(item.RentBookItemId))
+    .map((item) => ({
+      RentBookItemId: item.RentBookItemId,
+      RentBookTitle: item.RentBookTitle,
+      RentalFee: item.RentalFee,
+      TotalFee: item.TotalFee,
+      Quantity: item.Quantity,
+      Condition: item.Condition,
+      BookPrice: item.BookPrice
+    }));
     localStorage.setItem("rentCartBuy", JSON.stringify(selectedProducts));
     localStorage.setItem(
       "rentCheckoutTotal",
