@@ -33,8 +33,7 @@ const Banner = () => {
   const prevIndex = (current - 1 + slides.length) % slides.length;
   const nextIndex = (current + 1) % slides.length;
 
-  const getImageUrl = (path) => `https://chosachonline-datn.onrender.com${path}`;
-
+  const getImageUrl = (path) ;
   // Điều hướng thủ công
   const goToPrev = () => {
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
