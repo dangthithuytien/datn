@@ -151,7 +151,7 @@ const FavoriteSaleBooks = () => {
                     <img
                       src={
                         book.ImageUrl?.startsWith("/")
-                          ? `https://chosachonline-datn.onrender.com${book.ImageUrl}`
+                          ? book.ImageUrl
                           : book.ImageUrl || "/no-image.jpg"
                       }
                       alt={book.Title}

@@ -65,7 +65,7 @@ const CommentSection = ({ bookId }) => {
   };
 
   const handleSendReply = async (parentId) => {
-    if (!user) return showAlert("Bạn cần đăng nhập để phản hồi!","error");
+    if (!user) return showAlert("Bạn cần đăng nhập để phản hồi!", "error");
     if (replyContent.trim() === "") return;
     try {
       await commentService.postComment(replyContent, bookId, parentId);
@@ -80,16 +80,16 @@ const CommentSection = ({ bookId }) => {
   const handleDeleteComment = async (commentId) => {
     const confirm = await showAlert("Bạn có chắc muốn xóa bình luận này?", "warning");
     if (!confirm) return;
-  
+
 
     try {
       await commentService.deleteComment(commentId);
       showAlert("Xóa Bình luận thành công");
       fetchComments();
-      
+
     } catch (error) {
       console.error("Lỗi khi xóa bình luận:", error);
-      showAlert("Xóa bình luận thất bại.","error");
+      showAlert("Xóa bình luận thất bại.", "error");
     }
   };
 
@@ -125,8 +125,6 @@ const CommentSection = ({ bookId }) => {
             <img
               src={
                 cmt.ImageUser
-                  ? `https://chosachonline-datn.onrender.com${cmt.ImageUser}`
-                  : "/default-avatar.png"
               }
               alt="avatar"
               className="comment-avatar"

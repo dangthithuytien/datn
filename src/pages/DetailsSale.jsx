@@ -169,7 +169,7 @@ const handleBuyNow = (book) => {
         >
           <div className="book-sale-box position-relative">
             <img
-              src={`${baseURL}${book.ImageUrl}`}
+              src={book.ImageUrl}
               alt={book.Title}
               className="img-fluid details-image"
               style={{

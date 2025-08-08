@@ -196,7 +196,7 @@ const BooksPage = () => {
               />
               <div onClick={() => handleBookClick(book)} style={{ cursor: "pointer" }}>
                 <img
-                  src={`${baseURL}${book.ImageUrl}`}
+                  src={book.ImageUrl}
                   alt={book.Title}
                   className="book-image"
                 />

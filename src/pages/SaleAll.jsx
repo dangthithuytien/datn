@@ -55,7 +55,7 @@ const SaleAll = () => {
             id: book.SaleBookId,
             title: book.Title,
             image: book.ImageUrl?.startsWith("/")
-              ? `${baseURL}${book.ImageUrl}`
+              ? book.ImageUrl
               : book.ImageUrl,
             price: originalPrice,
             finalPrice,
