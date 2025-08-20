@@ -41,7 +41,7 @@ const RentBooksPage = () => {
           return {
             ...item,
             Title: parentBook?.Title || "Unknown Title",
-            ImageUrl: imgUrl,
+            ImageUrl: parentBook?.ImageUrl || "",
             Price: price,
             id: item.RentBookItemId,
             PackagingSize: parentBook?.PackagingSize || "Không rõ",
