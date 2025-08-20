@@ -154,13 +154,7 @@ const AllBook = () => {
     localStorage.setItem("isBuyNow", "true");
     navigate("/checkout");
   };
-
-  const getRandomBooks = (books, count) => {
-    const shuffled = [...books].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
-  };
-
-  const displayedBooks = getRandomBooks(sortedBooks, 8);
+  const displayedBooks = sortedBooks;
 
   return (
     <div className="container mt-3">
@@ -253,7 +247,7 @@ const AllBook = () => {
             <p>Đang tải sách...</p>
           ) : (
             <div className="row">
-              {displayedBooks.map((book) => (
+              {displayedBooks.slice(0, 8).map((book) => (
                 <div key={book.SaleBookId} className="col-6 col-md-3 mb-4">
                   <div className="book-card position-relative">
                     {/* ❤️ ICON */}
