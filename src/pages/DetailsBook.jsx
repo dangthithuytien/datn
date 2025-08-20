@@ -154,7 +154,7 @@ const DetailsBook = () => {
           onMouseLeave={handleMouseLeave}
         >
           <img
-            src={`${baseURL}${book.ImageUrl}`}
+            src={book.ImageUrl}
             alt={book.Title}
             className="img-fluid details-image"
             style={{

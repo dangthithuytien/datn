@@ -214,7 +214,7 @@ const RentBooksPage = () => {
               >
                 <div className="image-container">
                   <img
-                    src={`${baseURL}${item.ImageUrl}`}
+                    src={item.ImageUrl}
                     alt={item.Title}
                     className="book-image"
                   />

@@ -222,7 +222,7 @@ const RentBookDetails = () => {
           onMouseLeave={handleMouseLeave}
         >
           <img
-            src={`${baseURL}${parentBook.ImageUrl}`}
+            src={parentBook.ImageUrl}
             alt={parentBook.Title}
             className="img-fluid details-image"
             style={{

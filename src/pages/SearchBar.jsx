@@ -138,8 +138,7 @@ const SearchBar = () => {
           <img
             src={
               book.ImageUrl
-                ? `https://chosachonline-datn.onrender.com${book.ImageUrl}`
-                : "/default-avatar.png"
+                
             }
             alt={book.Title}
             width={50}

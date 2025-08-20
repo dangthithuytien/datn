@@ -123,7 +123,7 @@ const FavoriteRentBooks = () => {
 
                   <div className="image-container">
                     <img
-                      src={`${baseURL}${book.ImageUrl}`}
+                      src={book.ImageUrl}
                       alt={book.Title}
                       className="book-image"
                     />

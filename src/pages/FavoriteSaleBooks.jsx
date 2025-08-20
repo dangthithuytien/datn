@@ -150,9 +150,7 @@ const FavoriteSaleBooks = () => {
                   <div className="image-container">
                     <img
                       src={
-                        book.ImageUrl?.startsWith("/")
-                          ? book.ImageUrl
-                          : book.ImageUrl || "/no-image.jpg"
+                        book.ImageUrl
                       }
                       alt={book.Title}
                       className="book-image"

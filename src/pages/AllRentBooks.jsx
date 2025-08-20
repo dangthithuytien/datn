@@ -173,7 +173,7 @@ const AllRentBooks = () => {
               />
               <div onClick={() => navigate(`/rent-item-details/${item.RentBookItemId}`)} style={{ cursor: "pointer" }}>
                 <img
-                  src={`${baseURL}${item.ImageUrl}`}
+                  src={item.ImageUrl}
                   alt={item.Title}
                   className="book-image"
                 />
