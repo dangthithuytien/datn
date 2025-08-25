@@ -32,7 +32,7 @@ const Footer = () => {
               className="footer-col1-text mb-1"
               style={{ fontSize: "0.9rem", lineHeight: "1.5" }}
             >
-              <FaMapMarkerAlt className="me-2" /> M5 15 Thái Bình, P.19, TP.HCM
+              <FaMapMarkerAlt className="me-2" /> Tòa nhà QTSC9 (toà T), đường Tô Ký, phường Trung Mỹ Tây, TP HCM
             </p>
             <p
               className="footer-col1-text mb-1"
@@ -44,7 +44,7 @@ const Footer = () => {
               className="footer-col1-text mb-1"
               style={{ fontSize: "0.9rem", lineHeight: "1.5" }}
             >
-              <FaEnvelope className="me-2" /> csth@hexaclover.com
+              <FaEnvelope className="me-2" /> hexaclovershop@gmail.com
             </p>
           </div>
 
@@ -132,7 +132,7 @@ const Footer = () => {
             </div>
             <div className="d-flex gap-3 fs-4 justify-content-center justify-content-md-start">
               <a
-                href="https://facebook.com"
+                href="https://facebook.comhttps://www.facebook.com/profile.php?id=61577203287082"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white"

@@ -241,7 +241,7 @@ const RentBookDetails = () => {
             className="book-price-lg text-danger fw-bold"
             style={{ fontSize: "28px", marginBottom: "12px" }}
           >
-            Giá thuê: {formatPrice(parentBook.Price)}/ngày
+            Giá cọc sách: {formatPrice(parentBook.Price)}
           </p>
 
           <div className="mb-3">
