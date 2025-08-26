@@ -147,8 +147,8 @@ const RentBookDetails = () => {
 
   const handleAddToRentCart = async (rentBookItem) => {
     try {
-      await addToRentCart(rentBookItem.rentBookId); // hoặc rentBookItem.Id tuỳ backend
-      showAlert("Đã thêm vào giỏ thuê!", "success");
+      await addToRentCart(rentBookItem.RentBookItemId); 
+      showAlert("Đã thêm vào giỏ thuê!");
     } catch (error) {
       console.error("Lỗi khi thêm giỏ thuê:", error);
       showAlert("Không thể thêm vào giỏ thuê!", "error");
