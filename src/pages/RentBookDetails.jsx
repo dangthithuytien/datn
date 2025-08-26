@@ -22,8 +22,8 @@ const RentBookDetails = () => {
   const [error, setError] = useState(null); // Trạng thái lỗi
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 }); // Vị trí zoom mặc định ở giữa
   const { showAlert } = useMyAlert();
-  
-  
+
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken());
@@ -60,7 +60,7 @@ const RentBookDetails = () => {
   }, [id]);
   const checkFavoriteStatus = async () => {
     if (!rentBookItem) return;
-    
+
     try {
       // Sử dụng FavoriteRentBookService và kiểm tra bằng RentBookId (như trong FavoriteRentBooks)
       const favorites = await FavoriteRentBookService.getAll();
@@ -72,15 +72,15 @@ const RentBookDetails = () => {
   };
   const toggleFavorite = async () => {
     if (!accessToken) {
-      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!", "error");
       return;
     }
-  
+
     if (!rentBookItem) {
-      showAlert("❌ Thông tin sách chưa được tải!","error");
+      showAlert("❌ Thông tin sách chưa được tải!", "error");
       return;
     }
-  
+
     try {
       if (isFavorite) {
         await FavoriteRentBookService.deleteFavorite(rentBookItem.RentBookId);
@@ -88,23 +88,23 @@ const RentBookDetails = () => {
         showAlert("💔 Đã bỏ khỏi danh sách yêu thích!");
       } else {
         await FavoriteRentBookService.toggleFavorite(rentBookItem.RentBookId);
-   // ✅ SỬA Ở ĐÂY
+        // ✅ SỬA Ở ĐÂY
         setIsFavorite(true);
         showAlert("❤️ Đã thêm vào danh sách yêu thích!");
       }
     } catch (error) {
       console.error("❌ Lỗi xử lý yêu thích:", error);
-  
+
       if (error.message.includes("404") || error.message.includes("not found")) {
-        showAlert("❌ API endpoint không tồn tại. Vui lòng kiểm tra backend!","error");
+        showAlert("❌ API endpoint không tồn tại. Vui lòng kiểm tra backend!", "error");
       } else if (error.message.includes("Token hết hạn")) {
-        showAlert("❌ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!","error");
+        showAlert("❌ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!", "error");
       } else {
-        showAlert("❌ Không thể xử lý yêu thích. Vui lòng thử lại!","error");
+        showAlert("❌ Không thể xử lý yêu thích. Vui lòng thử lại!", "error");
       }
     }
   };
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       const newToken = tokenUtils.getAccessToken();
@@ -145,15 +145,16 @@ const RentBookDetails = () => {
     return formatter.format(price).replace("₫", "đ");
   };
 
-  const handleAddToRentCart = async (item) => {
+  const handleAddToRentCart = async (rentBookItem) => {
     try {
-      await addToRentCart(item.id);
-      showAlert("✅ Đã thêm sách thuê vào giỏ!");
+      await addToRentCart(rentBookItem.rentBookId); // hoặc rentBookItem.Id tuỳ backend
+      showAlert("Đã thêm vào giỏ thuê!", "success");
     } catch (error) {
-      console.error("Lỗi thêm vào giỏ thuê:", error);
-      showAlert("Sách đã được thuê", "error");
+      console.error("Lỗi khi thêm giỏ thuê:", error);
+      showAlert("Không thể thêm vào giỏ thuê!", "error");
     }
   };
+  
 
 
   if (isLoading) {
@@ -260,38 +261,31 @@ const RentBookDetails = () => {
           </div>
 
           <div className="d-flex gap-3 mt-3">
-            {rentBookItem.status === "Available" ? (
-              <button className="btn btn-primary" onClick={handleAddToRentCart(rentBookItem)}>
-                Thêm vào giỏ thuê
-              </button>
-            ) : (
-              <button className="btn btn-secondary" disabled>
-                Đã thuê
-              </button>
-            )}
             <button
-              className="btn btn-success"
-              onClick={() => navigate("/rent-cart")}
+              className="btn btn-primary"
+              onClick={() => handleAddToRentCart(rentBookItem)}
             >
-              Thuê ngay
+              Thêm vào giỏ thuê
             </button>
+
+           
             <button
-                className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
-                onClick={toggleFavorite}
-                title={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
-              >
-                {isFavorite ? (
-                  <>
-                    <FaHeart style={{ color: "red" }} />
-                    <span className="d-none d-md-inline">Đã thích</span>
-                  </>
-                ) : (
-                  <>
-                    <FaRegHeart />
-                    <span className="d-none d-md-inline">Yêu thích</span>
-                  </>
-                )}
-              </button>
+              className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
+              onClick={toggleFavorite}
+              title={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
+            >
+              {isFavorite ? (
+                <>
+                  <FaHeart style={{ color: "red" }} />
+                  <span className="d-none d-md-inline">Đã thích</span>
+                </>
+              ) : (
+                <>
+                  <FaRegHeart />
+                  <span className="d-none d-md-inline">Yêu thích</span>
+                </>
+              )}
+            </button>
           </div>
 
           {/* Nút "Quay lại" đã được bỏ theo yêu cầu */}
@@ -321,16 +315,16 @@ const RentBookDetails = () => {
                 <th>Tiền cọc</th>
                 <td>{formatPrice(parentBook.Price)}</td>
               </tr>
-            
+
             </tbody>
           </table>
         </div>
       </div>
       {/* ==== BÌNH LUẬN ==== */}
-    <CommentSection
-  bookId={rentBookItem.RentBookItemId}
-  storageKeyPrefix="comments-rent"
-/>
+      <CommentSection
+        bookId={rentBookItem.RentBookItemId}
+        storageKeyPrefix="comments-rent"
+      />
 
     </div>
   );
