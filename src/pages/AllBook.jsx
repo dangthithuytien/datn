@@ -160,7 +160,7 @@ const AllBook = () => {
     <div className="container mt-3">
       <div className="row">
         <div className="col-md-3 mb-4">
-          <h4 className="category-title">Danh mục sản phẩm</h4>
+          <h4 className="category-title">Thể loại sách</h4>
           <div
             className="category-list-wrapper"
             style={{ maxHeight: "630px", overflowY: "auto" }}
