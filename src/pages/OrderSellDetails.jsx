@@ -77,28 +77,12 @@ const OrderSellDetails = () => {
                 <td>{item.SubTotal.toLocaleString()}đ</td>
               </tr>
             ))}
-             <tr>
+            <tr>
               <td colSpan="3">
                 <strong>Tổng cộng</strong>
               </td>
               <td>
                 <strong>{totalAmount.toLocaleString()}đ</strong>
-              </td>
-            </tr>
-            <tr>
-              <td colSpan="3">
-                <strong>Tiền giảm</strong>
-              </td>
-              <td>
-                <strong>{orderInfo.DiscountAmount}đ</strong>
-              </td>
-            </tr>
-            <tr>
-              <td colSpan="3">
-                <strong>Thành tiền</strong>
-              </td>
-              <td>
-                <strong>{orderInfo.TotalAmount}đ</strong>
               </td>
             </tr>
           </tbody>
