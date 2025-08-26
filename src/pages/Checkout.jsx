@@ -394,7 +394,7 @@ const createVnpay = async(orderData)=> {
             checked={payment === "cod"}
             onChange={() => setPayment("cod")}
           />
-          COD
+          Tiền mặt
         </label>
         <label>
           <input
@@ -404,7 +404,7 @@ const createVnpay = async(orderData)=> {
             checked={payment === "vnpay"}
             onChange={() => setPayment("vnpay")}
           />
-          VnPay
+          Chuyển khoản ngân hàng
         </label>
       </div>
 

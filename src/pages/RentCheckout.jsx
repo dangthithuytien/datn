@@ -333,7 +333,7 @@ const CheckoutRent = () => {
             checked={payment === "cod"}
             onChange={() => setPayment("cod")}
           />{" "}
-          COD
+          Tiền mặt
         </label>
 
         <label>
