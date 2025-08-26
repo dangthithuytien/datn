@@ -10,6 +10,7 @@ import { FaHeart, FaRegHeart, FaShare, FaBookmark, FaRegBookmark } from "react-i
 import { tokenUtils } from "../components/Cookie/cookieUtils";
 import FavoriteRentBookService from "../components/Service/FavoriteRentBookService"; //
 import { useMyAlert } from "../components/MyAlertContext";
+import { addToRentCart } from "../components/Service/CartRentService";
 const baseURL = "https://chosachonline-datn.onrender.com";
 
 const RentBookDetails = () => {
@@ -144,39 +145,16 @@ const RentBookDetails = () => {
     return formatter.format(price).replace("₫", "đ");
   };
 
-  const handleAddToRentCart = () => {
-    if (!rentBookItem || !parentBook) return;
-
-    const rentCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-    const exists = rentCart.find(
-      (cartItem) => cartItem.id === rentBookItem.RentBookItemId
-    );
-
-    if (exists) {
-      alert("Mục sách này đã có trong giỏ thuê.");
-      return;
+  const handleAddToRentCart = async (item) => {
+    try {
+      await addToRentCart(item.id);
+      showAlert("✅ Đã thêm sách thuê vào giỏ!");
+    } catch (error) {
+      console.error("Lỗi thêm vào giỏ thuê:", error);
+      showAlert("Sách đã được thuê", "error");
     }
-
-    const today = new Date();
-    const returnDate = new Date();
-    returnDate.setDate(today.getDate() + 3);
-
-    const cartItem = {
-      id: rentBookItem.RentBookItemId,
-      title: parentBook.Title,
-      rentPrice: parentBook.Price,
-      image: `${baseURL}${parentBook.ImageUrl}`,
-      rentDate: today.toISOString().split("T")[0],
-      returnDate: returnDate.toISOString().split("T")[0],
-      quantity: 1,
-      deposit: 50000,
-      status: rentBookItem.status,
-      condition: rentBookItem.Condition,
-    };
-
-    localStorage.setItem("rentCart", JSON.stringify([...rentCart, cartItem]));
-    alert("✅ Đã thêm vào giỏ thuê!");
   };
+
 
   if (isLoading) {
     return (
@@ -283,7 +261,7 @@ const RentBookDetails = () => {
 
           <div className="d-flex gap-3 mt-3">
             {rentBookItem.status === "Available" ? (
-              <button className="btn btn-primary" onClick={handleAddToRentCart}>
+              <button className="btn btn-primary" onClick={handleAddToRentCart(rentBookItem)}>
                 Thêm vào giỏ thuê
               </button>
             ) : (
