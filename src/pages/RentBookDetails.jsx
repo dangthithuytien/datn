@@ -340,13 +340,10 @@ const RentBookDetails = () => {
                 <td>{parentBook.Title}</td>
               </tr>
               <tr>
-                <th>Giá thuê</th>
-                <td>{formatPrice(parentBook.Price)}/ngày</td>
-              </tr>
-              <tr>
                 <th>Tiền cọc</th>
-                <td>{formatPrice(50000)}</td>
+                <td>{formatPrice(parentBook.Price)}</td>
               </tr>
+            
             </tbody>
           </table>
         </div>

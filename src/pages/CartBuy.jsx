@@ -35,9 +35,32 @@ const CartSale = () => {
   };
 
   const handleIncrease = async (id) => {
-    await increaseQuantity(id);
-    fetchCart();
+    try {
+      // lấy item cũ trong giỏ
+      const oldItem = cartItems.find((x) => x.ProductId === id);
+      const oldQuantity = oldItem?.Quantity ?? 0;
+  
+      // gọi API tăng số lượng
+      await increaseQuantity(id);
+  
+      // gọi lại giỏ hàng mới
+      const newCart = await getCartSale();
+      setCartItems(newCart);
+  
+      // lấy item mới sau khi gọi API
+      const newItem = newCart.find((x) => x.ProductId === id);
+      const newQuantity = newItem?.Quantity ?? 0;
+  
+      // nếu số lượng KHÔNG tăng → báo
+      if (newQuantity === oldQuantity) {
+        showAlert("Số lượng sản phẩm không thể tăng thêm!", "warning");
+      }
+    } catch (error) {
+      console.error("Lỗi khi tăng số lượng:", error);
+      showAlert("Không thể tăng số lượng sản phẩm!", "error");
+    }
   };
+  
 
   const handleDecrease = async (id) => {
     await decreaseQuantity(id);
