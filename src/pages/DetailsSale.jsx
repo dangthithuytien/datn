@@ -23,9 +23,9 @@ const DetailsSale = () => {
   const baseURL = "https://chosachonline-datn.onrender.com";
   const { showAlert } = useMyAlert();
   const [isFavorite, setIsFavorite] = useState(false); // Trạng thái yêu thích (đồng bộ server)
- 
+
   const [accessToken, setAccessToken] = useState(tokenUtils.getAccessToken()); // Token đồng bộ
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       const newToken = tokenUtils.getAccessToken();
@@ -46,8 +46,8 @@ const DetailsSale = () => {
           data.DiscountPercentage !== undefined
             ? data.DiscountPercentage
             : originalPrice && finalPrice
-            ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
-            : null;
+              ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
+              : null;
 
         setBook({ ...data, finalPrice, discountPercent });
       } catch (error) {
@@ -60,9 +60,9 @@ const DetailsSale = () => {
     if (accessToken) {
       checkFavoriteStatus();
     }
-   
+
   }, [id, accessToken]);
-  
+
   const checkFavoriteStatus = async () => {
     try {
       const favorites = await FavoriteSaleBookService.getFavorites();
@@ -74,7 +74,7 @@ const DetailsSale = () => {
   };
   const toggleFavorite = async () => {
     if (!accessToken) {
-      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!","error");
+      showAlert("❌ Vui lòng đăng nhập để yêu thích sách!", "error");
       return;
     }
 
@@ -90,7 +90,7 @@ const DetailsSale = () => {
       }
     } catch (error) {
       console.error("❌ Lỗi xử lý yêu thích:", error);
-      showAlert("Không thể xử lý yêu thích!","error");
+      showAlert("Không thể xử lý yêu thích!", "error");
     }
   };
   // ✅ SỬA: Thêm accessToken dependency
@@ -112,40 +112,40 @@ const DetailsSale = () => {
   };
 
   const handleAddToCart = async () => {
-  if (!book) return;
-  try {
-    await addToCartSale(book.SaleBookId, quantity); // ✅ Gọi API
-    showAlert("✅ Đã thêm vào giỏ hàng!");
-  } catch (err) {
-    console.error("Lỗi thêm vào giỏ hàng:", err);
-    showAlert("❌ Không thể thêm vào giỏ hàng","error");
-  }
-};
-const handleBuyNow = (book) => {
-  const token = localStorage.getItem("accessToken");
-  const user = localStorage.getItem("user");
-
-  if (!token || !user) {
-    showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.","error");
-    navigate("/login"); // Hoặc mở modal đăng nhập
-    return;
-  }
-
-  const selectedProduct = {
-    ProductId: book.SaleBookId,
-    ProductName: book.Title,
-    Quantity: 1,
-    UnitPrice: book.FinalPrice || book.Price,
-    ImageUrl: book.ImageUrl,
+    if (!book) return;
+    try {
+      await addToCartSale(book.SaleBookId, quantity); // ✅ Gọi API
+      showAlert("✅ Đã thêm vào giỏ hàng!");
+    } catch (err) {
+      console.error("Lỗi thêm vào giỏ hàng:", err);
+      showAlert("❌ Không thể thêm vào giỏ hàng", "error");
+    }
   };
+  const handleBuyNow = (book) => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
 
-  localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
-  
-  localStorage.setItem("checkoutTotal", JSON.stringify(book.FinalPrice || book.Price));
-  localStorage.setItem("isBuyNow", "true"); 
+    if (!token || !user) {
+      showAlert("Vui lòng đăng nhập để tiếp tục mua hàng.", "error");
+      navigate("/login"); // Hoặc mở modal đăng nhập
+      return;
+    }
 
-  navigate("/checkout");
-};
+    const selectedProduct = {
+      ProductId: book.SaleBookId,
+      ProductName: book.Title,
+      Quantity: 1,
+      UnitPrice: book.FinalPrice || book.Price,
+      ImageUrl: book.ImageUrl,
+    };
+
+    localStorage.setItem("cartBuy", JSON.stringify([selectedProduct]));
+
+    localStorage.setItem("checkoutTotal", JSON.stringify(book.FinalPrice || book.Price));
+    localStorage.setItem("isBuyNow", "true");
+
+    navigate("/checkout");
+  };
 
   if (!book) {
     return (
@@ -197,14 +197,17 @@ const handleBuyNow = (book) => {
               className="sale-price text-danger fw-bold"
               style={{ fontSize: "28px" }}
             >
-              {(book.finalPrice ).toLocaleString("vi-VN")}đ
+              {(book.finalPrice).toLocaleString("vi-VN")}đ
             </span>
-            <span
-              style={{ fontSize: "20px" }}
-              className="original-price text-muted text-decoration-line-through ms-3"
-            >
-              {(book.Price ).toLocaleString("vi-VN")}đ
-            </span>
+
+            {book.discountPercent > 0 && (
+              <span
+                style={{ fontSize: "20px" }}
+                className="original-price text-muted text-decoration-line-through ms-3"
+              >
+                {(book.Price).toLocaleString("vi-VN")}đ
+              </span>
+            )}
           </div>
 
           <div className="mb-3">
@@ -249,24 +252,24 @@ const handleBuyNow = (book) => {
             <button className="btn-add-to-cart" onClick={handleAddToCart}>
               🛒 Thêm vào giỏ
             </button>
-            <button className="btn-buy-now"   onClick={() => handleBuyNow(book)}>⚡ Mua ngay</button>
+            <button className="btn-buy-now" onClick={() => handleBuyNow(book)}>⚡ Mua ngay</button>
             <button
-                className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
-                onClick={toggleFavorite}
-                title={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
-              >
-                {isFavorite ? (
-                  <>
-                    <FaHeart style={{ color: "red" }} />
-                    <span className="d-none d-md-inline">Đã thích</span>
-                  </>
-                ) : (
-                  <>
-                    <FaRegHeart />
-                    <span className="d-none d-md-inline">Yêu thích</span>
-                  </>
-                )}
-              </button>
+              className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
+              onClick={toggleFavorite}
+              title={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
+            >
+              {isFavorite ? (
+                <>
+                  <FaHeart style={{ color: "red" }} />
+                  <span className="d-none d-md-inline">Đã thích</span>
+                </>
+              ) : (
+                <>
+                  <FaRegHeart />
+                  <span className="d-none d-md-inline">Yêu thích</span>
+                </>
+              )}
+            </button>
 
           </div>
         </div>

@@ -129,7 +129,7 @@ const Header = () => {
           <Link to="/" className="bottom-nav-link"><FaBookOpen /><span>Trang chủ</span></Link>
           <Link to="/news" className="bottom-nav-link"><FaNewspaper /><span>Tin Tức</span></Link>
           <Link to="/about" className="bottom-nav-link"><FaTags /><span>Giới Thiệu</span></Link>
-          <Link to="/contact" className="bottom-nav-link"><FaBlog /><span>Blog</span></Link>
+          <Link to="/contact" className="bottom-nav-link"><FaBlog /><span>Hỗ Trợ</span></Link>
         </nav>
       </div>
 
