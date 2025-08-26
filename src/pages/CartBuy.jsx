@@ -53,7 +53,7 @@ const CartSale = () => {
   
       // nếu số lượng KHÔNG tăng → báo
       if (newQuantity === oldQuantity) {
-        showAlert("Số lượng sản phẩm không thể tăng thêm!", "warning");
+        showAlert("Số lượng sách không thể tăng thêm!", );
       }
     } catch (error) {
       console.error("Lỗi khi tăng số lượng:", error);
