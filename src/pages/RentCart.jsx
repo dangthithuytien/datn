@@ -60,6 +60,12 @@ const RentCart = () => {
   
 
   const handleCheckout = () => {
+    const token = localStorage.getItem("accessToken"); 
+    if (!token) {
+      showAlert("Vui lòng đăng nhập để tiếp tục thanh toán!", "error");
+      navigate("/login"); 
+      return;
+    }
     if (selectedItems.length === 0) {
       showAlert("Vui lòng chọn sản phẩm để thanh toán!", "error");
       return;
