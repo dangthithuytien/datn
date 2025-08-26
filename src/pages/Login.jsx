@@ -113,9 +113,7 @@ export default function Login() {
         >
           <i className="bi bi-google me-2"></i>ĐĂNG NHẬP GOOGLE
         </button>
-        <button className="social-button facebook-button btn btn-outline-primary w-100">
-          <i className="bi bi-facebook me-2"></i>ĐĂNG NHẬP FACEBOOK
-        </button>
+     
       </div>
 
       <div className="text-center mt-3">

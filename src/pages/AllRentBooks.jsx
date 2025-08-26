@@ -190,7 +190,7 @@ const AllRentBooks = () => {
                 >
                   Giỏ thuê
                 </button>
-                <button className="btn btn-success btn-sm">Thuê ngay</button>
+             
               </div>
             </div>
           </div>

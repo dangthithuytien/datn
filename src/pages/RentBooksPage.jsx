@@ -233,9 +233,7 @@ const RentBooksPage = () => {
                 >
                   Giỏ thuê
                 </button>
-                <Link to="/rent-cart" className="btn btn-success btn-sm">
-                  Thuê ngay
-                </Link>
+               
               </div>
             </div>
           </div>
